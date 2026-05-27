@@ -44,6 +44,7 @@ If no project-slug is given, ASK via `AskUserQuestion` which project to audit; p
    - Zero matches → ASK via `AskUserQuestion` whether to create one via `mcp__dossier__project_create { slug: <project-slug>, name: <project-slug> }` or abort.
    - Multiple matches → ASK which.
 4. **Cache repo state once**: `git -C <path> ls-files` (universe of tracked files), the README path, the stack manifest paths from Step 2. Re-reading these per check is wasteful and racy.
+5. **Ask about nice-to-have / community-onramp checks**: via `AskUserQuestion` — include the soft audits in Step 5 (`CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, issue/PR templates, README badges, `docs/` index)? **Default: no.** Most personal-portfolio launches don't want these — a one-developer repo usually doesn't need a CODE_OF_CONDUCT or issue template, and over-investing in community-onramp hygiene before there's a community is noise. Record the answer for Step 5.
 
 ### 2. Stack detection (FIRST audit step)
 
@@ -282,7 +283,9 @@ Each missing → **P2 finding** — title: `P2: <project>.gemspec missing spec.<
 
 ### 5. Soft / nice-to-have audits (P3)
 
-Each is at most one P3 task; skip silently if the project doesn't have a `.github/` dir (private mirror case — these only apply once the public repo is the canonical one):
+**Opt-in only.** Run this step only if the operator answered "yes" to Step 1's nice-to-have question; the default is "no" and most launches skip. If the operator declined, print `Soft checks: skipped (declined at pre-flight)` and move to Step 6.
+
+If opted in: each is at most one P3 task; skip silently if the project doesn't have a `.github/` dir (private mirror case — these only apply once the public repo is the canonical one):
 
 - `CONTRIBUTING.md` — guidance for external PRs.
 - `CODE_OF_CONDUCT.md` — sets expectations.
@@ -343,7 +346,7 @@ Findings by severity:
 Scan notes:
   Secret scan: <ran with gitleaks | ran with trufflehog | skipped (--skip-secret-scan) | not installed — P1 emitted>
   Stack-specific section: <stack> (Step 4<x>)
-  Soft checks: <N> findings
+  Soft checks: <skipped (declined at pre-flight) | skipped (no .github dir) | <N> findings>
 
 Next:
   /work-driver-prep project:<project-slug>:phase:<project>-prep-public-<YYYY-MM-DD>
