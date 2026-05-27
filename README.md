@@ -5,8 +5,8 @@ Opinionated dev-workflow skills for [Claude Code](https://claude.com/claude-code
 ## Install
 
 ```bash
-git clone https://github.com/itsHabib/skills ~/pers/skills
-cp -r ~/pers/skills/skills/* ~/.claude/skills/
+git clone https://github.com/itsHabib/skills ~/dev/skills
+cp -r ~/dev/skills/skills/* ~/.claude/skills/
 ```
 
 Each appears as `/<skill-name>` in your next session. Copy individual dirs if you want a subset.
@@ -37,7 +37,7 @@ These encode one developer's workflow opinions. Fork and edit to match yours —
 Several skills call MCP servers; without them you'll see missing-tool errors.
 
 - [ship](https://github.com/itsHabib/ship) — required by `/work-driver`.
-- dossier — required by `/work-driver`, `/work-driver-prep`, `/polish`, `/prep-public`, `/shipped`. Currently private.
+- dossier — required by `/work-driver`, `/work-driver-prep`, `/polish`, `/prep-public`, `/shipped`.
 
 ## License
 
