@@ -42,9 +42,9 @@ Don't use for:
 
 **MCP servers** (workflow order, dossier-first):
 
-1. **dossier** — project memory: projects → phases → tasks → artifacts, markdown-on-disk. Source: `~/pers/dossier/`.
-2. **ship** — workflow execution: hands a task doc to cursor, persists the run, lets you inspect/cancel/replay. Source: `~/pers/ship/`.
-3. **huddle** — multi-agent / multi-seat coordination via Slack channels + per-seat keys. Source: `~/pers/huddle/`.
+1. **dossier** — project memory: projects → phases → tasks → artifacts, markdown-on-disk. Source: `~/projects/dossier/`.
+2. **ship** — workflow execution: hands a task doc to cursor, persists the run, lets you inspect/cancel/replay. Source: `~/projects/ship/`.
+3. **huddle** — multi-agent / multi-seat coordination via Slack channels + per-seat keys. Source: `~/projects/huddle/`.
 4. **playwright** — browser automation (Playwright MCP plugin).
 
 **Skills** (workflow order):
@@ -121,7 +121,7 @@ Keep it readable; a compact ASCII flow is fine. Annotate the one or two steps `/
 
 **(d) The seams** (3-6 sentences, the swappability rationale): each layer is independently substitutable and owns one responsibility — dossier owns "what needs doing" (could be Linear), worktree skills own "where work happens", ship owns "drive an agent + persist", review-coordinator owns "consolidate the finders' output" (the four bots are swappable finders under it), huddle owns multi-seat, playwright owns browser. Substituting one doesn't ripple. End with: "the workbench is a menu, not a checklist — skip what a given flow doesn't need."
 
-**(e) Dogfood call-out** (only if the repo IS a canonical tool): inline in the intro, e.g. inside `~/pers/ship/`: *"**This is ship — the execution plane itself** — so the ship verbs are the most directly relevant here."* Inside `~/pers/dossier/`, `~/pers/huddle/` same pattern. Inside `cc-skills`/`skills` (the skill registries): *"**This is the skills registry** — the workbench skills live here; editing one ships it portfolio-wide via sync."* Otherwise no call-out.
+**(e) Dogfood call-out** (only if the repo IS a canonical tool): inline in the intro, e.g. inside `~/projects/ship/`: *"**This is ship — the execution plane itself** — so the ship verbs are the most directly relevant here."* Inside `~/projects/dossier/`, `~/projects/huddle/` same pattern. Inside `cc-skills`/`skills` (the skill registries): *"**This is the skills registry** — the workbench skills live here; editing one ships it portfolio-wide via sync."* Otherwise no call-out.
 
 **Voice**: match the repo's CLAUDE.md. Terse, lowercase technical errors, operator-facing — not marketing. **Resist re-expanding** any entry into a full block; if you feel the urge to add a verb signature, that's the harness's job.
 

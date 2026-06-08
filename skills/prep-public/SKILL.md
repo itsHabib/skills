@@ -7,7 +7,7 @@ user_invocable: true
 
 # /prep-public — pre-launch public-readiness audit
 
-Take any project in your portfolio (typically `~/pers/<project>/`) from "I'm about to announce this" to "I have a punch-list of P0–P3 findings I can fan out via /work-driver". Single-pass audit; materializes findings as dossier tasks under a fresh phase. Distinct from `/polish` (ongoing quality maintenance) — `/prep-public` is a one-shot pre-launch gate; the categories overlap on README but otherwise diverge (secrets-over-history, license alignment, package metadata, no-internal-leaks are public-readiness-specific).
+Take any project in your portfolio (typically `~/projects/<project>/`) from "I'm about to announce this" to "I have a punch-list of P0–P3 findings I can fan out via /work-driver". Single-pass audit; materializes findings as dossier tasks under a fresh phase. Distinct from `/polish` (ongoing quality maintenance) — `/prep-public` is a one-shot pre-launch gate; the categories overlap on README but otherwise diverge (secrets-over-history, license alignment, package metadata, no-internal-leaks are public-readiness-specific).
 
 ## When to use
 
@@ -27,7 +27,7 @@ Anti-triggers:
 
 `/prep-public <project-slug> [--skip-secret-scan]`
 
-- **`<project-slug>` (required)** — resolves to `~/pers/<project-slug>/` (or wherever your portfolio root lives). Bail with a clear error if that dir doesn't exist.
+- **`<project-slug>` (required)** — resolves to `~/projects/<project-slug>/` (or wherever your portfolio root lives). Bail with a clear error if that dir doesn't exist.
 - **`--skip-secret-scan` (optional)** — skips Step 3a (gitleaks / trufflehog over full git history). Useful for fast mid-development iteration when you know secrets aren't the gap and the scan adds minutes. Surfaces a "secret scan skipped" line in the summary so it isn't forgotten.
 
 If no project-slug is given, ASK via `AskUserQuestion` which project to audit; populate options from the immediate subdirectories of your portfolio root.
@@ -36,7 +36,7 @@ If no project-slug is given, ASK via `AskUserQuestion` which project to audit; p
 
 ### 1. Pre-flight
 
-1. **Resolve path**: `~/pers/<project-slug>/` (adjust to your portfolio root). Bail if missing.
+1. **Resolve path**: `~/projects/<project-slug>/` (adjust to your portfolio root). Bail if missing.
 2. **Verify git repo**: `git -C <path> rev-parse --git-dir` succeeds. Bail if not a repo.
 3. **Resolve dossier project**:
    - `mcp__dossier__project_list {}` → match `<project-slug>` against each project's `slug` or `name`.

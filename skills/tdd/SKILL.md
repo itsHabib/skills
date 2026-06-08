@@ -53,7 +53,7 @@ If the design hasn't been discussed yet and there's no context to draw on, inter
 
 Resolve `(repo_dir, dossier_project_slug, feature_slug, branch)` or stop with a clear error.
 
-- Confirm the repo (the cwd's project, under `C:/Users/MichaelHabib/pers/` for portfolio work).
+- Confirm the repo (the cwd's project, under your portfolio root for portfolio work).
 - Resolve the dossier project: `mcp__dossier__project_get { slug: <project> }`.
   - Exists → use it.
   - Not found AND this is a new initiative → propose `mcp__dossier__project_create { slug, title, description, actor: "claude-code:michael" }`. Confirm the slug/title with the operator before creating — a project is the top-level unit and the slug is immutable.
@@ -202,7 +202,7 @@ Next:
 - `~/.claude/skills/work-driver-prep/SKILL.md` — the downstream consumer; turns the dossier tasks this skill creates into per-task specs + batches.
 - `~/.claude/skills/work-driver/SKILL.md` — ships the batches.
 - `~/.claude/skills/polish/SKILL.md` — sibling skill; same phase+task seeding pattern, same hand-off chain.
-- `~/pers/dossier/docs/features/cloud-backend/spec.md` — the canonical TDD this template was extracted from (the dossier-cloud design). Imitate its section depth and the §9 rollout-plan table.
+- `~/projects/dossier/docs/features/cloud-backend/spec.md` — the canonical TDD this template was extracted from (the dossier-cloud design). Imitate its section depth and the §9 rollout-plan table.
 - Operator memory:
   - `feedback_design_doc_then_pr` — substantial work goes design-doc → branch → PR; smaller reviewable units. This skill *is* that front door.
   - `feedback_killer_per_step` — breadth now, depth just-in-time; park future phases as stubs, don't over-spec.

@@ -7,7 +7,7 @@ user_invocable: true
 
 # /polish — portfolio polish audit
 
-Audit one project in your portfolio (e.g. `~/pers/<project>/`) for the kinds of gaps that don't bottleneck shipping but compound if left to drift: missing CI jobs, stale docs, undocumented public surface, weak coverage workflow, missing OS matrix on cross-platform projects, shipped items still listed as open in follow-ups. Emit one dossier task per finding under a fresh phase. **Stack-aware** — detects the project's stack via manifest file and adapts every check.
+Audit one project in your portfolio (e.g. `~/projects/<project>/`) for the kinds of gaps that don't bottleneck shipping but compound if left to drift: missing CI jobs, stale docs, undocumented public surface, weak coverage workflow, missing OS matrix on cross-platform projects, shipped items still listed as open in follow-ups. Emit one dossier task per finding under a fresh phase. **Stack-aware** — detects the project's stack via manifest file and adapts every check.
 
 Pair with `/work-driver-prep` once you've reviewed the generated tasks; they run `/work-driver` to ship the batch in parallel.
 
@@ -40,7 +40,7 @@ No interactive mode. No options menu. No per-category opt-out. One audit pass, o
 
 Resolve `(project_dir, dossier_project_slug, phase_slug)` or stop with a clear error:
 
-- Verify `~/pers/<project>/` exists (adjust path to your portfolio root). If not → error: `project directory not found at ~/pers/<project>/`.
+- Verify `~/projects/<project>/` exists (adjust path to your portfolio root). If not → error: `project directory not found at ~/projects/<project>/`.
 - Verify the dossier project exists: `mcp__dossier__project_get { slug: "<project>" }`. If not-found → surface: `dossier project '<project>' not found — create it first via mcp__dossier__project_create`. Don't auto-create; that's a separate decision.
 - Compute `phase_slug`: `--phase-slug` if provided, else `<project>-polish-<YYYY-MM-DD>`.
 - Reject collisions: if `phase_slug` already exists in the project (check `phases[]` in the `project_get` response) → error: `phase '<phase_slug>' already exists; pass --phase-slug to override`.
