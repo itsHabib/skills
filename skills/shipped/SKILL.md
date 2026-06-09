@@ -88,6 +88,10 @@ git log --since=<since> -p -- <friction-log-path>
 
 Surface the headlines of any new entries — they signal patterns worth remembering for next session. Skip silently if no friction log exists; this section is operator-style-dependent.
 
+### 4b. Run-metrics snapshot (optional)
+
+If you keep a run-metrics ledger — a per-run record of merge rate, review cycles, and agent run success/duration, scanned from your CI / agent-run history into a queryable file — refresh it and report here so the recap carries loop health. Drop the report into the `## Run metrics` section below. Skip silently if you don't have such a tool; this section is operator-tooling-dependent.
+
 ### 5. Detect "what changed about main"
 
 For each merged PR, parse its body's `## Summary` / `## What this adds` / `## Validation` sections (whatever your repo's PR template uses). Pull 1-line "what's new" bullets that name new capabilities reachable from the CLI / API:
@@ -134,6 +138,10 @@ Match the recommendation count to the actual signal density. If there's genuinel
 
 - <1-line: new capability + how to reach it>
 - <1-line: ...>
+
+## Run metrics
+
+<your run-metrics tool's report — e.g. merge rate, review-cycle stats, run success rate + duration. Omit the section entirely if you don't keep one.>
 
 ## Open
 
