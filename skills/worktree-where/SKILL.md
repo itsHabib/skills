@@ -1,6 +1,7 @@
 ---
 name: worktree-where
 description: Report the current git worktree, branch, and working directory for this Claude Code session. Use whenever the user says things like "where am I", "what branch am I on", "which worktree is this", "what repo are we in", "remind me where I'm pointing", "what are we working on right now", or is jumping between Claude Code tabs and needs to orient. Resolves the cwd to its worktree root and shows whether it's the main checkout or a secondary worktree.
+user_invocable: true
 ---
 
 # worktree-where

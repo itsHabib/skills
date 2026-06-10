@@ -1,6 +1,8 @@
 ---
 name: worktree-transfer
 description: Transfer work from a secondary worktree to the root/main worktree by checking out its branch in root and removing the secondary worktree. Use whenever the user says things like "transfer the worktree to root", "bring this work over to main", "move the branch from the worktree", "switch root to the worktree's branch", "pull this into the main worktree", or is working in a .claude/worktrees/ subdirectory and wants to continue in the root. Invoke this proactively any time the user's intent is to consolidate a secondary worktree back into root.
+argument-hint: "[branch-or-path]"
+user_invocable: true
 ---
 
 # worktree-transfer
