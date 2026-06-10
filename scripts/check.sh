@@ -20,11 +20,14 @@ warn() {
 
 extract_frontmatter() {
   local file="$1"
+  # END guard: reaching EOF without a closing fence is a failure, not an
+  # implicit success — otherwise a malformed SKILL.md sails through CI.
   awk '
     NR == 1 && $0 != "---" { exit 1 }
     NR == 1 { next }
-    $0 == "---" { exit }
+    $0 == "---" { closed = 1; exit }
     { print }
+    END { if (!closed) exit 1 }
   ' "$file"
 }
 
@@ -78,7 +81,7 @@ check_readme_consistency() {
     if [[ "$line" =~ \`/([a-z0-9-]+)\` ]]; then
       readme_skills+=("${BASH_REMATCH[1]}")
     fi
-  done < <(sed -n '/^## Skills$/,/^## /p' README.md | grep '^|')
+  done < <(sed -n '/^## Skills$/,/^## /p' README.md | grep '^|' || true)
 
   for dir in skills/*/; do
     dir_skills+=("$(basename "$dir")")
@@ -105,8 +108,14 @@ check_readme_consistency() {
 }
 
 echo "Checking SKILL.md frontmatter..."
-for skill_md in skills/*/SKILL.md; do
-  check_frontmatter "$skill_md"
+# Iterate directories, not the SKILL.md glob — a skill dir with no SKILL.md
+# must fail loudly instead of being silently skipped.
+for dir in skills/*/; do
+  if [[ ! -f "$dir/SKILL.md" ]]; then
+    fail "$dir is missing SKILL.md"
+    continue
+  fi
+  check_frontmatter "$dir/SKILL.md"
 done
 
 echo "Checking README ↔ skills/ consistency..."
