@@ -1,6 +1,7 @@
 ---
 name: status
 description: Produce a tight 4-section status update (What happened / What's next / What I recommend / What I need from you), 1-3 sentences each. Use when the user says "give me an update", "status", "where are we", "sitrep", "recap", "summarize the situation", or invokes `/status`. Skip any section that's genuinely empty rather than padding it.
+user_invocable: true
 ---
 
 # Status update

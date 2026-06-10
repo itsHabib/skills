@@ -4,12 +4,31 @@ Opinionated dev-workflow skills for [Claude Code](https://claude.com/claude-code
 
 ## Install
 
+**Recommended — [skill-sync](https://github.com/itsHabib/skill-sync):**
+
+```bash
+go install github.com/itsHabib/skill-sync@latest
+
+# Clone this repo, then sync its skills/ tree into Claude Code
+git clone https://github.com/itsHabib/skills ~/dev/skills
+skill-sync sync --source-dir ~/dev/skills/skills --target-dir ~/.claude/skills
+
+# Check for drift any time
+skill-sync status --source-dir ~/dev/skills/skills --target-dir ~/.claude/skills
+```
+
+Each skill appears as `/<skill-name>` in your next session. Use `skill-sync status` to catch drift before it becomes a problem.
+
+A single canonical skill source also feeds future Managed-Agents drivers (MA loads Agent Skills), so skills stop being machine-local copies.
+
+**No-deps fallback:**
+
 ```bash
 git clone https://github.com/itsHabib/skills ~/dev/skills
 cp -r ~/dev/skills/skills/* ~/.claude/skills/
 ```
 
-Each appears as `/<skill-name>` in your next session. Copy individual dirs if you want a subset.
+Copy individual dirs if you want a subset.
 
 ## Skills
 
@@ -31,6 +50,8 @@ Each appears as `/<skill-name>` in your next session. Copy individual dirs if yo
 | `/polish` | Stack-aware portfolio hygiene audit (Rust / Go / Node / Python / Elixir / Ruby). |
 | `/subagent-scaffold` | Write a canonical Cursor subagent set into `.cursor/`. |
 | `/chip` | Spin an out-of-scope item out into its own Claude Code session. |
+| `/tdd` | Turn a feature idea into a reviewed Technical Design Document plus dossier structure — design doc and rollout tasks in one shot. |
+| `/review-coordinator` | Consolidate AI PR reviewers into one deduped verdict and merge gate; the judge over the finders. |
 
 These encode one developer's workflow opinions. Fork and edit to match yours — the opinions ARE the value.
 

@@ -1,6 +1,8 @@
 ---
 name: worktree-remove
 description: Remove a secondary git worktree, handling dirty state interactively. Use whenever the user says things like "remove the worktree", "drop the worktree", "clean up the worktree", "kill this worktree", "delete the worktree at X", or wants to free up a branch so another checkout can use it. Refuses to remove the main worktree.
+argument-hint: "<branch-or-path>"
+user_invocable: true
 ---
 
 # worktree-remove

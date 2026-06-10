@@ -1,6 +1,7 @@
 ---
 name: worktree-list
 description: List git worktrees in the current repo with branch, dirty state, and optional PR/CI status. Use whenever the user says things like "list worktrees", "what worktrees do I have", "show my worktrees", "which worktrees are open", or wants a status overview of in-flight work across worktrees. Pull PR/CI status from gh when worktrees correspond to branches with open PRs.
+user_invocable: true
 ---
 
 # worktree-list

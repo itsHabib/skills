@@ -1,6 +1,8 @@
 ---
 name: worktree-add
 description: Create a new secondary git worktree under .claude/worktrees/ for isolated work on a branch. Use whenever the user says things like "create a worktree for X", "add a worktree", "spin up a worktree for this ticket", "make a new isolated checkout", "start a branch in a worktree", or wants to do a piece of work in parallel without disturbing the root checkout. Defaults to the .claude/worktrees/<branch>/ convention so the new dir is sandboxed from the main checkout.
+argument-hint: "<branch>"
+user_invocable: true
 ---
 
 # worktree-add
