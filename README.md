@@ -37,6 +37,7 @@ Copy individual dirs if you want a subset.
 | `/work-driver` | Drive one or N parallel agent-led impl streams: fan out → poll → land → review → merge → cleanup. |
 | `/work-driver-prep` | Turn a backlog of dossier tasks into spec docs + a conflict-aware batched plan. |
 | `/work-driver-seed` | Seed a dossier phase + PR-sized, dependency-ordered tasks from a described chunk — the front-end to `/work-driver-prep` for work too big for one task, too small for a `/tdd`. |
+| `/driver-run` | Drive N parallel tasks to merge via ship's `ship driver` engine — the engine-based successor to `/work-driver`. |
 | `/shipped` | Retrospective: PRs merged, weighted-LOC, what's open, next moves. |
 | `/status` | In-flight 4-section status (What happened / What's next / What I recommend / What I need). |
 | `/worktree-add` | Create a worktree at `.claude/worktrees/<branch>/`. |
@@ -59,8 +60,8 @@ These encode one developer's workflow opinions. Fork and edit to match yours —
 
 Several skills call MCP servers; without them you'll see missing-tool errors.
 
-- [ship](https://github.com/itsHabib/ship) — required by `/work-driver`.
-- dossier — required by `/work-driver`, `/work-driver-prep`, `/work-driver-seed`, `/polish`, `/prep-public`, `/shipped`.
+- [ship](https://github.com/itsHabib/ship) — required by `/work-driver`, `/driver-run`.
+- dossier — required by `/work-driver`, `/work-driver-prep`, `/work-driver-seed`, `/driver-run`, `/polish`, `/prep-public`, `/shipped`.
 
 ## License
 
