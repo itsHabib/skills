@@ -61,3 +61,10 @@ Report:
 - Any pre-remove action (commit / stash / discard)
 
 Mention that the branch is now free for checkout in any other worktree (including root).
+
+## Gotchas
+
+Two failure modes that look like a broken removal but aren't:
+
+- **Agent scratch in the worktree root.** A coding agent that ran in the worktree often leaves a stray file behind (e.g. a copied task/spec doc). `git worktree remove` then refuses with "contains modified or untracked files" even though there's no real work to lose. Step 2's dirty-state handling covers it; for a blind force, `rm` the known scratch file first, then retry.
+- **Windows long-path on `node_modules`.** If the worktree had dependencies installed, removal can fail with "Filename too long" or "Function not implemented" because `node_modules` blows past Windows' 260-char path limit. Remove it first with a long-path-aware delete — PowerShell `Remove-Item -Recurse -Force -LiteralPath <path>/node_modules`, or drop to `cmd /c "rmdir /s /q <path>"` if even that refuses — then re-run the worktree removal.

@@ -283,7 +283,7 @@ Hand-off chain: `/polish <project>` → operator skims tasks in dossier → `/wo
 ## Source material
 
 - `work-driver-prep` — consumer of this skill's output (resolves the generated phase into spec docs + conflict-aware batches).
-- `work-driver` — downstream consumer that fans the batches out via `mcp__ship__ship`.
+- `work-driver` — downstream consumer that drives the batches to merge through the `ship driver` engine.
 
 Design rules baked into the audit:
 - **Stack detection first** — every check adapts to the manifest-detected stack; never hardcode Rust/Go/Node idioms.
