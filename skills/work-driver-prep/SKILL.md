@@ -303,21 +303,18 @@ Consumed by `/work-driver docs/features/<phase>/driver.md`.
 
 — but prefer the driver form when you've gone through prep, since you get state tracking and resume for free.
 
-### 6. Commit + push the specs
+### 6. Make the specs reachable by the run
 
-Before `/work-driver` can use them, the specs need to exist on the branch each worktree will be created from (typically `main`):
+How the specs reach the agent depends on the runtime — **don't blindly push them to `main`** (the auto-mode classifier blocks a direct default-branch push, and it bypasses review):
 
-```bash
-git add docs/features/<phase>/*.md
-git commit -m "docs(<phase>): spec docs for batch of <N> hygiene tasks"
-git push origin main   # or open a tiny docs PR if branch protection requires
-```
+- **Cloud (the default).** Nothing to commit. `ship driver run` embeds each spec's *local file content* into the agent prompt (cloud resolves the doc local-first), so the specs only need to exist on disk at the `spec_path` the manifest points at. Leave them uncommitted, or fold them into their impl PR later — your call.
+- **Local.** The per-stream worktrees fork from `origin/main`, so the specs DO need to be on `main` first. Open a small **docs PR** and merge it (`docs(<phase>): spec docs for <N> tasks`) — never `git push origin main` directly. `/work-driver` handles the post-merge worktree fast-forward in its pre-flight.
 
-If branch protection on `main` is strict, opening a docs PR and merging it first is the clean path. `/work-driver` itself handles the post-spec-merge worktree fast-forward in Step 1.
+Either way, read each spec through before the run — the agent runs against exactly what's there; typos and ambiguity become bugs.
 
 ## Key reminders
 
-- **Specs must land on the branch worktrees inherit from** before `/work-driver` fans out — otherwise worktrees won't have the docs to point ship at.
+- **Local-runtime specs must land on `origin/main`** (the per-stream worktrees fork from it) before `/work-driver` fans out — open a docs PR, never push `main`. **Cloud needs no commit** — the engine embeds the spec's local file content into the prompt.
 - **Conflict detection is a heuristic.** File-touching analysis from task bodies is best-effort. If two specs unexpectedly touch the same file at runtime, the second to merge needs a rebase per `/work-driver` Step 6.
 - **Don't over-spec one-liners.** A `bail!` one-line fix doesn't need a Behavior section with three subsections; the task body IS the spec, just dressed up.
 - **Don't fabricate scope.** If the task body doesn't ground an acceptance criterion, leave it out — the spec is binding for the agent.

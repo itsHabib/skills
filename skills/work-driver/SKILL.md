@@ -53,9 +53,12 @@ path, and the runtime if it isn't obvious.
    -1`; only commit + push yourself if `git status` shows uncommitted changes — then `gh pr
    create`.) Request reviewers as **standalone** comments (`@codex review`, `@claude
    review`, `@cursor review` — embedded pings don't trigger codex) plus `gh pr edit <n>
-   --add-reviewer @copilot`. Each cycle, call **`/review-coordinator <n>`** for the
-   consolidated `block`/`go` verdict over the four bots — don't hand-triage four comment
-   streams (the coordinator owns the ingest mechanism; this skill owns the cap + merge call).
+   --add-reviewer @copilot`. Each cycle, **when the bots surface real findings** (≥2 bots
+   flag the same thing, or any `block`-severity), call **`/review-coordinator <n>`** for the
+   consolidated `block`/`go` verdict — don't hand-triage four comment streams. On a clean
+   pass (all bots green, or one stray advisory nit) skip the coordinator and merge: it earns
+   its keep consolidating *conflicting or voluminous* findings, not rubber-stamping a clean
+   PR (the coordinator owns the ingest mechanism; this skill owns the cap + the merge call).
 5. **Record + close.** Per merge: `gh pr merge <n> --squash --admin --delete-branch`, then
    `driver land <drv_id> --pr <n>` (merges if not already, reads sha/time from gh, records),
    then dossier `task_complete` + `artifact_link` the merge commit. `driver status <drv_id>
@@ -69,7 +72,9 @@ path, and the runtime if it isn't obvious.
 - **Address-inline-and-merge (skip the re-ping)** when the next findings are pure follow-ons
   to the prior cycle's reasoning, or strict mechanical fixes (CI compile error, format
   drift): fix inline + post a close-out comment + merge, no fresh review wait. Re-ping only
-  when a fix changes shape/behavior enough to warrant fresh eyes.
+  when a fix changes shape/behavior enough to warrant fresh eyes — and post a re-ping as a
+  **standalone single-line** `@bot review` comment, never folded into the close-out
+  (embedded mentions don't trigger codex).
 - **Be opinionated** — don't take every comment; push back with rationale. Treat a lone
   "blocking" against two "minor" as advisory unless you concur it's real.
 - **Strategy by N** (pick one up front; don't drive reviews on all N PRs in parallel for
