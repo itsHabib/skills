@@ -50,6 +50,7 @@ Copy individual dirs if you want a subset.
 | `/polish` | Stack-aware portfolio hygiene audit (Rust / Go / Node / Python / Elixir / Ruby). |
 | `/subagent-scaffold` | Write a canonical Cursor subagent set into `.cursor/`. |
 | `/chip` | Spin an out-of-scope item out into its own Claude Code session. |
+| `/continue` | Emit a paste-ready continuation prompt so a fresh session picks up exactly where this one left off when context fills up. |
 | `/tdd` | Turn a feature idea into a reviewed Technical Design Document plus dossier structure — design doc and rollout tasks in one shot. |
 | `/review-coordinator` | Consolidate AI PR reviewers into one deduped verdict and merge gate; the judge over the finders. |
 
