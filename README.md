@@ -53,6 +53,11 @@ Copy individual dirs if you want a subset.
 | `/continue` | Emit a paste-ready continuation prompt so a fresh session picks up exactly where this one left off when context fills up. |
 | `/tdd` | Turn a feature idea into a reviewed Technical Design Document plus dossier structure — design doc and rollout tasks in one shot. |
 | `/review-coordinator` | Consolidate AI PR reviewers into one deduped verdict and merge gate; the judge over the finders. |
+| `/consult` | Summon another repo's steward agent for a same-turn answer — knowledge questions about a sibling repo go to a peer, not the operator. |
+| `/ship-ticket` | Chain the post-implementation wrap-up: file the Jira ticket, open the PR, describe it, sync the epic. |
+| `/spinup-ticket` | Create a Jira ticket under a given epic via the Jira REST API. |
+| `/sync-epic` | Bring a Jira epic's child tickets in line with their GitHub PR states (draft → In Progress, open → In Review, merged → Done). |
+| `/write-pr` | Write or update the current PR description in a standard format. |
 
 These encode one developer's workflow opinions. Fork and edit to match yours — the opinions ARE the value.
 
