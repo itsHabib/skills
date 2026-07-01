@@ -1,13 +1,13 @@
 ---
 name: dev-workbench
-description: Scaffold (or refresh) a compact `## Dev workbench` section in a repo's CLAUDE.md — a COMPOSITIONAL map of the operator's portfolio workbench (MCPs dossier/ship/huddle/playwright + the work-driver / review-coordinator / shipped / status / worktree-* skills), NOT an exhaustive per-verb manual. The harness already injects each tool's description + signature into every session; this section captures only what injection can't give: the roster (one line each), the end-to-end loop, the seams, and the behavioral nudge ("call the verb, don't ask"). Same shape across every repo. Idempotent re-run between guarded markers. Use when onboarding a fresh repo, when the workbench's composition changes, or when an existing repo's CLAUDE.md is missing the workbench map.
+description: Scaffold (or refresh) a compact `## Dev workbench` section in a repo's CLAUDE.md — a COMPOSITIONAL map of the operator's portfolio workbench (MCPs dossier/ship/huddle/playwright + the work-driver / review-coordinator / consult / shipped / status / worktree-* skills), NOT an exhaustive per-verb manual. The harness already injects each tool's description + signature into every session; this section captures only what injection can't give: the roster (one line each), the end-to-end loop, the seams, and the behavioral nudge ("call the verb, don't ask"). Same shape across every repo. Idempotent re-run between guarded markers. Use when onboarding a fresh repo, when the workbench's composition changes, or when an existing repo's CLAUDE.md is missing the workbench map.
 argument-hint: "[path/to/CLAUDE.md] — defaults to ./CLAUDE.md at repo root"
 user_invocable: true
 ---
 
 # /dev-workbench — scaffold the workbench MAP into a CLAUDE.md
 
-**This skill is portfolio-specific.** It documents the operator's dev-workflow infrastructure — dossier, ship, huddle, playwright as MCPs; `/work-driver`, `/work-driver-prep`, `/review-coordinator`, `/shipped`, `/status`, and the `/worktree-*` family as skills — into a target CLAUDE.md. The canonical set is hardcoded below; this is not a generic "document any MCP" tool.
+**This skill is portfolio-specific.** It documents the operator's dev-workflow infrastructure — dossier, ship, huddle, playwright as MCPs; `/work-driver`, `/work-driver-prep`, `/review-coordinator`, `/consult`, `/shipped`, `/status`, and the `/worktree-*` family as skills — into a target CLAUDE.md. The canonical set is hardcoded below; this is not a generic "document any MCP" tool.
 
 ## The core principle: map, not manual
 
@@ -54,7 +54,8 @@ Don't use for:
 3. **/review-coordinator** — the judge over the AI PR reviewers: consolidate codex/claude/cursor/copilot findings on a PR into one severity-ranked verdict + block/go gate. Invoke at the review step to get one verdict instead of reading four comment streams. (Standalone today; folding it into `/work-driver`'s review cycle is a planned step, not yet wired — don't imply the driver calls it automatically.) Source: `~/.claude/skills/review-coordinator/`.
 4. **/shipped** — retrospective recap after a chunk lands (PRs + weighted-LOC, dossier closures, friction delta, what's open). Post-`/work-driver` follow-up. Source: `~/.claude/skills/shipped/`.
 5. **/status** — tight 4-section in-flight status update. Mid-session counterpart to `/shipped`. Source: `~/.claude/skills/status/`.
-6. **/worktree-*** — thin family over `git worktree` (add / list / remove / transfer / where). Source: `~/.claude/skills/worktree-*/`.
+6. **/consult** — summon another portfolio repo's steward (an ephemeral subagent scoped to that repo) for a same-turn answer to a knowledge question. The stuck-path escalation before the operator; read-only, no side effects. Source: `~/.claude/skills/consult/`.
+7. **/worktree-*** — thin family over `git worktree` (add / list / remove / transfer / where). Source: `~/.claude/skills/worktree-*/`.
 
 **Explicitly NOT in the section**:
 
@@ -88,6 +89,7 @@ Assemble these parts, in order. Keep it tight — roster lines are ONE line each
 **(a) Intro + nudge** (2-4 sentences):
 - One sentence: "these MCPs + skills are available in any Claude session on this machine; the harness injects each tool's signature, so this section is the *map* — how they compose — not the per-verb manual."
 - The nudge: "when the signal matches, just call the verb; don't ask permission."
+- The escalation ladder: "stuck on a *knowledge* question about another portfolio repo → `/consult` its steward; only *authority* questions (direction, spend, irreversible calls) go to the operator."
 - The dogfood call-out IF the repo is itself a workbench tool (see step 3e).
 
 **(b) Roster** — two short lists, one line per entry. Format:
@@ -103,6 +105,7 @@ Assemble these parts, in order. Keep it tight — roster lines are ONE line each
 - **/work-driver** [+ **/work-driver-prep**] — drive agent-led impl end-to-end; prep builds the specs + batches.
 - **/review-coordinator** — consolidate the AI PR reviewers into one verdict + merge gate (the judge over the finders).
 - **/shipped** / **/status** — retrospective recap / in-flight update.
+- **/consult** — summon a sibling repo's steward for a same-turn answer; knowledge questions go to a peer, authority questions to the operator.
 - **/worktree-*** — add · list · remove · transfer · where, over `git worktree`.
 ```
 
@@ -119,7 +122,7 @@ dossier task → /worktree-add → write spec → ship run
 
 Keep it readable; a compact ASCII flow is fine. Annotate the one or two steps `/work-driver` automates — and scope that annotation to what the driver *actually* does today (it runs its own review triage inline). **Place `/review-coordinator` at the review step as a step you can invoke**, not as something the driver calls for you — the driver→coordinator wiring is planned, not built, so the rendered loop must not imply automatic delegation. (When that integration lands, update this annotation.)
 
-**(d) The seams** (3-6 sentences, the swappability rationale): each layer is independently substitutable and owns one responsibility — dossier owns "what needs doing" (could be Linear), worktree skills own "where work happens", ship owns "drive an agent + persist", review-coordinator owns "consolidate the finders' output" (the four bots are swappable finders under it), huddle owns multi-seat, playwright owns browser. Substituting one doesn't ripple. End with: "the workbench is a menu, not a checklist — skip what a given flow doesn't need."
+**(d) The seams** (3-6 sentences, the swappability rationale): each layer is independently substitutable and owns one responsibility — dossier owns "what needs doing" (could be Linear), worktree skills own "where work happens", ship owns "drive an agent + persist", review-coordinator owns "consolidate the finders' output" (the four bots are swappable finders under it), consult owns the stuck path (peer knowledge before operator attention), huddle owns multi-seat, playwright owns browser. Substituting one doesn't ripple. End with: "the workbench is a menu, not a checklist — skip what a given flow doesn't need."
 
 **(e) Dogfood call-out** (only if the repo IS a canonical tool): inline in the intro, e.g. inside `~/projects/ship/`: *"**This is ship — the execution plane itself** — so the ship verbs are the most directly relevant here."* Inside `~/projects/dossier/`, `~/projects/huddle/` same pattern. Inside `cc-skills`/`skills` (the skill registries): *"**This is the skills registry** — the workbench skills live here; editing one ships it portfolio-wide via sync."* Otherwise no call-out.
 
