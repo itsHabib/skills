@@ -53,7 +53,7 @@ If the design hasn't been discussed yet and there's no context to draw on, inter
 
 Resolve `(repo_dir, dossier_project_slug, feature_slug, branch)` or stop with a clear error.
 
-- Confirm the repo (the cwd's project, under your portfolio root for portfolio work).
+- Confirm the repo (the cwd's project, under `C:/Users/MichaelHabib/pers/` for portfolio work).
 - Resolve the dossier project: `mcp__dossier__project_get { slug: <project> }`.
   - Exists → use it.
   - Not found AND this is a new initiative → propose `mcp__dossier__project_create { slug, title, description, actor: "claude-code:michael" }`. Confirm the slug/title with the operator before creating — a project is the top-level unit and the slug is immutable.
@@ -147,7 +147,7 @@ Now mirror §9 into dossier structure. **Structure and links only — never the 
    ```
    The phase body is a *summary + pointer*, not the design. It carries the high-level task list as prose so the work is visible even before tasks are materialized.
 
-2. **Tasks — near-term phases only.** Materialize `mcp__dossier__task_create` tasks for the phases that are (a) unblocked (no upstream `depends_on`) AND (b) at or before the validation gate. Leave post-gate / blocked phases as task-less stubs (their high-level tasks live in the phase body as prose, materialized when the phase unblocks). This keeps the corpus from filling with speculative tasks for work you haven't earned — killer-per-step. Each task body uses the standard `## Problem / ## Fix / ## Acceptance / ## Test plan / ## Out of scope` shape so `/work-driver-prep` can spec it directly.
+2. **Tasks — near-term phases only.** Materialize `mcp__dossier__task_create` tasks for the phases that are (a) unblocked (no upstream `depends_on`) AND (b) at or before the validation gate. Leave post-gate / blocked phases as task-less stubs (their high-level tasks live in the phase body as prose, materialized when the phase unblocks). This keeps the corpus from filling with speculative tasks for work you haven't earned — killer-per-step. Each task body uses the standard `## Problem / ## Fix / ## Acceptance / ## Test plan / ## Out of scope` shape so `/work-driver-prep` can spec it directly. Also tag each task with a recommended **model** + **effort** (a `**Model/effort:**` body line) so the operator dispatches it at the right tier: `opus` for correctness-critical or novel work, `sonnet` for mechanical / type-enforced changes (the cheaper default), `fable` rarely for production code; effort `extra`/`max` single-agent, `ultracode` reserved for adversarial review/verification. Tier tracks correctness-risk and design-novelty, not size - default `sonnet`/`extra` and justify each escalation in one line.
 
 3. **Link the TDD** as a doc artifact to the project:
    ```
@@ -202,7 +202,7 @@ Next:
 - `~/.claude/skills/work-driver-prep/SKILL.md` — the downstream consumer; turns the dossier tasks this skill creates into per-task specs + batches.
 - `~/.claude/skills/work-driver/SKILL.md` — ships the batches.
 - `~/.claude/skills/polish/SKILL.md` — sibling skill; same phase+task seeding pattern, same hand-off chain.
-- `~/projects/dossier/docs/features/cloud-backend/spec.md` — the canonical TDD this template was extracted from (the dossier-cloud design). Imitate its section depth and the §9 rollout-plan table.
+- `~/pers/dossier/docs/features/cloud-backend/spec.md` — the canonical TDD this template was extracted from (the dossier-cloud design). Imitate its section depth and the §9 rollout-plan table.
 - Operator memory:
   - `feedback_design_doc_then_pr` — substantial work goes design-doc → branch → PR; smaller reviewable units. This skill *is* that front door.
   - `feedback_killer_per_step` — breadth now, depth just-in-time; park future phases as stubs, don't over-spec.

@@ -36,7 +36,7 @@ The litmus: *the design is settled, it's more than one PR, and it doesn't need a
 
 `/work-driver-seed [project:<slug>] [--phase <slug> | --into-phase <existing-slug>]`
 
-- **`project:<slug>`** (optional): the dossier project the work belongs to. Default: infer from the repo (the cwd's project under your portfolio root). If it can't be inferred and isn't given, ASK via `AskUserQuestion` — wrong project puts the phase in the wrong corpus.
+- **`project:<slug>`** (optional): the dossier project the work belongs to. Default: infer from the repo (the cwd's project under `C:/Users/MichaelHabib/pers/`). If it can't be inferred and isn't given, ASK via `AskUserQuestion` — wrong project puts the phase in the wrong corpus.
 - **`--phase <slug>`** (optional): slug for a NEW phase to create for this chunk. Default: a kebab-case slug derived from the chunk name. This is the common case.
 - **`--into-phase <existing-slug>`** (optional): append the tasks to an EXISTING phase instead of creating one. Use when the chunk is the next batch under an umbrella phase that already exists. Mutually exclusive with `--phase`.
 
@@ -110,6 +110,7 @@ For each unit, `mcp__dossier__task_create`. The body shape is the dossier task-s
 
 **Files:** `src/foo.rs`, `src/bar.rs`, `tests/baz.rs`   <!-- explicit — prep's conflict scan reads this -->
 **Depends on:** `<upstream-task-slug>` (must land first — <one-line why>)   <!-- omit for unblocked units -->
+**Model/effort:** `<opus|sonnet>` / `<extra|max|ultracode>` - <one-line why>   <!-- recommended dispatch tier; see 4b -->
 
 ## Acceptance
 
@@ -138,6 +139,15 @@ mcp__dossier__task_create { project, slug, title, actor, body, phase, depends_on
 Caveat surfaced by this skill's first dogfood: a *running* dossier MCP server can lag the source — if the connected server's `task_create` / `task_update` schema doesn't advertise `depends_on`, you can't set the structured field until that server is rebuilt + restarted. The prose line is independent of the running build, so the chain still works regardless. **Prose mandatory; structured best-effort.**
 
 **One task per shippable unit. Don't bundle** two PRs into one task, and **don't over-split** one PR into several tasks. The unit boundary from Step 2 is the task boundary.
+
+### 4b. Recommend a model + effort tier per task
+
+Tag each task with a recommended Claude Code **model** + **effort mode** (the `**Model/effort:**` body line above) so the operator dispatches it at the right tier; `/work-driver-prep` propagates it into the manifest's per-stream `model:`/`effort:` fields.
+
+- **model**: `opus` (deep cross-system reasoning, novel design, correctness-critical - a silent wrong result is easy to introduce and costly to catch) · `sonnet` (mechanical / well-scoped / type-enforced; the cheaper default) · `fable` (rarely for production code).
+- **effort**: `extra` (xhigh, single agent) · `max` (maximum single-agent) · `ultracode` (max + multi-agent/adversarial fan-out - reserve for adversarial review/verification, not deep-but-singular builds).
+
+Rule of thumb: **tier tracks correctness-risk and design-novelty, not size.** Default `sonnet`/`extra`; escalate to `opus`/`max` only where a defect is both easy to introduce and silent/expensive; reserve `ultracode` for adversarial verification. One-line justification per escalation.
 
 ### 5. Link the umbrella design doc (if any)
 
@@ -192,7 +202,7 @@ Next:
 - `~/.claude/skills/work-driver-prep/SKILL.md` — the consumer; its Step 3 (file + dep prose scan) is *why* this skill's task bodies must carry explicit `**Files:**` and `**Depends on:**` lines.
 - `~/.claude/skills/tdd/SKILL.md` — the heavy sibling; its Step 5 (seed dossier from the rollout) is the same operation this skill does standalone. Same task-body shape, same actor, same phase-body-as-summary rule. (If `/tdd`'s seeding and this ever drift, reconcile toward this skill.)
 - `~/.claude/skills/polish/SKILL.md` — sibling seeding skill; same phase + task pattern, same hand-off chain.
-- Dossier task-body shape: any `~/projects/dossier-state/projects/<project>/tasks/*.md` — mirror the voice.
+- Dossier task-body shape: any `~/pers/dossier-state/projects/<project>/tasks/*.md` — mirror the voice.
 - Operator memory:
   - `feedback_design_doc_then_pr.md` — substantial work goes design → reviewable units; this skill is the lightweight front door for chunks (the heavy one is `/tdd`).
   - `feedback_pr_sizing_bigger.md` — units are PR-sized; prefer fewer, bigger PRs over a swarm of tiny ones, but keep each inside the band.

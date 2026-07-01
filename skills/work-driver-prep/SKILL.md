@@ -108,7 +108,7 @@ fix, this is often a single new test asserting the new behavior.>
 
 **For one-line task fixes** (e.g. *"add `bail!` on second match"*), the spec is correspondingly one screen — don't pad. The spec's job is to give the agent enough rails; over-spec wastes reviewer attention. A 100-line spec for a 5-line fix is a smell.
 
-**Budget estimates routinely drift, sometimes 3–4×.** A spec estimated at ~40 weighted LOC can ship at ~150 weighted if the agent ends up writing more tests than expected. Worth knowing for calibration. Don't pad estimates "to be safe"; the spec's stated band is a *lower bound* on agent attention, not an upper bound on output. If you genuinely expect a task to fall outside the band, split it before specing.
+**Budget estimates routinely drift, sometimes 3–4×.** In dossier batches 2–6, the `frontmatter-field-drift-test` spec estimated ~40 weighted LOC (80 raw × 0.5×) and the agent shipped ~150 weighted (300 raw, all tests). Within the "amazing" band, so non-blocking — but worth knowing for calibration. Don't pad estimates "to be safe"; the spec's stated band is a *lower bound* on agent attention, not an upper bound on output. If you genuinely expect a task to fall outside the band, split it before specing.
 
 **Spec doc path**: write each spec to `docs/features/<phase-slug>/<task-slug>.md` (anchor under the phase it lives in) or, for cross-cutting tasks, `docs/features/<task-slug>/spec.md`.
 
@@ -122,7 +122,7 @@ Two passes, both heuristic, both surfaced honestly to the operator so they can s
 - If a task says *"helper used everywhere a slug-derived path is built"* or similar broad-touch language, flag as **wide-blast**: probably touches multiple files; conservatively assume conflict with anything in the same module.
 - Ambiguous? `AskUserQuestion` — don't guess. A wrong conflict guess produces silent rebase pain at merge time.
 
-**Sub-region heuristic — test-only vs production code on the same file.** Two tasks that both touch e.g. `src/store.rs` but where one is *test-only* (adds entries to `mod tests`) and the other is *production-only* (modifies a public fn) almost never collide at the textual level: tests sit at the bottom of the file, production code sits at the top. The default conservative behavior is still to serialize, but call out the sub-region split in `conflict_notes` so the operator can override to parallel for the obvious-safe cases. Example:
+**Sub-region heuristic — test-only vs production code on the same file.** Two tasks that both touch e.g. `src/store.rs` but where one is *test-only* (adds entries to `mod tests`) and the other is *production-only* (modifies a public fn) almost never collide at the textual level: tests sit at the bottom of the file, production code sits at the top. In dossier batches 4+5, two tasks both flagged for `src/store.rs` ran in parallel safely once recognized as test-only-plus-production-light. The default conservative behavior is still to serialize, but call out the sub-region split in `conflict_notes` so the operator can override to parallel for the obvious-safe cases. Example:
 
 ```yaml
 conflict_notes:
@@ -159,7 +159,7 @@ Greedy grouping respecting both conflict types from Step 3:
 - Batches are ordered: if task C depends on task A, the batch containing C goes after the batch containing A.
 - A task with no conflicts and no upstream deps lands in **Batch 1 — ready now**.
 
-Each batch can run as one `/work-driver N` invocation. **Batches may be mixed-runtime** — some streams `runtime: local`, others `runtime: cloud`. The driver dispatches each stream per its own runtime; the batch boundary still respects file + dep conflicts independent of runtime.
+Each batch can run as one `/work-driver N` invocation. **Batches may be mixed-runtime** — some streams `runtime: local`, others `runtime: cloud` — per phase 09. The driver dispatches each stream per its own runtime; the batch boundary still respects file + dep conflicts independent of runtime.
 
 #### 4b. Runtime selection (default LOCAL; cloud only on positive signal)
 
@@ -169,7 +169,7 @@ Each batch can run as one `/work-driver N` invocation. **Batches may be mixed-ru
 |---|---|
 | `docker compose` / `setup-local-db` / `localhost` API deps | **LOCAL (force)** — cloud VM doesn't have local services |
 | Operator-personal env vars / tokens not in the cloud VM | **LOCAL (force)** — cloud VM lacks the secrets |
-| Touches files in multiple repos (multi-repo refactor) | **LOCAL (force)** — multi-repo cloud out of scope |
+| Touches files in multiple repos (multi-repo refactor) | **LOCAL (force)** — multi-repo cloud out of scope per phase 04 |
 | Spec mentions browser automation / desktop GUI testing | **CLOUD** — cursor cloud's desktop VM unlocks this |
 | Long-running impl (>10 min) AND batch has ≥3 parallel streams | **CLOUD** — cloud parallelizes; local would serialize on the operator's machine |
 | Operator explicitly asked for cloud (e.g. `--runtime cloud`, "fire this on cloud", dogfood request) | **CLOUD** — explicit override |
@@ -187,6 +187,15 @@ Batch 1 — parallel-safe, 3 streams (suggested runtime):
   - tsk_BBB → docs/features/hygiene-followups/bbb.md (src/domain.rs only)       [suggest: local — default]
   - tsk_CCC → docs/features/hygiene-followups/ccc.md (browser scrape flow)      [suggest: cloud — browser-automation signal]
 ```
+
+#### 4c. Model + effort selection (per stream)
+
+Alongside runtime, suggest a **model** + **effort mode** per stream (written to the manifest's `model:`/`effort:` fields in Step 5) so `/work-driver` dispatches each at the right tier:
+
+- **model**: `opus` (deep cross-system reasoning, novel design, correctness-critical) · `sonnet` (mechanical / well-scoped / type-enforced; the cheaper default) · `fable` (rarely for production code).
+- **effort**: `extra` (xhigh, single agent) · `max` (maximum single-agent) · `ultracode` (max + multi-agent/adversarial fan-out - reserve for adversarial review, not deep-but-singular builds).
+
+Rule of thumb: **tier tracks correctness-risk and design-novelty, not size.** Default `sonnet`/`extra`; escalate to `opus`/`max` only where a defect is both easy to introduce and silent/expensive; reserve `ultracode` for adversarial verification. If the task body carries a `**Model/effort:**` line from `/work-driver-seed` or `/tdd`, propagate it verbatim; otherwise infer it and surface it in the grouping report for override.
 
 Output the grouping report (always show the operator the partition before committing):
 
@@ -208,7 +217,7 @@ Batch 3 — serial, 2 streams (both touch src/server.rs):
 
 ### 5. Write the driver manifest + emit invocation commands
 
-Produce a machine-readable driver manifest at `docs/features/<phase>/driver.md`. **Distinct from dossier's free-form `plan.md`** (which is a multi-PR feature checklist) — the driver manifest is structured execution state for `/work-driver` specifically. Named after its consumer so the role is obvious.
+Produce a machine-readable driver manifest at `docs/features/<phase>/driver.md`. **Distinct from dossier's free-form `plan.md`** (which is a multi-PR feature checklist per CLAUDE.md) — the driver manifest is structured execution state for `/work-driver` specifically. Named after its consumer so the role is obvious.
 
 YAML frontmatter holds the structured batches; the markdown body is the human-readable view of the same content. `/work-driver` consumes this directly — operator doesn't need to copy-paste per batch, and progress is tracked in-file so resume-after-interrupt works. The driver autodetects manifest vs ad-hoc form by reading the file's frontmatter (`driver_version:` present → manifest), so no prefix on the invocation.
 
@@ -224,7 +233,7 @@ source:
   phase: <phase-slug>
 repo: <repo-name>            # workflow_runs.repo label; for cloud streams also defaults the cloud.repos[0].url derivation
 repo_url: https://github.com/<owner>/<name>  # required when any stream is runtime: cloud (cursor cloud needs the GitHub URL)
-branch_prefix: <feature>-    # local branches; chosen by user, no forced prefix
+branch_prefix: <feature>-    # local branches; chosen by user, no forced `tower/` prefix per /worktree-* convention
 default_runtime: local       # local | cloud — applies to streams that don't set their own runtime; default local for back-compat
 
 batches:
@@ -238,6 +247,8 @@ batches:
         spec_path: docs/features/<phase>/<slug>.md
         branch_name: <feature>-<slug>     # local-runtime only; cloud branches are picked by cursor cloud
         runtime: local                    # local | cloud — overrides default_runtime when set
+        model: sonnet                     # opus | sonnet | fable — recommended dispatch model (see 4c)
+        effort: extra                     # extra | max | ultracode — recommended effort mode (see 4c)
         touches: [src/file1.rs, src/file2.rs]
         status: pending
         # populated by /work-driver as the stream lands:
@@ -248,7 +259,7 @@ batches:
         task_slug: <slug>
         spec_path: docs/features/<phase>/<slug>.md
         runtime: cloud                    # cloud streams don't need branch_name (cursor cloud picks it)
-        # autoCreatePR + workOnCurrentBranch default to true / false respectively
+        # autoCreatePR + workOnCurrentBranch default per phase 09 (true / false respectively)
         touches: [docs/features/<phase>/<other-slug>.md]
         status: pending
       - ...
@@ -330,9 +341,9 @@ Either way, read each spec through before the run — the agent runs against exa
 
 ## Source material
 
-- `work-driver` — the consumer of this skill's output.
+- `~/.claude/skills/work-driver/SKILL.md` — the consumer of this skill's output.
 - Dossier task layout: `LAYOUT.md` + `PROTOCOL.md` in any dossier-tracked repo.
-- Spec doc convention: any `docs/features/<feature>/spec.md` in your own repos that follow this pattern; mirror their voice.
+- Spec doc convention: any `docs/features/<feature>/spec.md` in the dossier repo itself; they're the canonical examples.
 
 ## Outcome
 
