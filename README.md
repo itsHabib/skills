@@ -59,6 +59,12 @@ Copy individual dirs if you want a subset.
 | `/spinup-ticket` | Create a Jira ticket under a given epic via the Jira REST API. |
 | `/sync-epic` | Bring a Jira epic's child tickets in line with their GitHub PR states (draft → In Progress, open → In Review, merged → Done). |
 | `/write-pr` | Write or update the current PR description in a standard format. |
+| `/ship-feature` | Take a design doc through to a PR with reviews requested — implement on a branch, open the PR, baby-sit CI to green, then address every actionable review comment. |
+| `/recover` | After a crash or reboot, reconstruct interrupted Claude Code sessions — scan transcripts, classify done-vs-interrupted, detect dead background jobs, and emit a ranked resume plan with exact `--resume` commands. |
+| `/wip` | Standing cross-project board of what's open or in-flight now — joins CI/driver runs, a task store, and open PRs into one liveness-ranked view. |
+| `/pr-risk` | Route a PR to the right amount of review — an optional deterministic risk floor plus an escalate-only agent pass, tiered T0–T3. |
+| `/review-digest` | Collapse a PR's four-bot comment pile into a line-grouped digest using a local model — each bot's own headline + severity, grouped by file:line. Offline, no cloud tokens. |
+| `/ask-portfolio` | Answer questions about your own work — code, docs, notes, past decisions — via a local RAG second-brain over your corpus. Offline, cited, zero cost. |
 
 These encode one developer's workflow opinions. Fork and edit to match yours — the opinions ARE the value.
 
@@ -66,8 +72,9 @@ These encode one developer's workflow opinions. Fork and edit to match yours —
 
 Several skills call MCP servers; without them you'll see missing-tool errors.
 
-- [ship](https://github.com/itsHabib/ship) — required by `/work-driver`, `/driver-run`.
-- dossier — required by `/work-driver`, `/work-driver-prep`, `/work-driver-seed`, `/driver-run`, `/polish`, `/prep-public`, `/shipped`.
+- [ship](https://github.com/itsHabib/ship) — required by `/work-driver`, `/wip`.
+- dossier — required by `/work-driver`, `/work-driver-prep`, `/work-driver-seed`, `/wip`, `/polish`, `/prep-public`, `/shipped`.
+- [Ollama](https://ollama.com) (local model) — required by `/ask-portfolio` and `/review-digest`; optional for `/pr-risk`'s deterministic floor. These run offline with no cloud tokens.
 
 ## License
 
