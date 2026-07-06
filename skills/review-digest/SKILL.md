@@ -29,9 +29,12 @@ current one):
 ```
 "$REVTRIAGE_BIN" <pr-number>
 "$REVTRIAGE_BIN" -repo owner/name <pr-number>
+"$REVTRIAGE_BIN" -json -repo owner/name <pr-number>
 ```
 
 It prints one row per bot finding: `line · severity · verdict · confidence · bot · headline`.
+`-json` emits the same findings as a JSON array with `comment_id`/`file`/`url` for joining back to
+the source comments — the form a review coordinator consumes as its ingest pre-pass.
 
 ## What to relay
 

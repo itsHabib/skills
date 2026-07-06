@@ -68,8 +68,35 @@ A finding can live in any of three places. **Read all three** — Codex line com
 ```
 gh api --paginate repos/<o>/<r>/pulls/<n>/reviews   --jq '.[] | {login:.user.login, state:.state, body:.body}'
 gh api --paginate repos/<o>/<r>/issues/<n>/comments --jq '.[] | {login:.user.login, body:.body}'
-gh api --paginate repos/<o>/<r>/pulls/<n>/comments  --jq '.[] | {login:.user.login, path:.path, line:.line, body:.body}'
+gh api --paginate repos/<o>/<r>/pulls/<n>/comments  --jq '.[] | {id:.id, login:.user.login, path:.path, line:.line, body:.body}'
 ```
+
+**Optional local pre-pass on the inline endpoint (free, offline).** `pulls/comments` is where the
+dense finding bodies live. If a local reviewer-extraction CLI is available (see `/review-digest`),
+run it first — it extracts each comment's headline + the bot's own stated severity, one local-model
+call per comment:
+
+```
+"$REVTRIAGE_BIN" -json -repo <o>/<r> <n>
+```
+
+Each row is `{comment_id, file, line, bot, severity, verdict, confidence, headline}`. Because this
+skill's output **gates merges**, the digest pre-populates findings under two deterministic checks —
+it never replaces the endpoint reads:
+
+1. **Coverage** — still fetch the `pulls/comments` *listing* (the jq above; ids + metadata, no
+   deep-reading). Every expected-bot comment id must have a digest row; any gap → read that
+   comment body directly.
+2. **Distrust the un-checkable row** — low `confidence`, or a severity of `unknown` from a bot
+   that does emit labels (codex/cursor), or a headline that doesn't correspond to the comment's
+   own title → read that comment body directly. (`unknown` from Copilot is normal — don't invent
+   a severity.)
+
+A wrong extraction can then only cost one direct read; it can never flip the gate. The digest
+covers ONLY the inline endpoint — reviews and issue comments (endpoints 1–2) are read as before.
+No local model running? Skip the pre-pass; this step works as before (read everything). Digest
+`severity` feeds the severity-normalization step as `severity_raw` unchanged (it's the bot's own
+scale: P1/P2, High/Medium, blocking).
 
 Keep only authors in the `expected`-bot set. **Drop non-findings:**
 - Boilerplate wrappers: Codex's "💡 Codex Review" header, Cursor's "Skipping Bugbot…" / `<!-- BUGBOT_REVIEW -->` header with no finding, "no major issues", any "LGTM".
