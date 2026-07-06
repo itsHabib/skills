@@ -65,6 +65,7 @@ Copy individual dirs if you want a subset.
 | `/pr-risk` | Route a PR to the right amount of review — an optional deterministic risk floor plus an escalate-only agent pass, tiered T0–T3. |
 | `/review-digest` | Collapse a PR's four-bot comment pile into a line-grouped digest using a local model — each bot's own headline + severity, grouped by file:line. Offline, no cloud tokens. |
 | `/ask-portfolio` | Answer questions about your own work — code, docs, notes, past decisions — via a local RAG second-brain over your corpus. Offline, cited, zero cost. |
+| `/editorial-pass` | Multi-editor editorial pass over a draft in your voice — a mechanical AI-tell scan, six editor lenses fanned out via Workflow, and an editor-in-chief consolidation with verbatim fixes + a publish verdict. |
 
 These encode one developer's workflow opinions. Fork and edit to match yours — the opinions ARE the value.
 
