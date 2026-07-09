@@ -5,7 +5,7 @@ description: Offload a cheap, verifiable sub-task to the LOCAL model (Ollama, $0
 
 # Offload to the local co-processor
 
-`local` (on PATH, from `pers/local`) runs a structured extract/classify task on the local model:
+`local` (a small CLI on your PATH) runs a structured extract/classify task on the local model:
 
 ```
 local -prompt "<task>" -schema '<json-schema | @file>' [-min-confidence 0.7] < input
@@ -38,5 +38,6 @@ outcomes. Bad fits: judging a diff's risk, reviewing code, anything where being 
 
 ## Prereqs
 
-Ollama running with `qwen2.5:7b` pulled. If `local` isn't on PATH: `go install ./cmd/local`
-from `pers/local`.
+Ollama running with `qwen2.5:7b` pulled, and the `local` CLI on your PATH — a thin wrapper
+that runs a structured extract/classify prompt against the local model. Operator-built; supply
+your own or adapt the skill to your local-model runner.
