@@ -68,6 +68,7 @@ Copy individual dirs if you want a subset.
 | `/review-digest` | Collapse a PR's four-bot comment pile into a line-grouped digest using a local model — each bot's own headline + severity, grouped by file:line. Offline, no cloud tokens. |
 | `/ask-portfolio` | Answer questions about your own work — code, docs, notes, past decisions — via a local RAG second-brain over your corpus. Offline, cited, zero cost. |
 | `/offload` | Hand a cheap, verifiable sub-task — narrowing a file list, extracting structure from noisy output, classifying log lines — to a local model. Offline, zero cloud tokens; you keep the judgment calls. |
+| `/health` | Sign-on tool-health board — rolls the append-only friction log up per tool (recent friction, worst severity, one-line pain) into a "what needs attention" view. Local model, offline. |
 | `/editorial-pass` | Multi-editor editorial pass over a draft in your voice — a mechanical AI-tell scan, six editor lenses fanned out via Workflow, and an editor-in-chief consolidation with verbatim fixes + a publish verdict. |
 
 These encode one developer's workflow opinions. Fork and edit to match yours — the opinions ARE the value.
@@ -78,7 +79,8 @@ Several skills call MCP servers; without them you'll see missing-tool errors.
 
 - [ship](https://github.com/itsHabib/ship) — required by `/work-driver`, `/wip`.
 - dossier — required by `/work-driver`, `/work-driver-prep`, `/work-driver-seed`, `/wip`, `/polish`, `/prep-public`, `/shipped`.
-- [Ollama](https://ollama.com) (local model) — required by `/ask-portfolio`, `/review-digest`, and `/offload`; optional for `/pr-risk`'s deterministic floor. These run offline with no cloud tokens.
+- [Ollama](https://ollama.com) (local model) — required by `/ask-portfolio`, `/review-digest`, `/offload`, and `/health` (which wants `qwen2.5:7b`); optional for `/pr-risk`'s deterministic floor. These run offline with no cloud tokens.
+- `toolhealth` CLI — required by `/health`: a small local binary that summarizes an append-only friction log into a per-tool board. Operator-built; supply your own on PATH or adapt the skill to your own friction log.
 
 ## License
 
