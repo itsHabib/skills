@@ -1,6 +1,8 @@
 ---
 name: voice-learn
 description: Build and mine a corpus of AI-draft → operator-final pairs so the agent's writing converges on the operator's real voice. Two verbs — capture (freeze the AI version of a draft BEFORE the operator edits it) and learn (diff the operator's final against the frozen AI version, classify every edit as voice vs content, and fold recurring voice edits into voice-profile.md and tellscan.mjs as dated, evidence-backed rules). Use when the operator says "voice learn", "capture this draft", "here's my final version, learn from it", "diff my edits", "store this pair", "learn my voice", or invokes /voice-learn. Corpus lives under a writing dir you configure (e.g. ~/writing/corpus/); the voice profile stays the single contract.
+user_invocable: true
+argument-hint: "capture <draft-path> [slug] | <slug> <final-path> | status"
 ---
 
 # /voice-learn — revealed-preference voice tuning

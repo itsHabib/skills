@@ -70,6 +70,7 @@ Copy individual dirs if you want a subset.
 | `/offload` | Hand a cheap, verifiable sub-task — narrowing a file list, extracting structure from noisy output, classifying log lines — to a local model. Offline, zero cloud tokens; you keep the judgment calls. |
 | `/health` | Sign-on tool-health board — rolls the append-only friction log up per tool (recent friction, worst severity, one-line pain) into a "what needs attention" view. Local model, offline. |
 | `/editorial-pass` | Multi-editor editorial pass over a draft in your voice — a mechanical AI-tell scan, six editor lenses fanned out via Workflow, and an editor-in-chief consolidation with verbatim fixes + a publish verdict. |
+| `/voice-learn` | Mine AI-draft → final edit pairs to converge the agent's writing on your real voice — capture the AI version before you edit, then learn the diff into a voice profile. Corpus is yours, local, never in the repo. |
 
 These encode one developer's workflow opinions. Fork and edit to match yours — the opinions ARE the value.
 

@@ -1,6 +1,7 @@
 ---
 name: health
 description: Sign-on tool-health board — reads the workbench friction log and rolls it up per tool into a "how's each tool doing" view (recent friction, worst severity, one-line pain), using a LOCAL model (free, offline). Use when the operator asks "how are my tools doing", "tool health", "what's the friction", "how's everything doing", "anything need attention", "are my tools ok", or invokes /health, especially at sign-on. Distinct from /wip (in-flight work right now) and /status (session recap) — this is standing tool *health* from accumulated friction.
+user_invocable: true
 ---
 
 # Tool-health board (local, from the friction log)

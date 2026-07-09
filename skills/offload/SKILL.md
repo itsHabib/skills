@@ -1,6 +1,7 @@
 ---
 name: offload
 description: Offload a cheap, verifiable sub-task to the LOCAL model (Ollama, $0, offline) via the `local` CLI — narrow a big file list, extract structure from noisy tool output, classify log lines or command success/failure. Use PROACTIVELY mid-task when a sub-step is mechanical narrowing/extraction/shallow-classification AND you can verify the result at a glance; also when the operator says "offload that", "run that locally", "use the local model", or invokes /offload. NEVER for deep judgment (code review, risk calls, dense-diff reasoning) — that stays with you.
+user_invocable: true
 ---
 
 # Offload to the local co-processor
