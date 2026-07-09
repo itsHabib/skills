@@ -12,6 +12,17 @@ skill is the index: it reads every skill's frontmatter off disk and either lays 
 or points at the right one for a task. It never guesses from memory or from the harness's
 injected skill list - it reads the source of truth so a skill added yesterday shows up today.
 
+## Scope — operator-authored skills only
+
+This librarian catalogs **only skills the operator wrote**: the three on-disk roots below.
+It deliberately excludes skills the operator did not author - Anthropic/plugin skills
+(namespaced `anthropic-skills:*`, e.g. docx / pdf / pptx / skill-creator) and harness
+built-ins (`/dataviz`, `/code-review`, `/loop`, `/verify`, `/init`, `/security-review`, and
+the like). Those live in plugin/marketplace directories, not the roots below, so the
+discovery step never sees them - keep it that way. Do not add plugin or built-in roots to
+`discover.sh`, and if asked to "list everything," clarify that this tool is scoped to the
+operator's own skills.
+
 ## Discover first (always)
 
 Build the catalog by running the discovery script from the current repo root:
