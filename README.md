@@ -39,6 +39,7 @@ Copy individual dirs if you want a subset.
 | `/work-driver-seed` | Seed a dossier phase + PR-sized, dependency-ordered tasks from a described chunk — the front-end to `/work-driver-prep` for work too big for one task, too small for a `/tdd`. |
 | `/shipped` | Retrospective: PRs merged, weighted-LOC, what's open, next moves. |
 | `/status` | In-flight 4-section status (What happened / What's next / What I recommend / What I need). |
+| `/skills` | Skill librarian — discover every skill on disk (personal / project / stranded in worktrees) and either lay them all out in a grouped table or recommend the best fit for a task you describe, with the exact command to type. |
 | `/worktree-add` | Create a worktree at `.claude/worktrees/<branch>/`. |
 | `/worktree-list` | List worktrees with dirty state + PR/CI. |
 | `/worktree-remove` | Remove a worktree, dirty-state aware. |
