@@ -1,7 +1,7 @@
 ---
 name: skills
-description: Skill librarian - catalog every skill available in this session and recommend the best fit for a task. Discovers all skills on disk (personal ~/.claude/skills, project .claude/skills, and skills stranded in .claude/worktrees) by reading their frontmatter, so the catalog is always current. Run alone (/skills) for a grouped tabular overview of everything you have; run with a prompt (/skills post the daily bomb-out triage) to rank the catalog against that task and recommend the top matches with the exact command to type. Use when the operator asks "what skills do I have", "which skills are available", "what can I run", "is there a skill for X", "which skill should I use for Y", "recommend a skill", "I forget what skills I built", "what's available to me", or invokes /skills.
-argument-hint: "[a task or question] — omit for the full overview, e.g. /skills, /skills check copilot web APM for anything actionable"
+description: Skill librarian - catalog every skill available in this session and recommend the best fit for a task. Discovers all skills on disk (personal ~/.claude/skills, project .claude/skills, and skills stranded in .claude/worktrees) by reading their frontmatter, so the catalog is always current. Run alone (/skills) for a grouped tabular overview of everything you have; run with a prompt (/skills open a pull request for my changes) to rank the catalog against that task and recommend the top matches with the exact command to type. Use when the operator asks "what skills do I have", "which skills are available", "what can I run", "is there a skill for X", "which skill should I use for Y", "recommend a skill", "I forget what skills I built", "what's available to me", or invokes /skills.
+argument-hint: "[a task or question] — omit for the full overview, e.g. /skills, /skills open a pull request for my changes"
 user_invocable: true
 ---
 
