@@ -52,6 +52,7 @@ Copy individual dirs if you want a subset.
 | `/subagent-scaffold` | Write a canonical Cursor subagent set into `.cursor/`. |
 | `/chip` | Spin an out-of-scope item out into its own Claude Code session. |
 | `/continue` | Emit a paste-ready continuation prompt so a fresh session picks up exactly where this one left off when context fills up. |
+| `/transfer-context` | Fork a mid-task thread into its own briefed session without derailing the working agent — thread-scoped and conversation-dependent (vs `/chip`'s fresh task and `/continue`'s whole-session handoff). |
 | `/tdd` | Turn a feature idea into a reviewed Technical Design Document plus dossier structure — design doc and rollout tasks in one shot. |
 | `/review-coordinator` | Consolidate AI PR reviewers into one deduped verdict and merge gate; the judge over the finders. |
 | `/consult` | Summon another repo's steward agent for a same-turn answer — knowledge questions about a sibling repo go to a peer, not the operator. |
@@ -66,6 +67,7 @@ Copy individual dirs if you want a subset.
 | `/pr-risk` | Route a PR to the right amount of review — an optional deterministic risk floor plus an escalate-only agent pass, tiered T0–T3. |
 | `/review-digest` | Collapse a PR's four-bot comment pile into a line-grouped digest using a local model — each bot's own headline + severity, grouped by file:line. Offline, no cloud tokens. |
 | `/ask-portfolio` | Answer questions about your own work — code, docs, notes, past decisions — via a local RAG second-brain over your corpus. Offline, cited, zero cost. |
+| `/offload` | Hand a cheap, verifiable sub-task — narrowing a file list, extracting structure from noisy output, classifying log lines — to a local model. Offline, zero cloud tokens; you keep the judgment calls. |
 | `/editorial-pass` | Multi-editor editorial pass over a draft in your voice — a mechanical AI-tell scan, six editor lenses fanned out via Workflow, and an editor-in-chief consolidation with verbatim fixes + a publish verdict. |
 
 These encode one developer's workflow opinions. Fork and edit to match yours — the opinions ARE the value.
@@ -76,7 +78,7 @@ Several skills call MCP servers; without them you'll see missing-tool errors.
 
 - [ship](https://github.com/itsHabib/ship) — required by `/work-driver`, `/wip`.
 - dossier — required by `/work-driver`, `/work-driver-prep`, `/work-driver-seed`, `/wip`, `/polish`, `/prep-public`, `/shipped`.
-- [Ollama](https://ollama.com) (local model) — required by `/ask-portfolio` and `/review-digest`; optional for `/pr-risk`'s deterministic floor. These run offline with no cloud tokens.
+- [Ollama](https://ollama.com) (local model) — required by `/ask-portfolio`, `/review-digest`, and `/offload`; optional for `/pr-risk`'s deterministic floor. These run offline with no cloud tokens.
 
 ## License
 
