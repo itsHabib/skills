@@ -1,7 +1,7 @@
 ---
 name: work-driver-prep
 description: Build the spec docs + work-driver invocation for a batch of dossier tasks. Resolves task IDs or a phase slug, generates one spec doc per task, detects file-overlap conflicts, groups into parallel-safe batches, and emits ready /work-driver commands. Use before /work-driver when you have N small tasks to ship in parallel and want to skip the manual "draft a spec for each, figure out which can run together" step.
-argument-hint: "[task-ids... | phase:<slug> | project:<slug>:phase:<slug>]"
+argument-hint: "[task-ids... | phase:<slug> | project:<slug>:phase:<slug>] [--model-pool <provider:model,...>]"
 user_invocable: true
 ---
 
@@ -29,6 +29,8 @@ Parse `<user_argument>` as one of:
 - **Project + phase (preferred, unambiguous)**: `project:<slug>:phase:<slug>` — pull all `todo` tasks from that phase.
 - **Phase slug only**: `phase:<slug>` — convenience form; the skill must resolve which project owns the phase (see Step 1).
 - **Explicit task IDs**: `tsk_XXX tsk_YYY tsk_ZZZ` — dossier has no `task_get { id }` verb, so the skill must walk projects to resolve each ID to a `(project, task)` tuple (see Step 1).
+
+**Optional flag — `--model-pool <[runtime/]provider:model,...>`**: after the manifest is written (Step 5), shell to `ship driver assign --pool <spec> <driver.md>`. The verb round-robins the pool over the manifest's streams and stamps each stream's `provider` + `model_id`; the skill just forwards the flag — zero rotation logic here. Omit for the default per-stream model inference (Step 4c).
 
 If no argument is given, ASK via `AskUserQuestion`:
 1. Project slug (or "all" to scan the whole corpus).
