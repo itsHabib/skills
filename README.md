@@ -49,6 +49,7 @@ Copy individual dirs if you want a subset.
 | `/eng-philo` | Stamp an opinionated `## Engineering principles` house style (Dave Cheney lineage) into a repo's CLAUDE.md, paired with the lint that enforces it. |
 | `/prep-public` | Pre-launch audit: secrets, LICENSE, package metadata, README, `.gitignore`, leaks. |
 | `/polish` | Stack-aware portfolio hygiene audit (Rust / Go / Node / Python / Elixir / Ruby). |
+| `/floor` | Render the effective Claude Code permission floor — every settings layer + guard hooks merged into one tiered view, with wildcard/asymmetry findings. |
 | `/subagent-scaffold` | Write a canonical Cursor subagent set into `.cursor/`. |
 | `/chip` | Spin an out-of-scope item out into its own Claude Code session. |
 | `/continue` | Emit a paste-ready continuation prompt so a fresh session picks up exactly where this one left off when context fills up. |
