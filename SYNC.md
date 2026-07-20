@@ -21,7 +21,8 @@ Before pushing: `scripts/check.sh` must pass AND
 `git grep -riE "<employer>|<operator-username>|<private-repo-names>" -- skills`
 must return nothing.
 
-Pending: behavioral re-sync of the 2026-07-18 canonical changes (work-driver
---engine session, panel-from-config, model-pool) awaits a scrubbed pass; two
-pre-existing files (`tdd`, `work-driver-seed`) also need an identifying-content
-cleanup.
+Pending: `work-driver` `--engine session` + panel-from-config were scrubbed and
+synced 2026-07-20; the model-pool changes still await a scrubbed pass. `tdd` and
+`work-driver-seed` had their **hard** identifying content (username paths, actor
+strings) scrubbed 2026-07-20; the softer transforms — memory-slug citations (#5)
+and second-person voice (#6) — remain for those two.
