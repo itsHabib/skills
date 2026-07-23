@@ -52,6 +52,7 @@ Copy individual dirs if you want a subset.
 | `/floor` | Render the effective Claude Code permission floor — every settings layer + guard hooks merged into one tiered view, with wildcard/asymmetry findings. |
 | `/subagent-scaffold` | Write a canonical Cursor subagent set into `.cursor/`. |
 | `/chip` | Spin an out-of-scope item out into its own Claude Code session. |
+| `/brief` | Explore an unfamiliar code area and produce a code-anchored kickoff doc + a paste-ready handoff prompt for another agent — for POC/exploration handoffs, not a design doc. |
 | `/continue` | Emit a paste-ready continuation prompt so a fresh session picks up exactly where this one left off when context fills up. |
 | `/transfer-context` | Fork a mid-task thread into its own briefed session without derailing the working agent — thread-scoped and conversation-dependent (vs `/chip`'s fresh task and `/continue`'s whole-session handoff). |
 | `/tdd` | Turn a feature idea into a reviewed Technical Design Document plus dossier structure — design doc and rollout tasks in one shot. |
