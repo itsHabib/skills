@@ -59,6 +59,7 @@ Copy individual dirs if you want a subset.
 | `/review-coordinator` | Consolidate AI PR reviewers into one deduped verdict and merge gate; the judge over the finders. |
 | `/consult` | Summon another repo's steward agent for a same-turn answer — knowledge questions about a sibling repo go to a peer, not the operator. |
 | `/interview` | Extract unwritten knowledge from a person via a fillable, resumable interview doc, then synthesize it into a target artifact (deck, design doc, ADR, post-mortem, onboarding guide) in their voice. |
+| `/dojo` | Interactive teaching mode — diagnose silently, then drive a Socratic loop where the user runs every fix step themselves (escalating hint ladder, you only ask and verify), and close with a transferable rule + a lessons-ledger scroll. |
 | `/ship-ticket` | Chain the post-implementation wrap-up: file the Jira ticket, open the PR, describe it, sync the epic. |
 | `/spinup-ticket` | Create a Jira ticket under a given epic via the Jira REST API. |
 | `/sync-epic` | Bring a Jira epic's child tickets in line with their GitHub PR states (draft → In Progress, open → In Review, merged → Done). |
