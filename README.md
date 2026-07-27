@@ -37,6 +37,7 @@ Copy individual dirs if you want a subset.
 | `/work-driver` | Drive N parallel tasks to merge through ship's `ship driver` engine (import → dispatch → poll → judgment → land → record). The engine owns the loop; the skill keeps the policy — review-cycle cap, strategy selection, the merge call. |
 | `/work-driver-prep` | Turn a backlog of dossier tasks into spec docs + a conflict-aware batched plan. |
 | `/work-driver-seed` | Seed a dossier phase + PR-sized, dependency-ordered tasks from a described chunk — the front-end to `/work-driver-prep` for work too big for one task, too small for a `/tdd`. |
+| `/drive` | Drive ONE ad-hoc task through the full delivery loop — repo patterns, worktree isolation, local green, PR, review-roster fold-and-converge — then stop at the last safe autonomous point and hand off. The lightweight single-task sibling of `/work-driver`; "done" is whatever you said it is. |
 | `/shipped` | Retrospective: PRs merged, weighted-LOC, what's open, next moves. |
 | `/status` | In-flight 4-section status (What happened / What's next / What I recommend / What I need). |
 | `/skills` | Skill librarian — discover every skill on disk (personal / project / stranded in worktrees) and either lay them all out in a grouped table or recommend the best fit for a task you describe, with the exact command to type. |
