@@ -48,6 +48,17 @@ Volatile reality — which reviewers are alive, merge policy, tool health, what'
 in flight — comes from the living sources (project CLAUDE.md, memory), **never from this
 skill**. This skill hardcodes only the stable spine.
 
+If the repository has `.ship.json`, read it before opening the PR. Its `review` stanza
+is the repository-owned review contract:
+
+- use exactly `review.panel`; do not substitute a remembered or hard-coded roster;
+- treat `review.require` as required completion, not a suggestion;
+- use `review.settle_minutes` as the bounded wait, never as permission to call Gate
+  with missing required reviewers;
+- if the invocation forbids one configured reviewer or transport, stop before
+  triggering and surface the policy conflict. Never silently drop the reviewer or
+  weaken the checked-in declaration.
+
 ## 3. Isolate
 
 Work in a dedicated git worktree (e.g. `.claude/worktrees/<branch>`), never in the root
@@ -66,8 +77,19 @@ rather than presenting partial green as full green.
 
 - Push and open the PR in the repo's format. One PR; if the task genuinely needs a
   second, stop and say so — that's `/work-driver` territory.
-- **Trigger the review roster.** Hand-opened PRs often get no bot reviews — ping the ones
-  that are alive (check, don't assume). Then wait; don't self-review in their place.
+- **Trigger the repository-owned review roster.** When `.ship.json.review` exists,
+  execute each declared trigger: `mention` posts one standalone `@<name> review`
+  comment, `reviewer-request` uses the connected GitHub reviewer-request capability
+  (or its API equivalent), and `auto` posts nothing. Without a review stanza, follow
+  the repository's documented manual policy; do not invent a default panel.
+- **Track the exact head.** Print and retain `requested`, `completed`, `pending`,
+  `missing`, and the full reviewed head. Completion means the configured reviewer
+  finished on that exact head. A local/session subagent review is useful feedback but
+  does not impersonate a configured GitHub reviewer or satisfy its completion record.
+  Any pushed fix advances the head and resets this check.
+- **Wait before Gate.** Wait up to `settle_minutes`. If a required reviewer remains
+  pending or missing, stop at `review incomplete` and name it; do not run Gate merely
+  to manufacture a predictable parked run.
 - **Fold every actionable finding**, smallest-safe change, and re-run the checks after
   each fold. Before folding a re-review, check which commit it reviewed — stale
   re-reviews of already-fixed heads happen; don't re-fold what's already addressed.
@@ -81,9 +103,10 @@ rather than presenting partial green as full green.
 ## 6. Stop at the safe boundary + hand off
 
 - **Repo with a merge gate** (a merge-authorization tool or required check governs
-  merges): drive that flow as far as authorized — typically to a parked/awaiting-judgment
-  state — then **stop**. Hand off: PR link, its exact state, and the ready-to-paste
-  commands for the human to authorize and merge.
+  merges): call it only after CI and every configured required reviewer are complete
+  on the exact head. Then follow its typed result and stop at the last authorized
+  boundary. Never use a known-incomplete review panel as input just to obtain a parked
+  result.
 - **Ungated repo**: green CI + reviews folded → report with the merge command ready.
 - Met the stated done-criteria? Say so plainly. Didn't? Say what's left, why, and what
   the human must do to close it. Never mark unmerged work "done" when done meant merged.
