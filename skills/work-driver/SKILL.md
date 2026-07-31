@@ -1,6 +1,22 @@
 ---
 name: work-driver
-description: Drive N parallel tasks end-to-end through ship's `ship driver` engine — the state machine (import → dispatch → poll → judgment → land → record) that replaced the hand-run per-stream `mcp__ship__ship` loop. Resolves dossier task IDs (or a phase, or an existing driver.md), preps specs + a conflict-batched manifest, dispatches all streams (cloud by default), handles failures via `ship driver decide`, drives the resulting PRs through review→merge, records merges back, and logs friction. `--engine session` makes THIS session a THIN orchestrator: each task's impl runs in a delegated isolated-worktree subagent (fresh context, own model), the parent holds only structured summaries + PR URLs and records every transition through workbench-mcp (parent run + child sub-runs), and the whole run is resumable from the ledger in a fresh session (≥5 tasks, single writer per sub-run). Use when you want to fire one or several tasks in parallel and have an agent drive them to merge — "drive this impl work", "drive these 3 tasks", "run this batch through ship", "parallel-ship these", "ship and merge", "fire N parallel streams", explicit /work-driver.
+description: >-
+  Drive N parallel tasks end-to-end through ship's `ship driver` engine — the
+  state machine (import → dispatch → poll → judgment → land → record) that
+  replaced the hand-run per-stream `mcp__ship__ship` loop. Resolves dossier task
+  IDs (or a phase, or an existing driver.md), preps specs + a conflict-batched
+  manifest, dispatches all streams (cloud by default), handles failures via
+  `ship driver decide`, drives the resulting PRs through review→merge, records
+  merges back, and logs friction. `--engine session` makes THIS session a THIN
+  orchestrator: each task's impl runs in a delegated isolated-worktree subagent
+  (fresh context, own model), the parent holds only structured summaries + PR
+  URLs and records every transition through workbench-mcp (parent run + child
+  sub-runs), and the whole run is resumable from the ledger in a fresh session
+  (≥5 tasks, single writer per sub-run). Use when you want to fire one or
+  several tasks in parallel and have an agent drive them to merge — "drive this
+  impl work", "drive these 3 tasks", "run this batch through ship",
+  "parallel-ship these", "ship and merge", "fire N parallel streams", explicit
+  /work-driver.
 argument-hint: "[task-ids... | phase:<slug> | project:<slug>:phase:<slug> | <path-to-driver.md>] [--runtime cloud|local] [--engine ship|session]"
 user_invocable: true
 ---
@@ -9,9 +25,11 @@ user_invocable: true
 
 Drive N tasks to merge using ship's **driver engine** (`ship driver <verb>`). The engine
 owns the mechanism — dispatch → poll → judgment → land → record, with durable resumable
-state in its own store. This skill is the **policy wrapper**: prep, review-cycle strategy,
-the merge call, merge-recording, and a friction log. No sleep-polls, no YAML-as-database,
-no resume bash — those are the engine's job now, not prose for the LLM to re-derive.
+state in its own store. This skill is the **orchestration wrapper**: prep, invocation of
+Workbench's review policy, engine-specific execution adapters, the Gate-authorized merge,
+merge-recording, and a friction log. It does not reinterpret tier or cycle policy. No
+sleep-polls, no YAML-as-database, no resume bash — those are the engine's job now, not prose
+for the LLM to re-derive.
 
 ## Inputs
 
@@ -40,11 +58,10 @@ path, and the runtime if it isn't obvious.
    refuses on an untracked-file collision, handle each file deliberately (**don't** blind
    `git stash` — forgotten stashes lose drafts; `rm` it or `mv` to `<file>.bak`) or reach
    for `/worktree-transfer`. Cloud streams need no worktree — cursor cloud is the workspace.
-2. **Drive via the ship CLI**, from `pers/ship`, with the cursor key set and **absolute**
+2. **Drive via the ship CLI**, with `CURSOR_API_KEY` already set and **absolute**
    manifest paths (`pnpm --filter exec` changes cwd):
    ```
-   $env:CURSOR_API_KEY = [regex]::Match((Get-Content C:\Users\MichaelHabib\pers\ship\.keys -Raw), '"cursor":\s*"([^"]+)"').Groups[1].Value
-   cd C:\Users\MichaelHabib\pers\ship
+   cd <ship-repository>
    pnpm --filter @ship/cli exec tsx src/bin.ts driver <verb> ...
    ```
    - `driver run <ABSOLUTE driver.md path> --max-wait 30m --poll-interval 30s --json`
@@ -68,53 +85,50 @@ path, and the runtime if it isn't obvious.
 4. **Judgment.** On a failed stream: `driver decide <drv_id> <decision> --stream <ds_id>
    [--reason "..."]` (`retry` re-dispatches the same branch; `skip`/`abort` need a reason),
    then re-run. Be opinionated about retry-vs-skip — judgment is the LLM's actual job here.
-5. **Land → PR → review.** Each succeeded cloud stream opened a **draft** PR; the engine
+5. **Land → PR → exact-head review.** Each succeeded cloud stream opened a **draft** PR; the engine
    flips it ready at the poll boundary (ship #177) — a stream parked with a flip error is
    the exception, not a prompt to hand-run `gh pr ready`. (Local streams: the agent
    auto-commits now — verify with `git -C <wt> log
    -1`; only commit + push yourself if `git status` shows uncommitted changes — then `gh pr
-   create`.) Request reviewers per the target repo's **Panel from config** stanza (the
-   reviewer set is the repo's `.ship.json` `review` key, never this prose): `mention`
-   entries as **standalone** comments (`@<name> review` — embedded pings don't trigger
-   codex), `reviewer-request` entries via `gh pr edit <n> --add-reviewer`, `auto` entries
-   get nothing posted. Each cycle, **when the bots surface real findings** (≥2 bots
-   flag the same thing, or any `block`-severity), call **`/review-coordinator <n>`** for the
-   consolidated `block`/`go` verdict — don't hand-triage four comment streams. On a clean
-   pass (all bots green, or one stray advisory nit) skip the coordinator and merge: it earns
-   its keep consolidating *conflicting or voluminous* findings, not rubber-stamping a clean
-   PR (the coordinator owns the ingest mechanism; the merge grant owns the cycle cap; this
-   skill owns the merge call).
-6. **Merge gate (dry-run advisory) → record + close.** Once per repo in the run, mint a
-   merge grant, from `pers/gate` as the stable cwd (gate's default `-state` dir is
-   cwd-relative and the grant only exists in the state dir it was minted into):
-   `.\gate.exe grant -repo <owner/repo> -action merge -max-tier T1 -ttl 6h`
-   Don't pass `-max-cycles` — gate's CLI default IS the review-cycle policy; this skill
-   states no cycle number. Hold the printed `grt_…` for every gate call this run. Per PR
-   per cycle, call the gate as the merge step and branch on its exit code — requiring the
+    create`.) If `.ship.json.review.tier_aware` is `true`, run **Tier-aware exact-head
+    review** below; Workbench selects the panel and continuation. Otherwise preserve the
+    repository's existing **Legacy panel from config** behavior unchanged. Per cycle,
+    append the raw per-bot `review_cycle` spend event; Ship also emits the consumed
+    Workbench `review_decision` event.
+6. **Merge gate → exact emitted merge → record + close.** Resolve a live
+    **operator-minted** grant for the repository. Never call `gate grant`. If none is
+    available, park and hand the operator this exact request:
+    `gate grant -repo <owner/repo> -action merge -max-tier <required-tier> -ttl 24h`.
+    T3 cycles 4–8 additionally need the operator to choose a sufficient `-max-cycles`;
+    Workbench's cap never widens Gate authority. Run Gate from the stable state root:
+    `gate gate -repo <owner/repo> -pr <n> -grant <grt_…> -state ~/pers/gate/state`.
+    Branch on its exit code — requiring the
    code and the JSON `outcome` on stdout to **agree** (0 ⟺ `would_merge`,
    1 ⟺ `blocked`, 2 ⟺ `parked_for_judgment`, 3 ⟺ `capability_refused`); a bare code
    with missing/disagreeing JSON is a truncated run — treat it as exit 4:
-   `.\gate.exe gate -repo <owner/repo> -pr <n> -grant <grt_…>`   (never `-live`)
-   - **0** `would_merge` → land via the existing ship path: `driver land <drv_id> --pr <n>`
-     (ship merges, reads sha/time back from gh, records), then dossier `task_complete` +
-     `artifact_link` the merge commit.
+    - **0** `would_merge` → run the **exact commit-pinned `gh pr merge
+      --match-head-commit …` command Gate emits**; never reconstruct or loosen it. After
+      GitHub reports the merge, call `driver land <drv_id> --pr <n> --stream <ds_id>
+      --cycles <n> --reviewed-head <exact-reviewed-head> --gate-run <run_…>` so Ship reads
+      the merged fact and records closure, then dossier `task_complete` + `artifact_link`.
    - **1** `blocked` → stop the stream; do not merge. Red stays red.
    - **2** `parked_for_judgment` → read the JSON: a **ceiling park** (a coded tier- or
-     cycle-over-ceiling) resolves by re-minting a wider grant (`-max-tier` /
-     `-max-cycles`) and retrying — **a re-mint, never a judge, never `--admin`**; the
-     over-cap park is the "ping the operator" moment, not a prompt to loop. A **content
+      cycle-over-ceiling) requires the operator to mint a wider grant (`-max-tier` /
+      `-max-cycles`) or stop — **never mint it yourself, never judge a ceiling, never
+      `--admin`**. A **content
      escalation** resolves by `gate judge -run <run_…> -grant <grt_…> …` (a judge can
      pass an escalation but can never clear a ceiling).
-   - **3** `capability_refused` → grant expired/mis-scoped; re-mint and retry once.
+    - **3** `capability_refused` → grant expired/mis-scoped; ask the operator for a fresh
+      correctly scoped grant.
    - **4** error → surface it; no merge.
-   Gate is **advisory dry-run** here: it records the decision but never executes a merge
-   (`-live` stays off until its preconditions land); ship's `driver land` remains the
-   merge writer. Advisory means gate doesn't *merge* — not that it's optional: gate is a
-   **required** step of the merge tail, and a missing binary is a setup error to surface,
-   not a step to skip. Resolve it as `pers/gate/gate.exe`, built there via
+    Gate is the required authorization boundary; its emitted command is the only merge
+    writer. A missing binary is a setup error to surface, not a step to skip. Resolve it as
+    `pers/workbench/gate.exe` (or `gate` on PATH), built there via
    `go build -o gate.exe ./cmd/gate`. `driver status <drv_id> --json` /
    `driver render <drv_id>` to track. All streams merged → the run self-finishes to
-   terminal `done`.
+   terminal `done`. At each terminal — merge **or** close — record review-spend: the engine
+   emits `terminal {merged:true}`, but closed-unmerged PRs and fixes-PR linkage are the
+   skill's to append (see **Review-spend telemetry**).
 
 ## Engine: session (`--engine session`) — the THIN orchestrator
 
@@ -207,21 +221,27 @@ rollup names every stream's `child_status`, `pr`, friction, and whether the pare
 say where to look) → if the PR exists, mirror it up; else re-dispatch a fresh child. Never act on
 ledger state alone. `driver_verify` the parent and any suspect child. State-root sanity: the MCP
 server prints its root at startup and the `driverstate` CLI on every call — if you touch both,
-confirm they match (`C:\Users\<user>\.workbench\driver-state` unless `WORKBENCH_STATE_DIR`).
+confirm they match (the configured Workbench driver-state directory).
 
 ### 6. Merge tail (merged boundary only)
 
-Same review-cycle policy, gate step, and merge rules as below — reviews from **Panel from
-config** (unconfigured repo: no review step, record one `review_cycle {cycle:1,
-review:"unconfigured", panel_settled:true, findings:0}` and go straight to gate). Gate
-authorizes per PR; record `stream_merged` only after the merge fact is readable from GitHub.
+Use the same **Tier-aware exact-head review** procedure as the Ship engine when the repo opts
+in; the Workbench plan/request/decision artifacts must be byte-equivalent for the same inputs.
+Only an `address` decision selects the session adapter:
+`reviewfindings address accept -run <child> -stream <stream> -artifact <findings.json>
+-decision <decision.json> -max-cycles <plan.max_cycles>`. Follow its claim/start/completed
+runbook, then re-read the live head and start a fresh exact-head plan. If the repo has not
+opted in, preserve its legacy panel behavior. Gate authorizes per PR; record `stream_merged`
+only after the merge fact is readable from GitHub.
 Expect the harness to refuse a merge of a PR this same session authored (self-approval
 classifier) — that's a park: hand the operator the exact
 `gh pr merge … --match-head-commit <full 40-char sha>` and record `stream_merged` after their
 merge. A run that stops at a non-merge boundary (§1 `pr-open`/`green`, or a work repo) stays
 `open` — do NOT fabricate `run_finished`. At that stop, **ASK** whether to leave the run open or
 record a terminal handoff (`stream_skipped {reason}`); never silently close an in-flight run,
-never silently leave one open without surfacing it.
+never silently leave one open without surfacing it. **Review-spend telemetry** (per-cycle
+`review_cycle` events + terminal spend) applies here too — the skill appends it in session
+mode exactly as in ship mode.
 
 ## Per-task impl contract (the dispatched subagent)
 
@@ -247,13 +267,16 @@ The parent mirrors the stream up from this return (`stream_dispatched {child_run
 `/work-driver-task-session` is the invokable form of this contract; inline `Agent` with the same
 input/output is equivalent.
 
-## Panel from config (`.ship.json` `review` — both engines)
+## Review opt-in and legacy panel (`.ship.json` — both engines)
 
-The reviewer set is per-repo contract, read at drive time from the target repo's
-`.ship.json`:
+Tier-aware review is a double opt-in. The target repo must set
+`.ship.json.review.tier_aware: true`, and Workbench's checked-in canary policy
+must list the same `owner/repo`. Either side absent means no reduced route.
+The remaining panel fields preserve the repo's legacy review contract:
 
 ```json
 "review": {
+  "tier_aware": true,
   "panel": [
     { "name": "codex", "trigger": "mention" },
     { "name": "claude", "trigger": "mention" },
@@ -265,6 +288,11 @@ The reviewer set is per-repo contract, read at drive time from the target repo's
 }
 ```
 
+- With `tier_aware: true`, Workbench `review plan` is authoritative. A
+  `full_panel_fallback` or `parked_unverified` plan requests the complete
+  safe panel it carries; never reinterpret an error into fewer reviewers.
+- Without `tier_aware: true`, preserve the legacy behavior below exactly. Do
+  not invoke tier routing and do not edit work/employer repository config.
 - `mention` → standalone `@<name> review` comment; `auto` → the bot fires on PR open, post
   nothing; `reviewer-request` → `gh pr edit --add-reviewer` (copilot needs the API form:
   `gh api repos/<r>/pulls/<n>/requested_reviewers -f 'reviewers[]=copilot-pull-request-reviewer[bot]'`
@@ -275,6 +303,70 @@ The reviewer set is per-repo contract, read at drive time from the target repo's
   no consolidation — recorded as `review: unconfigured` so the omission is visible. Never
   substitute a remembered panel; follow the contract that's there.
 
+## Tier-aware exact-head review (both engines)
+
+Workbench `review` owns reviewer and continuation policy. The skill only
+orchestrates its artifacts. Use a new evidence directory for every
+`{repo, pr, head}`; never overwrite or reuse an older head's plan, request,
+panel, findings, cycle input, or decision.
+
+1. Read the live 40-character `headRefOid` with `gh pr view`. Run:
+   `review plan -repo <owner/repo> -pr <n> -head <sha> -out <head-dir>/plan.json`.
+   The built-in checked-in policy is the default; callers do not select a
+   policy revision. `-policy` is only for an explicit validated experiment.
+2. Inspect the emitted plan, not prose:
+   - `tier_routed` → follow its reviewers, requirements, and `max_cycles`;
+   - `full_panel_fallback`, `deliberately_overridden`, or
+     `parked_unverified` → follow the full panel carried by the plan and
+     record its reason;
+   - malformed/missing output → stop. Infrastructure uncertainty never becomes
+     a reduced route.
+3. Initial cycle:
+   - T0 requests no cloud reviewer. Run and record the required local
+     adversarial pass.
+   - T1/T2/T3 call `review request -plan <plan> -out <request>`; the command
+     checks the live head before and after every GitHub write.
+   - Observe completion with `review observe -plan <plan> -out <panel>`.
+     Produce a sourced exact-head `ReviewFindingsV1` when findings exist.
+     Run the coordinator/adversarial work exactly when the plan requires it.
+4. Build `ReviewCycleInputV1` with explicit state for every finding and call
+   `review decide -plan <plan> -input <cycle-input> -out <decision>`.
+   Set `completed_reviewers` to the exact `panel.completed` identities; set
+   `panel_complete` only when every `plan.required` reviewer is present.
+   Workbench validates both fields and derives `decision.next_reviewers` from
+   required reviewers still missing, so later cycles never blindly re-request
+   a reviewer that already completed.
+   Noncritical findings may be deferred with a rationale; genuine debt also
+   requires a follow-up reference. Critical findings, failed tests, and
+   missing required evidence cannot be deferred. On T0–T2 later cycles,
+   exact-head deterministic proof may replace bot rereview for noncritical
+   findings. Cycles 4–8 require T3 plus a continuation rationale.
+5. Execute only the emitted action:
+   - `address` → pass the exact findings and decision to one adapter:
+     - Ship: `driver address <drv> --stream <ds> --findings <findings>
+       --decision <decision> --max-cycles <plan.max_cycles>`;
+     - session: `reviewfindings address accept -run <child> -stream <stream>
+       -artifact <findings> -decision <decision>
+       -max-cycles <plan.max_cycles>`, then claim/start/complete the durable
+       work item.
+     A different action, head, cycle, or finding set must refuse before work.
+   - `continue` → request only `decision.next_reviewers`.
+   - `stop` → proceed to Gate only after CI and all plan requirements are green.
+   - `escalate` → re-read the head and produce a new plan; never widen the tier
+     locally.
+   - `park` → surface its reason and wait for operator judgment/authority.
+6. A push invalidates all prior-head authorization. Re-read the live head,
+   create a fresh evidence directory, reclassify, and regenerate every required
+   artifact before another request, adapter call, or Gate run. For a later
+   post-fix cycle at the same or lower tier, deterministically request only the
+   intersection of the new plan with
+   `new_plan.required ∪ prior_decision.next_reviewers`. If the tier increased
+   or the new plan is a fallback, request the complete new plan. This keeps
+   rereview focused without skipping newly required reviewers.
+7. Record `cycle`, `continuation_weight`, and `cumulative_weight` from the
+   decision as shadow telemetry. They explain why another cycle was expensive;
+   they do not independently authorize or suppress review.
+
 ## Epic ingestion (work demo — a mapping step, not a platform)
 
 To drive a work epic: fetch its child tickets, take the N≤3 smallest real ones, create one
@@ -284,29 +376,21 @@ never crosses into pers/ files or memory. Credential rule: state which Claude to
 account the run will use and get operator confirmation BEFORE dispatching; personal
 credentials never touch work repos, work credentials never drive pers/.
 
-## Review-cycle policy (the judgment the skill keeps)
+## Review-cycle orchestration (Workbench keeps the policy)
 
-- **Size review to risk (optional, invokable).** `/pr-risk <n>` classifies a PR's tier
-  (deterministic floor + agent advisory) to inform *how much* review it needs: a T0 change
-  (tests-only / generated / non-policy docs) can take a lighter panel or the safe-slice
-  fast-path; a T2/T3 (migration, auth/secrets, supply-chain, isolation, a policy-relocating
-  refactor) wants owner review + the adversarial pass, not a rubber-stamp. This is
-  **recommend-only guidance you can invoke** — the driver does not auto-call it or auto-gate
-  on it yet (same status as `/review-coordinator`). Don't skip a human on a low tier unless
-  the operator has flipped the safe-slice on.
-- **The cycle cap rides the merge grant**, not this prose: gate's `-max-cycles` CLI
-  default is the policy (no number restated here), and gate derives each PR's count from
-  its own state — N open PRs each get their own count under one grant. An over-cap gate
-  park (exit 2) is the escalation point: re-mint a wider grant or stop — never auto-spiral
-  into another cycle, never a judge, never `--admin` past the cap.
-- **Address-inline-and-merge (skip the re-ping)** when the next findings are pure follow-ons
-  to the prior cycle's reasoning, or strict mechanical fixes (CI compile error, format
-  drift): fix inline + post a close-out comment + merge, no fresh review wait. Re-ping only
-  when a fix changes shape/behavior enough to warrant fresh eyes — and post a re-ping as a
-  **standalone single-line** `@bot review` comment, never folded into the close-out
-  (embedded mentions don't trigger codex).
-- **Be opinionated** — don't take every comment; push back with rationale. Treat a lone
-  "blocking" against two "minor" as advisory unless you concur it's real.
+- Do not infer a tier, reviewer set, cap, or stop condition in this skill.
+  `ReviewPlanV1` and `ReviewDecisionV1` are authoritative for both engines.
+- Caps are ceilings, not required loop counts. Stop immediately when the
+  decision says `stop`; continue only for its named reviewers. Gate's grant is
+  an independent authority ceiling and can be narrower, never wider, than the
+  review plan.
+- Be opinionated in the explicit finding disposition: fix, prove safe, defer
+  with rationale/follow-up, or leave unresolved. Do not silently suppress a
+  finding because other bots disagreed. Workbench deterministically decides
+  whether the resulting evidence can stop.
+- A push always invalidates prior-head review. The old decision may guide the
+  deterministic targeted-reviewer calculation described above, but it cannot
+  authorize an adapter or merge against the new head.
 - **Strategy by N** (pick one up front; don't drive reviews on all N PRs in parallel for
   N≥3 — cycle-1 fixes land on every PR at once and thrash context):
   - **Serial** — finish one PR's cycles before opening the next's. Lowest context, longest
@@ -315,9 +399,67 @@ credentials never touch work repos, work credentials never drive pers/.
     call), coordinate only at merge. Highest parallelism.
   - **Batched** — first cycle across all N (small fixes are often the same shape), then
     serialize the remaining cycles. Best for N≤2 or same-shape work.
-- Only escalate genuinely major issues (product direction, auth/CI infra). Otherwise drive
-  all the way to merge — through the gate step; never hand-`--admin` past a gate outcome
-  (ship's `driver land` carries whatever branch-protection capability the merge needs).
+- Only escalate genuinely major issues (product direction, auth/CI infra) or a
+  Workbench/Gate park. Otherwise drive all the way to the Gate-emitted
+  commit-pinned merge; never use `--admin`.
+
+## Review-spend telemetry (per cycle + per bot — feeds the tiering measurement)
+
+The `review-credit-tiering` loss-analysis needs per-bot review spend the engine
+cannot see from the consolidated findings artifact. Ship writes
+`review_decision` when its adapter consumes an exact-head `address` decision
+and `terminal` at merge. This skill writes the raw per-bot `review_cycle` event
+for every decision, including `stop`/`continue`/fallback and session runs, into
+the **same** append-only log.
+
+**File** — `review-spend.jsonl` in ship's state dir, beside `state.db`:
+`dirname($SHIP_DB_PATH)/review-spend.jsonl` when `SHIP_DB_PATH` is absolute, else
+`<userConfigDir>/ship/review-spend.jsonl` (Windows → `%APPDATA%\ship\review-spend.jsonl`).
+One JSON object per line. **Best-effort: a write failure warns and is dropped — it never
+blocks a cycle, a land, a merge, or the run.** This is the JSONL *spend* log, distinct from
+the driver-state ledger's `review_cycle` transition — don't conflate them.
+
+**Per review cycle** (after `review decide`), append one `review_cycle` event —
+the skill has the raw per-bot comments the engine lacks:
+
+```json
+{"ts":"<RFC3339>","event":"review_cycle","repo":"owner/name","pr":<n>,"head_sha":"<sha>",
+ "tier":"T0|T1|T2|T3","tier_reasons":[],"policy_id":"tier-aware-canary",
+ "policy_digest":"sha256:…","route_disposition":"tier_routed|full_panel_fallback|…",
+ "route_reason":null,"cycle":<1-based>,"continuation_weight":1,"cumulative_weight":1,
+ "decision_action":"stop|continue|address|escalate|park","decision_reasons":[],
+ "reviewers_requested":["codex"],"reviewers_completed":["codex"],"next_reviewers":[],
+ "findings_per_bot":{"codex":{"total":N,"unique":N,"critical":N},"claude":{"total":N,"unique":N,"critical":N}},
+ "claude_cost_proxy":<int|null>}
+```
+
+- `findings_per_bot` — from the panel's raw per-bot comments (the `/review-coordinator` /
+  `/review-digest` ingest): `total` = that bot's actionable findings this cycle, `unique` =
+  findings NOT duplicated by another bot at the same `file:line` (reuse the coordinator's
+  grouping — **don't re-judge**), `critical` = block-severity count.
+- `claude_cost_proxy` = (diff bytes fed to claude in) + (claude review-body bytes out) this
+  cycle; **bytes, not tokens** (the 30-day re-eval calibrates bytes/4 ≈ tokens against the
+  operator-pulled Claude usage total). `null` when claude didn't review that cycle.
+- Policy, route, tier, cycle, weights, action, and reason fields are copied
+  from Workbench artifacts; never reconstruct them from prose.
+- The shape is skill-defined raw JSONL. Ship's typed union covers its
+  `review_decision` and `terminal` events; readers union all three event shapes.
+
+**At terminal**:
+
+- **Closed-unmerged** (the engine's `markMerged` never fires for these — the abandoned/stuck
+  tail the strategy doc weighs most): the skill appends the `terminal` event itself:
+  `{ts, event:"terminal", repo, pr, tier?, tier_source?, cycles_used, merged:false, fixes_pr}`.
+- **Merged with a declared fixes-PR**: the engine's `terminal {merged:true}` lacks
+  `fixes_pr` (it doesn't parse the PR body; the skill does). When the PR body **explicitly**
+  declares it fixes a prior PR, append `{ts, event:"terminal", repo, pr, …, merged:true,
+  fixes_pr:<n>}`. The analysis keys terminal events by `{repo,pr}` and **unions their
+  fields**, so this coexists with the engine's terminal for the same PR by design — the
+  union picks up `fixes_pr`. Explicit declaration only; otherwise don't append (the engine's
+  terminal already covers a plain merge).
+
+**Both engines** — identical in `--engine ship` (Flow steps 5–6) and `--engine session`
+(§6 merge tail); the skill owns this append in both, since both process raw PR comments.
 
 ## Kill + resume (the engine's resilience)
 
