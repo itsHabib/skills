@@ -72,7 +72,7 @@ path, and the runtime if it isn't obvious.
    ```
    tracelens ship -json <workflowRunId>
    ```
-   (`go install ./cmd/tracelens` from `pers/tracelens` puts it on PATH; run refs resolve
+   (`go install ./cmd/tracelens` from `~/projects/tracelens` puts it on PATH; run refs resolve
    under `%APPDATA%\ship\runs` / `SHIP_RUNS_DIR` — the store the terminal CLI writes.)
    Surface `health` + the top finding in the stream's judgment context, and record one
    verdict line per stream in the manifest notes or the dossier task note, e.g.
@@ -101,7 +101,7 @@ path, and the runtime if it isn't obvious.
     `gate grant -repo <owner/repo> -action merge -max-tier <required-tier> -ttl 24h`.
     T3 cycles 4–8 additionally need the operator to choose a sufficient `-max-cycles`;
     Workbench's cap never widens Gate authority. Run Gate from the stable state root:
-    `gate gate -repo <owner/repo> -pr <n> -grant <grt_…> -state ~/pers/gate/state`.
+    `gate gate -repo <owner/repo> -pr <n> -grant <grt_…> -state ~/projects/gate/state`.
     Branch on its exit code — requiring the
    code and the JSON `outcome` on stdout to **agree** (0 ⟺ `would_merge`,
    1 ⟺ `blocked`, 2 ⟺ `parked_for_judgment`, 3 ⟺ `capability_refused`); a bare code
@@ -123,8 +123,8 @@ path, and the runtime if it isn't obvious.
    - **4** error → surface it; no merge.
     Gate is the required authorization boundary; its emitted command is the only merge
     writer. A missing binary is a setup error to surface, not a step to skip. Resolve it as
-    `pers/workbench/gate.exe` (or `gate` on PATH), built there via
-   `go build -o gate.exe ./cmd/gate`. `driver status <drv_id> --json` /
+    `gate` on PATH, built from the workbench repo via
+   `go build -o gate ./cmd/gate`. `driver status <drv_id> --json` /
    `driver render <drv_id>` to track. All streams merged → the run self-finishes to
    terminal `done`. At each terminal — merge **or** close — record review-spend: the engine
    emits `terminal {merged:true}`, but closed-unmerged PRs and fixes-PR linkage are the
@@ -160,10 +160,10 @@ re-attach is still the signal to use `--engine ship`.
 
 ### 0. Grant + credentials first
 
-Resolve a live, operator-minted gate grant for a **merged**-boundary pers/ repo before
-dispatching (`grep '"kind":"grant"' ~/pers/gate/state/log.jsonl | tail -5`, check repo +
+Resolve a live, operator-minted gate grant for a **merged**-boundary personal repo before
+dispatching (`grep '"kind":"grant"' ~/projects/gate/state/log.jsonl | tail -5`, check repo +
 `expires_at`). Absent/expired → PARK and emit the exact
-`gate grant -repo <r> -action merge -max-tier <T> -ttl <d> -state ~/pers/gate/state` for the
+`gate grant -repo <r> -action merge -max-tier <T> -ttl <d> -state ~/projects/gate/state` for the
 operator. **Never mint.** Work repos and `pr-open`/`green`-boundary local repos: gate does not
 apply — state which Claude token + gh account the run uses, get confirmation, drive to the
 boundary, stop.
@@ -172,7 +172,7 @@ boundary, stop.
 
 The manifest's `done_boundary` decides how far each stream is pushed (spec §4 D7):
 
-- **`merged`** (pers/ default): drive through the panel → gate → merge; parent records
+- **`merged`** (personal-repo default): drive through the panel → gate → merge; parent records
   `stream_merged`; all streams terminal → `run_finished`.
 - **`pr-open`** (local-only / human-merge repos): drive to an open PR and STOP — no bot
   reviewers, no gate merge. The stream sits at `pr_open`, so the parent run stays `open`
@@ -372,9 +372,9 @@ panel, findings, cycle input, or decision.
 To drive a work epic: fetch its child tickets, take the N≤3 smallest real ones, create one
 dossier task per ticket on the WORK side (title = key + summary, body = description +
 acceptance criteria, note = ticket URL), then `/work-driver-prep` as usual. Ticket content
-never crosses into pers/ files or memory. Credential rule: state which Claude token + gh
+never crosses into personal files or memory. Credential rule: state which Claude token + gh
 account the run will use and get operator confirmation BEFORE dispatching; personal
-credentials never touch work repos, work credentials never drive pers/.
+credentials never touch work repos, work credentials never drive personal repos.
 
 ## Review-cycle orchestration (Workbench keeps the policy)
 
@@ -497,7 +497,7 @@ and waits it out — expected.
 
 ## Capture friction (mandatory)
 
-Append a dated section to `pers/workbench-friction.md`, one line per rough edge: the
+Append a dated section to `~/projects/workbench-friction.md`, one line per rough edge: the
 prep→import seam, the `import → run → decide → land` cadence (what felt manual), N-parallel
 dispatch, judgment UX, `render`/`status` accuracy, kill+resume latency, CLI clunk (startup,
 absolute-path requirement, key plumbing), the MCP-surface gap. The log is this skill's

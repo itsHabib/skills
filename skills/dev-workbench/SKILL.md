@@ -42,14 +42,14 @@ Don't use for:
 
 **MCP servers** (in-session, workflow order, dossier-first):
 
-1. **dossier** — durable project memory: projects → phases → tasks → artifacts, markdown-on-disk. The State substrate's work-item incumbent. Source: `~/pers/dossier/`.
-2. **ship** — the driver engine: dispatch a task to a cloud/local agent and persist the run (dispatch→poll→judgment→land→record); inspect/cancel/replay. The Execution plane. Source: `~/pers/ship/`.
-3. **huddle** — *optional* multi-seat coordination (Slack-backed); off the normal PR path, not a Flare dependency. Source: `~/pers/huddle/`.
+1. **dossier** — durable project memory: projects → phases → tasks → artifacts, markdown-on-disk. The State substrate's work-item incumbent. Source: `~/projects/dossier/`.
+2. **ship** — the driver engine: dispatch a task to a cloud/local agent and persist the run (dispatch→poll→judgment→land→record); inspect/cancel/replay. The Execution plane. Source: `~/projects/ship/`.
+3. **huddle** — *optional* multi-seat coordination (Slack-backed); off the normal PR path, not a Flare dependency. Source: `~/projects/huddle/`.
 4. **playwright** — browser automation when a task needs a real DOM (supporting).
 
-**Planes** (workbench tenants — CLIs coupled by exit codes + JSONL artifacts, NOT MCPs, NOT skills; all live in `~/pers/workbench/cmd/<tool>` since the 2026-07-17 monorepo migration):
+**Planes** (workbench tenants — CLIs coupled by exit codes + JSONL artifacts, NOT MCPs, NOT skills; all live in `~/projects/workbench/cmd/<tool>` since the 2026-07-17 monorepo migration):
 
-1. **gate** — the flagship: authorization. Evaluates the exact PR head against an operator-minted grant + the escalate-only verifier ladder, emits governed-path merge authorization into a hash-chained audit log (Verification + Capability). Findings ≠ authorization; gate is the merge boundary. Exit contract: 0 pass / 1 blocked / 2 parked / 3 refused / 4 error. Source: workbench `cmd/gate`; state + keys stay `~/pers/gate` (operational data, never in-repo).
+1. **gate** — the flagship: authorization. Evaluates the exact PR head against an operator-minted grant + the escalate-only verifier ladder, emits governed-path merge authorization into a hash-chained audit log (Verification + Capability). Findings ≠ authorization; gate is the merge boundary. Exit contract: 0 pass / 1 blocked / 2 parked / 3 refused / 4 error. Source: workbench `cmd/gate`; state + keys stay `~/projects/gate` (operational data, never in-repo).
 2. **flare** — notification: best-effort escalation sink over authoritative receipts → its own Slack app/channel (Observability). Pure sink; never gates; not built on huddle. Source: workbench `cmd/flare`.
 3. **console** — a local, read-only web view of gate's inbox: parked runs + the grant ledger. Shells the gate binary for data, never imports it; owns no authoritative state (Observability). Source: workbench `cmd/console`.
 4. **escalate** — the agent→human→agent resolution back-channel: ingests the human's decision for a parked escalation and drives `gate resolve`, closing the loop a park opens. A contract + seam, not a plane of its own. Source: workbench `cmd/escalate`.
@@ -143,7 +143,7 @@ Keep it readable; a compact ASCII flow is fine. Annotate the one or two steps `/
 
 **(f) The shape underneath** (the five-plane close): after the seams, name the redesign's contract planes the tools instantiate — **State** (dossier + gate's hash-chained log + run/verdict/grant/receipt artifacts) · **Execution** (ship's driver) · **Verification** (the escalate-only ladder: deterministic floor → local → premium; gate's reducer, review-coordinator, triage/tracelens) · **Capability** (scoped/timed grants; every effectful verb needs a live grant + a supporting verdict) · **Observability** (read-only, storeless views: flare, console, /wip, /shipped, /status) — coupled only by typed artifacts (`evidence → verdict → action`), never call stacks; note this section itself is the sixth, **Composition**. The block's boundary lines *are* the plane laws.
 
-**(e) Dogfood call-out** (only if the repo IS a canonical tool): inline in the intro, e.g. inside `~/pers/ship/`: *"**This is ship — the execution plane itself** — so the ship verbs are the most directly relevant here."* Inside `~/pers/dossier/`, `~/pers/huddle/` same pattern. Inside `cc-skills`/`skills` (the skill registries): *"**This is the skills registry** — the workbench skills live here; editing one ships it portfolio-wide via sync."* Otherwise no call-out.
+**(e) Dogfood call-out** (only if the repo IS a canonical tool): inline in the intro, e.g. inside `~/projects/ship/`: *"**This is ship — the execution plane itself** — so the ship verbs are the most directly relevant here."* Inside `~/projects/dossier/`, `~/projects/huddle/` same pattern. Inside `cc-skills`/`skills` (the skill registries): *"**This is the skills registry** — the workbench skills live here; editing one ships it portfolio-wide via sync."* Otherwise no call-out.
 
 **Voice**: match the repo's CLAUDE.md. Terse, lowercase technical errors, operator-facing — not marketing. **Resist re-expanding** any entry into a full block; if you feel the urge to add a verb signature, that's the harness's job.
 

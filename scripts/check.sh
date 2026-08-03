@@ -72,6 +72,32 @@ check_frontmatter() {
   fi
 }
 
+# SYNC.md lists the public transforms, but its identifier scan was a MANUAL
+# pre-push step - so check.sh passed while the tree still carried `~/pers/`
+# roots. A documented rule nothing enforces is a rule that drifts. This makes
+# transforms 2 and 3 part of the gate.
+#
+# Patterns are literal-ish EREs, one per line: <pattern>|<what it violates>
+scrub_patterns() {
+  cat <<'PATTERNS'
+pers/|SYNC.md #3: operator path root (use the ~/projects/ placeholder)
+C:\\\\Users|SYNC.md #3: Windows operator path
+\$HOME/pers|SYNC.md #3: operator path root
+PATTERNS
+}
+
+check_scrub() {
+  local pattern reason hits
+  while IFS='|' read -r pattern reason; do
+    [[ -z "$pattern" ]] && continue
+    hits="$(grep -rnE "$pattern" skills/ 2>/dev/null || true)"
+    [[ -z "$hits" ]] && continue
+    while IFS= read -r hit; do
+      fail "${hit%%:*}: ${reason} -> ${hit#*:}"
+    done <<<"$hits"
+  done < <(scrub_patterns)
+}
+
 check_readme_consistency() {
   local -a readme_skills=()
   local -a dir_skills=()
@@ -117,6 +143,9 @@ for dir in skills/*/; do
   fi
   check_frontmatter "$dir/SKILL.md"
 done
+
+echo "Checking public scrub (SYNC.md transforms)..."
+check_scrub
 
 echo "Checking README ↔ skills/ consistency..."
 check_readme_consistency
