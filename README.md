@@ -65,6 +65,7 @@ Copy individual dirs if you want a subset.
 | `/spinup-ticket` | Create a Jira ticket under a given epic via the Jira REST API. |
 | `/sync-epic` | Bring a Jira epic's child tickets in line with their GitHub PR states (draft → In Progress, open → In Review, merged → Done). |
 | `/write-pr` | Write or update the current PR description in a standard format. |
+| `/validation-card` | Produce the evidence CI cannot: run a branch against real infrastructure, write a card where every claim carries its re-runnable command, post it on the tracking issue, link it from the PR. A card that only lists passing tests is not a card. |
 | `/ship-feature` | Take a design doc through to a PR with reviews requested — implement on a branch, open the PR, baby-sit CI to green, then address every actionable review comment. |
 | `/recover` | After a crash or reboot, reconstruct interrupted Claude Code sessions — scan transcripts, classify done-vs-interrupted, detect dead background jobs, and emit a ranked resume plan with exact `--resume` commands. |
 | `/wip` | Standing cross-project board of what's open or in-flight now — joins CI/driver runs, a task store, and open PRs into one liveness-ranked view. |
