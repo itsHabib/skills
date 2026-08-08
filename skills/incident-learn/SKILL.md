@@ -12,7 +12,7 @@ Turn an operational event into a durable control. Treat an incident as a state t
 ## Boundaries
 
 - Diagnose with read-only evidence by default.
-- Require explicit user approval or an already-valid scoped capability before changing a live environment.
+- Require a live scoped capability AND its supporting verdict before changing a live environment — the capability-plane law for every effectful verb. Explicit user approval is an additional gate on top, never a substitute for either.
 - Use the smallest documented, bounded, and reversible recovery action.
 - Never declare recovery from command success alone. Verify the affected runtime invariant independently.
 - Separate `impact_status` from `root_cause_status`. Impact may be recovered while prevention remains open.
@@ -49,8 +49,10 @@ Do not use “human error” or “agent error” as a root cause. Name the syst
 
 Require both:
 
-1. the recovery action reached a successful terminal state; and
-2. an observer outside that action confirms the affected invariant is healthy and current.
+1. when a recovery action was taken, that it reached a successful terminal state; and
+2. an observer outside any recovery action confirms the affected invariant is healthy and current.
+
+A self-recovered outage or near miss has no recovery action to check; the independent observer is then the whole requirement — conclude `recovered` or `no impact` from live evidence alone rather than leaving the record unresolvable.
 
 Run the narrow runtime check first, then the broader documented confidence check when available. Record residual risk. An alert or incident ticket may remain open after impact recovery; report that as reconciliation lag, not ongoing impact, when live evidence is green.
 
