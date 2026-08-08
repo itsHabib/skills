@@ -1,0 +1,4 @@
+interface:
+  display_name: "Incident Learn"
+  short_description: "Turn incidents into durable controls"
+  default_prompt: "Use $incident-learn to verify recovery and record the operational lesson."
