@@ -1,13 +1,26 @@
 ---
 name: dev-workbench
-description: Scaffold (or refresh) a compact `## Dev workbench` section in a repo's CLAUDE.md — a COMPOSITIONAL map of the operator's portfolio workbench (MCPs dossier/ship + the workbench planes gate [flagship] / flare / console / escalate + the work-driver / pr-risk / review-coordinator / consult / shipped / status / wip / worktree-* skills; huddle/playwright optional), NOT an exhaustive per-verb manual. The harness already injects each tool's description + signature into every session; this section captures only what injection can't give: the roster (one line each), the end-to-end loop, the seams, the five-plane shape underneath, and the behavioral nudge ("call the verb, don't ask"). Same shape across every repo. Idempotent re-run between guarded markers. Use when onboarding a fresh repo, when the workbench's composition changes, or when an existing repo's CLAUDE.md is missing the workbench map.
-argument-hint: "[path/to/CLAUDE.md] — defaults to ./CLAUDE.md at repo root"
+description: >-
+  Scaffold (or refresh) a compact `## Dev workbench` section in a repo's
+  `CLAUDE.md` and `AGENTS.md` — a COMPOSITIONAL map of the operator's portfolio workbench (MCPs
+  dossier/ship + the workbench planes gate [flagship] / flare / console /
+  escalate + the work-driver / pr-risk / review-coordinator / consult / shipped
+  / status / wip / worktree-* skills; channel/playwright optional), NOT an
+  exhaustive per-verb manual. The harness already injects each tool's
+  description + signature into every session; this section captures only what
+  injection can't give: the roster (one line each), the end-to-end loop, the
+  seams, the five-plane shape underneath, and the behavioral nudge ("call the
+  verb, don't ask"). Same shape across every repo. Idempotent re-run between
+  guarded markers. Use when onboarding a fresh repo, when the workbench's
+  composition changes, or when existing agent guidance is missing the
+  workbench map.
+argument-hint: "[path/to/CLAUDE.md|AGENTS.md] — no argument updates every existing root entrypoint"
 user_invocable: true
 ---
 
-# /dev-workbench — scaffold the workbench MAP into a CLAUDE.md
+# /dev-workbench — scaffold the workbench MAP into agent guidance
 
-**This skill is portfolio-specific.** It documents the operator's dev-workflow infrastructure — dossier, ship as MCPs; the artifact-coupled workbench planes: gate (the flagship), flare, console, escalate; `/work-driver`, `/pr-risk`, `/review-coordinator`, `/consult`, `/shipped`, `/status`, `/wip`, and the `/worktree-*` family as skills; huddle + playwright optional — into a target CLAUDE.md. The canonical set is hardcoded below; this is not a generic "document any MCP" tool.
+**This skill is portfolio-specific.** It documents the operator's dev-workflow infrastructure — dossier, ship as MCPs; the artifact-coupled workbench planes: gate (the flagship), flare, console, escalate; `/work-driver`, `/pr-risk`, `/review-coordinator`, `/consult`, `/shipped`, `/status`, `/wip`, and the `/worktree-*` family as skills; channel + playwright optional (channel supersedes huddle) — into the repo's agent entrypoints. The canonical set is hardcoded below; this is not a generic "document any MCP" tool.
 
 ## The core principle: map, not manual
 
@@ -27,41 +40,45 @@ Target: the rendered section is **~65-80 lines**. Roster is terse; the loop + se
 ## When to use
 
 User-facing signals:
-- "add the workbench section to this CLAUDE.md"
+- "add the workbench section to the agent guides"
 - "document the dev workbench in this repo"
 - "refresh the workbench section — composition changed"
-- Onboarding a fresh repo where CLAUDE.md was just `/init`-ed and lacks the workbench map
+- Onboarding a fresh repo whose `CLAUDE.md` or `AGENTS.md` lacks the workbench map
 - Any explicit invocation: `/dev-workbench`
 
 Don't use for:
-- Authoring the rest of CLAUDE.md (use `/init` for greenfield, hand-edit otherwise). This skill owns only the marked section.
+- Authoring the rest of an agent guide (use the harness initializer for greenfield, hand-edit otherwise). This skill owns only the marked section.
 - Re-documenting individual verb signatures — that's the harness's job, not this section's.
 - Documenting non-workbench MCPs (Neon, computer-use, ccd_session, anthropic-skills:*) — different tier.
 
 ## The canonical workbench (hardcoded, not discovered)
 
+`<portfolio-root>` below is the operator's portfolio root — resolve it to the first of
+`$PORTFOLIO_ROOT`, `~/dev`, `~/pers` that exists; never emit a hardcoded absolute root
+into a generated section.
+
 **MCP servers** (in-session, workflow order, dossier-first):
 
-1. **dossier** — durable project memory: projects → phases → tasks → artifacts, markdown-on-disk. The State substrate's work-item incumbent. Source: `~/projects/dossier/`.
-2. **ship** — the driver engine: dispatch a task to a cloud/local agent and persist the run (dispatch→poll→judgment→land→record); inspect/cancel/replay. The Execution plane. Source: `~/projects/ship/`.
-3. **huddle** — *optional* multi-seat coordination (Slack-backed); off the normal PR path, not a Flare dependency. Source: `~/projects/huddle/`.
+1. **dossier** — durable project memory: projects → phases → tasks → artifacts, markdown-on-disk. The State substrate's work-item incumbent. Source: `<portfolio-root>/dossier/`.
+2. **ship** — the driver engine: dispatch a task to a cloud/local agent and persist the run (dispatch→poll→judgment→land→record); inspect/cancel/replay. The Execution plane. Source: `<portfolio-root>/ship/`.
+3. **channel** — *optional* agent message bus: append-only JSONL channels under `~/.channel`, CLI + MCP (`channel.post/read/list`), self-declared identity, no lifecycle. Supersedes huddle (Slack-backed, retired from the map). Source: `<portfolio-root>/channel/`.
 4. **playwright** — browser automation when a task needs a real DOM (supporting).
 
-**Planes** (workbench tenants — CLIs coupled by exit codes + JSONL artifacts, NOT MCPs, NOT skills; all live in `~/projects/workbench/cmd/<tool>` since the 2026-07-17 monorepo migration):
+**Planes** (workbench tenants — CLIs coupled by exit codes + JSONL artifacts, NOT MCPs, NOT skills; all live in `<portfolio-root>/workbench/cmd/<tool>` since the 2026-07-17 monorepo migration):
 
-1. **gate** — the flagship: authorization. Evaluates the exact PR head against an operator-minted grant + the escalate-only verifier ladder, emits governed-path merge authorization into a hash-chained audit log (Verification + Capability). Findings ≠ authorization; gate is the merge boundary. Exit contract: 0 pass / 1 blocked / 2 parked / 3 refused / 4 error. Source: workbench `cmd/gate`; state + keys stay `~/projects/gate` (operational data, never in-repo).
-2. **flare** — notification: best-effort escalation sink over authoritative receipts → its own Slack app/channel (Observability). Pure sink; never gates; not built on huddle. Source: workbench `cmd/flare`.
+1. **gate** — the flagship: authorization. Evaluates the exact PR head against an operator-minted grant + the escalate-only verifier ladder, emits governed-path merge authorization into a hash-chained audit log (Verification + Capability). Findings ≠ authorization; gate is the merge boundary. Exit contract: 0 pass / 1 blocked / 2 parked / 3 refused / 4 error. Source: workbench `cmd/gate`; state + keys stay in the gate checkout's `state/` (operational data, never in-repo).
+2. **flare** — notification: best-effort escalation sink over authoritative receipts → its own Slack app/channel (Observability). Pure sink; never gates; independent of channel. Source: workbench `cmd/flare`.
 3. **console** — a local, read-only web view of gate's inbox: parked runs + the grant ledger. Shells the gate binary for data, never imports it; owns no authoritative state (Observability). Source: workbench `cmd/console`.
 4. **escalate** — the agent→human→agent resolution back-channel: ingests the human's decision for a parked escalation and drives `gate resolve`, closing the loop a park opens. A contract + seam, not a plane of its own. Source: workbench `cmd/escalate`.
 
 **Skills** (workflow order):
 
-1. **/work-driver** [+ **/work-driver-prep**] — drive agent-led impl end-to-end (fan out → poll → land → review → merge → cleanup); prep builds specs + the conflict-batched plan. Source: `~/.claude/skills/work-driver*/`.
-2. **/pr-risk** — size how much review a PR needs (deterministic floor + agent advisory); upstream of the reviewers — it decides *how much*, they *do* it. Source: `~/.claude/skills/pr-risk/`.
-3. **/review-coordinator** [+ **/review-digest**] — the judge over the AI PR reviewers: consolidate codex/claude/cursor/copilot findings into one severity-ranked verdict + block/go gate; digest pre-triages the bot pile locally. (Standalone today; folding into `/work-driver`'s review cycle is planned, not yet wired — don't imply the driver calls it automatically.) Source: `~/.claude/skills/review-coordinator/`.
-4. **/shipped** · **/status** · **/wip** — retrospective recap / in-flight update / cross-store live board (Observability views). Source: `~/.claude/skills/{shipped,status,wip}/`.
-5. **/consult** — summon another portfolio repo's steward (an ephemeral subagent scoped to that repo) for a same-turn answer to a knowledge question. The stuck-path escalation before the operator; read-only, no side effects. Source: `~/.claude/skills/consult/`.
-6. **/worktree-*** — thin family over `git worktree` (add / list / remove / transfer / where). Source: `~/.claude/skills/worktree-*/`.
+1. **/work-driver** [+ **/work-driver-prep**] — drive agent-led impl end-to-end (fan out → poll → land → review → merge → cleanup); prep builds specs + the conflict-batched plan. Source: `<portfolio-root>/cc-skills/skills/work-driver*/`.
+2. **/pr-risk** — size how much review a PR needs (deterministic floor + agent advisory); upstream of the reviewers — it decides *how much*, they *do* it. Source: `<portfolio-root>/cc-skills/skills/pr-risk/`.
+3. **/review-coordinator** [+ **/review-digest**] — the judge over the AI PR reviewers: consolidate codex/claude/cursor/copilot findings into one severity-ranked verdict + block/go gate; digest pre-triages the bot pile locally. (Standalone today; folding into `/work-driver`'s review cycle is planned, not yet wired — don't imply the driver calls it automatically.) Source: `<portfolio-root>/cc-skills/skills/review-coordinator/`.
+4. **/shipped** · **/status** · **/wip** — retrospective recap / in-flight update / cross-store live board (Observability views). Source: `<portfolio-root>/cc-skills/skills/{shipped,status,wip}/`.
+5. **/consult** — summon another portfolio repo's steward (an ephemeral subagent scoped to that repo) for a same-turn answer to a knowledge question. The stuck-path escalation before the operator; read-only, no side effects. Source: `<portfolio-root>/cc-skills/skills/consult/`.
+6. **/worktree-*** — thin family over `git worktree` (add / list / remove / transfer / where). Source: `<portfolio-root>/cc-skills/skills/worktree-*/`.
 
 **The five-plane shape** (the redesign's contract taxonomy the block names at the end): **State** (dossier + gate's hash-chained log + run/verdict/grant/receipt artifacts) · **Execution** (ship's driver) · **Verification** (the escalate-only ladder — gate's reducer, review-coordinator, triage/tracelens) · **Capability** (scoped/timed grants) · **Observability** (flare, console, /wip, /shipped, /status). The sixth, **Composition** — the agent + thin policy — is this section itself. gate is the flagship: the one tool that spans Verification + Capability and holds the merge boundary.
 
@@ -75,12 +92,14 @@ Don't use for:
 
 ### 1. Locate target + sanity check
 
-Resolve the path (arg or `./CLAUDE.md`). Bail clearly if:
-- File doesn't exist → suggest `/init` first.
+With an explicit path, target that one file. With no argument, target every
+existing root `CLAUDE.md` and `AGENTS.md`; when both exist, the managed block
+must be byte-identical in both. Bail clearly if:
+- Neither entrypoint exists → suggest initializing both first.
 - Not named `CLAUDE.md` or `AGENTS.md` (case-insensitive) → ask the operator whether to proceed.
 - Repo root has no `.git` → ask whether to proceed.
 
-Read current content; you'll diff later.
+Read every target's current content; you'll diff each later.
 
 ### 2. Detect existing section + choose insert point
 
@@ -92,10 +111,23 @@ Search for `<!-- BEGIN dev-workbench -->` / `<!-- END dev-workbench -->`.
 
 ### 3. Generate the section content (the compositional shape)
 
-Assemble these parts, in order. Keep it tight — roster lines are ONE line each.
+Locate `render-block.sh` beside this loaded `SKILL.md` and render the canonical block:
+
+```bash
+repo_root=<confirmed-repository-directory>
+bash <this-skill-directory>/render-block.sh --repo "$(basename "$repo_root")"
+```
+
+Use that output byte-for-byte for every target in the repo. The renderer owns the shared
+wording and repo-specific dogfood callout; this skill owns placement and operator review.
+Do not hand-compose a near-copy. The deterministic renderer is what makes the Claude and
+Codex entrypoints, and separate runs of this skill, converge.
+
+The rendered block contains these parts, in order. Keep any future renderer change tight —
+roster lines are ONE line each.
 
 **(a) Intro + nudge** (2-4 sentences):
-- One sentence: "these MCPs + skills are available in any Claude session on this machine; the harness injects each tool's signature, so this section is the *map* — how they compose — not the per-verb manual."
+- One sentence: "these MCPs + skills are available in any agent session on this machine; the harness injects each tool's signature, so this section is the *map* — how they compose — not the per-verb manual."
 - The nudge: "when the signal matches, just call the verb; don't ask permission."
 - The escalation ladder: "stuck on a *knowledge* question about another portfolio repo → `/consult` its steward; only *authority* questions (direction, spend, irreversible calls) go to the operator."
 - The dogfood call-out IF the repo is itself a workbench tool (see step 3e).
@@ -106,12 +138,12 @@ Assemble these parts, in order. Keep it tight — roster lines are ONE line each
 **MCPs (in-session):**
 - **dossier** — durable project memory: projects → phases → tasks → artifacts (markdown-on-disk).
 - **ship** — the driver engine: dispatch a task to a cloud/local agent and persist the run (dispatch→poll→judgment→land→record); inspect/cancel/replay.
-- **huddle** — *optional* multi-seat coordination (Slack-backed); off the normal PR path.
+- **channel** — *optional* agent message bus (append-only JSONL, `channel.post/read/list`); post/read to coordinate with peer agents or leave word for the operator; off the normal PR path.
 - **playwright** — browser automation when a task needs a real DOM.
 
 **Planes (workbench tenants — CLIs composed via exit codes + JSONL, not MCPs):**
 - **gate** — the flagship: authorization. Evaluates the *exact* PR head against an operator-minted grant + the escalate-only verifier ladder; hash-chained audit log; exit 0 pass / 1 blocked / 2 parked / 3 refused / 4 error. Findings ≠ authorization; gate is the merge boundary.
-- **flare** — notification: best-effort escalation sink over authoritative receipts → its own Slack app/channel. Pure sink; never gates; not built on huddle.
+- **flare** — notification: best-effort escalation sink over authoritative receipts → its own Slack app/channel. Pure sink; never gates; independent of channel.
 - **console** — read-only local web view of gate's inbox (parked runs + grant ledger); shells the gate binary, owns no authoritative state.
 - **escalate** — the agent→human→agent back-channel: ingests the human's decision for a parked escalation and drives `gate resolve`.
 
@@ -139,53 +171,48 @@ dossier task → /worktree-add → spec → ship driver (cloud-first: dispatch�
 
 Keep it readable; a compact ASCII flow is fine. Annotate the one or two steps `/work-driver` automates — and scope that annotation to what the driver *actually* does today (it runs its own review triage inline). **Place `/review-coordinator` at the review step as a step you can invoke**, not as something the driver calls for you — the driver→coordinator wiring is planned, not built, so the rendered loop must not imply automatic delegation. (When that integration lands, update this annotation.)
 
-**(d) The seams** (3-6 sentences, the swappability rationale): each layer is independently substitutable and owns one responsibility — dossier owns "what needs doing" (could be Linear), worktree skills own "where work happens", ship owns "drive an agent + persist the run", pr-risk owns "how much review a change needs", review-coordinator owns "consolidate the finders" (the bots are swappable finders under it), **gate owns authorization — is this exact head allowed to merge — which is not the reviewers' findings**, **escalate owns resolution — closing the agent→human→agent loop a park opens, without ever deciding for the human**, **console owns the read-only view of gate's inbox — it explains, never decides (shells the binary, owns no authoritative state)**, **flare owns notification — a best-effort sink on authoritative receipts, its own Slack app, never gating and never built on huddle**, consult owns the stuck path, huddle owns optional multi-seat, playwright owns browser. Substituting one doesn't ripple. End with: "the workbench is a menu, not a checklist — skip what a given flow doesn't need."
+**(d) The seams** (3-6 sentences, the swappability rationale): each layer is independently substitutable and owns one responsibility — dossier owns "what needs doing" (could be Linear), worktree skills own "where work happens", ship owns "drive an agent + persist the run", pr-risk owns "how much review a change needs", review-coordinator owns "consolidate the finders" (the bots are swappable finders under it), **gate owns authorization — is this exact head allowed to merge — which is not the reviewers' findings**, **escalate owns resolution — closing the agent→human→agent loop a park opens, without ever deciding for the human**, **console owns the read-only view of gate's inbox — it explains, never decides (shells the binary, owns no authoritative state)**, **flare owns notification — a best-effort sink on authoritative receipts, its own Slack app, never gating and never built on channel**, consult owns the stuck path, channel owns optional agent-to-agent messaging (superseding huddle), playwright owns browser. Substituting one doesn't ripple. End with: "the workbench is a menu, not a checklist — skip what a given flow doesn't need."
 
 **(f) The shape underneath** (the five-plane close): after the seams, name the redesign's contract planes the tools instantiate — **State** (dossier + gate's hash-chained log + run/verdict/grant/receipt artifacts) · **Execution** (ship's driver) · **Verification** (the escalate-only ladder: deterministic floor → local → premium; gate's reducer, review-coordinator, triage/tracelens) · **Capability** (scoped/timed grants; every effectful verb needs a live grant + a supporting verdict) · **Observability** (read-only, storeless views: flare, console, /wip, /shipped, /status) — coupled only by typed artifacts (`evidence → verdict → action`), never call stacks; note this section itself is the sixth, **Composition**. The block's boundary lines *are* the plane laws.
 
-**(e) Dogfood call-out** (only if the repo IS a canonical tool): inline in the intro, e.g. inside `~/projects/ship/`: *"**This is ship — the execution plane itself** — so the ship verbs are the most directly relevant here."* Inside `~/projects/dossier/`, `~/projects/huddle/` same pattern. Inside `cc-skills`/`skills` (the skill registries): *"**This is the skills registry** — the workbench skills live here; editing one ships it portfolio-wide via sync."* Otherwise no call-out.
+**(e) Dogfood call-out** (only if the repo IS a canonical tool): inline in the intro, e.g. inside the `ship` checkout: *"**This is ship — the execution plane itself** — so the ship verbs are the most directly relevant here."* Inside the `dossier` and `channel` checkouts, same pattern. Inside `cc-skills`/`skills` (the skill registries): *"**This is the skills registry** — the workbench skills live here; editing one ships it portfolio-wide via sync."* Otherwise no call-out.
 
-**Voice**: match the repo's CLAUDE.md. Terse, lowercase technical errors, operator-facing — not marketing. **Resist re-expanding** any entry into a full block; if you feel the urge to add a verb signature, that's the harness's job.
+**Voice**: match the repo's agent guidance. Terse, lowercase technical errors, operator-facing — not marketing. **Resist re-expanding** any entry into a full block; if you feel the urge to add a verb signature, that's the harness's job.
 
 **Time-sensitive notes**: if a workbench tool has live friction worth flagging (dated `**Note (YYYY-MM-DD):**`), put it in the seams prose, not as a per-tool block. Drop it on the next refresh once resolved.
 
 ### 4. Assemble + insert between markers
 
-```
-<!-- BEGIN dev-workbench (managed by /dev-workbench skill — re-run to refresh; hand-edits inside this block will be overwritten) -->
-## Dev workbench
-
-<intro + nudge (+ dogfood call-out)>
-
-<roster: MCPs list + Planes list + Skills list>
-
-### The loop
-
-<diagram>
-
-### Why this shape
-
-<seams / swappability>
-
-### The shape underneath
-
-<the five contract planes + the tools that instantiate them; note this section is Composition>
-<!-- END dev-workbench -->
-```
+The renderer output already includes exactly one complete marker pair. Replace an existing
+managed block with that output, or insert it at the Step 2 location. Do not wrap it again.
 
 ### 5. Diff + confirm before writing
 
-Show a unified diff. If the refresh shrinks a long per-verb section, **say so explicitly** ("this replaces a long per-verb section with a compact compositional map; the deleted verb signatures are auto-injected by the harness, so nothing is lost"). Then ask: **Write** (rec) / **Edit then write** / **Abort**. Don't write without confirmation.
+Locate `plan-block.sh` beside this loaded `SKILL.md` and show its complete output:
+
+```bash
+repo_root=<confirmed-repository-directory>
+bash <this-skill-directory>/plan-block.sh --repo-dir "$repo_root"
+```
+
+When the operator explicitly selected one guide, add `--guide <that-path>` so
+the preview contains only the authorized target.
+
+If the refresh shrinks a long per-verb section, **say so explicitly** ("this replaces a long
+per-verb section with a compact compositional map; the deleted verb signatures are injected by
+the harness, so nothing is lost"). Ask through the harness's available user-input surface:
+**Write all** (recommended) / **Edit then write** / **Abort**. Never update only one member of
+an existing pair unless the operator explicitly narrows the target.
 
 ### 6. Report
 
-- File path + new line range (and the before→after line-count delta — the shrink is the headline).
+- File paths + new line ranges (and the before→after line-count delta — the shrink is the headline).
 - What's in the section: roster (N MCPs + M skills), the loop, the seams; dogfood call-out (which tool | none).
 - Any dated time-sensitive note embedded.
 
 ## Updating the canonical set
 
-When the workbench evolves, edit the canonical list in THIS skill, then re-run on every CLAUDE.md with the markers. But first ask: **does this change the composition, or just add a tool?**
+When the workbench evolves, edit the canonical list in THIS skill, then re-run on every `CLAUDE.md`/`AGENTS.md` pair with the markers. But first ask: **does this change the composition, or just add a tool?**
 
 - **Composition change** (a new tool changes the loop or a seam — e.g. review-coordinator slotting into the review step): update the loop diagram + seams + add a one-line roster entry. This earns a refresh everywhere.
 - **Tool added that doesn't change any flow**: a one-line roster entry only. Do NOT add a block, a signature, or a trigger list. If it doesn't touch the loop or a seam, it barely earns the roster line — consider whether it belongs in the workbench framing at all.
@@ -214,4 +241,4 @@ Treat THIS skill's canonical list + loop as the single source of truth. Don't au
 
 ## Outcome
 
-The target CLAUDE.md has a compact `## Dev workbench` section between guarded markers: a one-line roster, the end-to-end loop, and the swappability seams — the *compositional* knowledge the harness's per-tool injection can't provide. Same shape across every repo, ~65-80 lines. Re-runs refresh in place; a long per-verb section shrinks on the next run. "What's in the workbench and how does it chain?" is answered in a 20-second scroll; "what are this verb's args?" is answered by the harness, where it belongs.
+Every existing root agent entrypoint has the same compact `## Dev workbench` section between guarded markers: a one-line roster, the end-to-end loop, and the swappability seams — the *compositional* knowledge the harness's per-tool injection can't provide. Same shape across every repo, ~65-80 lines. Re-runs refresh in place; a long per-verb section shrinks on the next run. "What's in the workbench and how does it chain?" is answered in a 20-second scroll; "what are this verb's args?" is answered by the harness, where it belongs.
