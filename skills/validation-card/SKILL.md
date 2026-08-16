@@ -147,9 +147,16 @@ Save as `<tracker-key-lowercase>-validation-comment.md` in the repo root, **untr
 are not committed; they live on the tracker. Add a row to your own local index (see
 [references/patterns.md](references/patterns.md)) so the next run has one more example.
 
-### 7. Post it
+### 7. Scan it, then post it
 
-Post the Markdown to the tracker with the adapter from Configuration, converting first on
+**Scan before publishing, not after.** The card quotes live payloads and real command output,
+so it can carry a credential, a token, customer data, or a path that names one. A tracker
+comment is permanent and frequently unpurgeable - once posted, deleting it does not undo the
+disclosure, and on a shared tracker it has already reached everyone watching the issue. Read
+the whole card and clear it before the first post; a scan that runs afterwards can only tell
+you how bad it already is.
+
+Then post the Markdown to the tracker with the adapter from Configuration, converting first on
 whichever path needs it:
 
 - **WIKI** - `jira-server`, and Jira Cloud via `/rest/api/2`. Run the Markdown through the
@@ -177,10 +184,12 @@ The card goes on the tracker; the PR body **references** it, matching `/write-pr
 Then a short bullet summary in the PR body. If an earlier card exists on the issue and is
 still accurate for part of the change, link both and say what each covers.
 
-### 9. Scan before finishing
+### 9. Read the posted card back
 
-Scan the card for anything that should not be published: credentials, tokens, absolute paths
-containing secrets, customer data. Cards are internal but they are permanent.
+The pre-post scan in step 7 is the one that protects you; this is the check that it held.
+Read the rendered comment as posted and confirm no credential, token, secret-bearing path, or
+customer datum survived into it, alongside the markup check. If something did get through,
+redact it now and say so on the ticket - but treat it as disclosed, because it is.
 
 ## What belongs in a card that authors usually leave out
 

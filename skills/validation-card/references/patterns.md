@@ -35,20 +35,32 @@ stash only saves working-tree and index changes, and on a clean tree it saves no
 Both runs then exercise the fixed code and the counter-check silently proves nothing, which is
 worse than omitting it. Move the *commit*:
 
+Changing the revision is only half of it. If the entry point runs a compiled binary, a
+generated client, or a prebuilt container from step 2, that artifact does not move with the
+source - so both runs execute the *fixed* build and you get the same false green as the stash.
+`git checkout --force` discards local modifications only, and build output is usually ignored,
+which `git clean` will not touch without `-x`. Rebuild at each revision:
+
 ```
 git checkout --detach "$SUBJECT"~1      # or the fix commit's parent, if it is not the tip
+<rebuild / regenerate — the same commands step 2 ran>
 <run the real entry point over the captured input>
   -> 8 wrongful FATAL verdicts across 3 real inputs
 git checkout --force "$SUBJECT"
 git rev-parse HEAD                      # must equal $SUBJECT before the second run
+<rebuild / regenerate again>
 <run again>
   -> 0
 ```
 
+Two isolated worktrees or images, one per revision, is the sturdier version when the build is
+slow or the artifact is a container.
+
 `git revert --no-commit <fix-sha>` on a scratch branch works equally well when the fix is not
-the tip. Either way, print both revisions in the card so the reader can see the two runs were
-against different code - and return to `$SUBJECT` from step 1, not to a locally-remembered
-HEAD, so the restored revision is still the one under review.
+the tip. Either way, print both revisions in the card - and the fact that you rebuilt between
+them - so the reader can see the two runs were against different code. Return to `$SUBJECT`
+from step 1, not to a locally-remembered HEAD, so the restored revision is still the one under
+review.
 
 That converts "I fixed a bug" into a measured blast radius. It is also the only way to
 substantiate a claim that a new guard catches the bug it was written for: without the revert,
