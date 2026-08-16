@@ -36,18 +36,19 @@ Both runs then exercise the fixed code and the counter-check silently proves not
 worse than omitting it. Move the *commit*:
 
 ```
-git rev-parse HEAD                      # remember the exact revision to return to
-git checkout --detach HEAD~1            # or the fix commit's parent, if it is not HEAD
+git checkout --detach "$SUBJECT"~1      # or the fix commit's parent, if it is not the tip
 <run the real entry point over the captured input>
   -> 8 wrongful FATAL verdicts across 3 real inputs
-git checkout <the revision from step 1>
+git checkout --force "$SUBJECT"
+git rev-parse HEAD                      # must equal $SUBJECT before the second run
 <run again>
   -> 0
 ```
 
 `git revert --no-commit <fix-sha>` on a scratch branch works equally well when the fix is not
 the tip. Either way, print both revisions in the card so the reader can see the two runs were
-against different code.
+against different code - and return to `$SUBJECT` from step 1, not to a locally-remembered
+HEAD, so the restored revision is still the one under review.
 
 That converts "I fixed a bug" into a measured blast radius. It is also the only way to
 substantiate a claim that a new guard catches the bug it was written for: without the revert,

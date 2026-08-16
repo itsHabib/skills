@@ -57,15 +57,22 @@ committed file. If the repo has no convention, prefer an env var.
 
 ### 1. Identify the subject
 
-Resolve the base from the PR rather than assuming `main` - a PR onto a release branch, or a
-repo whose default is not `main`, makes every count below describe the wrong commits:
+Take both endpoints from the PR itself. Anything derived from the local checkout can only
+confirm what the checkout already says: `origin/main` is the wrong ref for a PR onto a release
+branch, `origin/$BASE` is missing or stale on a fork or an unfetched remote, and a local `HEAD`
+compared against itself proves nothing about the commit under review.
 
 ```bash
-git branch --show-current && git rev-parse HEAD
-BASE=$(gh pr view <n> --repo <owner/repo> --json baseRefName --jq .baseRefName)
-git log "origin/$BASE..HEAD" --oneline
-git diff --shortstat "origin/$BASE...HEAD"
+eval "$(gh pr view <n> --repo <owner/repo> --json headRefOid,baseRefOid \
+  --jq '@sh "SUBJECT=\(.headRefOid) BASE=\(.baseRefOid)"')"
+git fetch -q origin "$SUBJECT" "$BASE"
+
+git log "$BASE..$SUBJECT" --oneline
+git diff --shortstat "$BASE...$SUBJECT"
 ```
+
+`$SUBJECT` is now the commit the tracker's PR is reviewing, and every later check compares
+against it rather than against a local guess.
 
 Derive the tracker key from the branch, commits, or PR body. Confirm the PR number with
 `gh pr list --repo <owner/repo> --head <branch>`.
@@ -85,10 +92,14 @@ worktree that already holds it after refreshing its dependencies and generated f
 either way, prove where you are before running anything:
 
 ```bash
-test "$(git rev-parse HEAD)" = "<subject-sha>" || { echo "not the subject; stop"; exit 1; }
+test "$(git rev-parse HEAD)" = "$SUBJECT" || { echo "checkout is not the PR head; stop"; exit 1; }
 ```
 
-Name the checkout you used and the verified HEAD in the card.
+A local branch that is behind the remote, or carries unpushed commits, fails this - which is
+the point. Comparing HEAD to a SHA you read out of that same checkout would pass in exactly
+the cases worth catching.
+
+Name the checkout you used and the verified `$SUBJECT` in the card.
 
 ### 2. Stand the branch's code up against real infrastructure
 
