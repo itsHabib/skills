@@ -43,8 +43,11 @@ Two things vary per repo. Resolve both before step 1.
 | GitHub Issues | `TRACKER=github` | Markdown, post with `gh issue comment` |
 | Linear | `TRACKER=linear` | Markdown, post via the GraphQL `commentCreate` |
 
-Markdown is the authoring format in every case. Only `jira-server` needs a conversion pass
-on the way out. Do not let the tracker choice change the card's content.
+Markdown is the authoring format in every case; both Jira targets need a conversion pass on
+the way out, and which one depends on the endpoint you post to. `jira-server` and Jira Cloud's
+`/rest/api/2` both take WIKI markup; Cloud's `/rest/api/3` takes ADF, and posting Markdown to
+it is rejected or renders raw. GitHub and Linear take the Markdown unchanged. Do not let the
+tracker choice change the card's content - only its markup.
 
 **Credentials.** A token read from a gitignored file at the repo root or from an env var -
 whichever the repo already uses. Never inline a token into the card, the command log, or a
@@ -54,18 +57,38 @@ committed file. If the repo has no convention, prefer an env var.
 
 ### 1. Identify the subject
 
+Resolve the base from the PR rather than assuming `main` - a PR onto a release branch, or a
+repo whose default is not `main`, makes every count below describe the wrong commits:
+
 ```bash
 git branch --show-current && git rev-parse HEAD
-git log origin/main..HEAD --oneline
-git diff --shortstat origin/main...HEAD
+BASE=$(gh pr view <n> --repo <owner/repo> --json baseRefName --jq .baseRefName)
+git log "origin/$BASE..HEAD" --oneline
+git diff --shortstat "origin/$BASE...HEAD"
 ```
 
 Derive the tracker key from the branch, commits, or PR body. Confirm the PR number with
 `gh pr list --repo <owner/repo> --head <branch>`.
 
-**Validate in the primary checkout**, not a secondary worktree, and say so in the card. A
-secondary worktree can have stale dependencies, a missing env file, or an ungenerated client,
-and each of those produces failures that look like real breakage.
+**Prefer the primary checkout** over a secondary worktree, and say so in the card. A secondary
+worktree can have stale dependencies, a missing env file, or an ungenerated client, and each of
+those produces failures that look like real breakage.
+
+That preference has a trap. If the branch was created by a worktree flow it is already checked
+out in the secondary worktree, and git refuses to check the same branch out twice - so
+"validate in the primary checkout" silently becomes "validate the default branch" while the
+card goes on naming the PR SHA. A card that attests a revision it never exercised is the one
+failure this skill exists to prevent.
+
+Pick one deliberately: transfer the branch to the primary checkout, or validate in the
+worktree that already holds it after refreshing its dependencies and generated files. Then,
+either way, prove where you are before running anything:
+
+```bash
+test "$(git rev-parse HEAD)" = "<subject-sha>" || { echo "not the subject; stop"; exit 1; }
+```
+
+Name the checkout you used and the verified HEAD in the card.
 
 ### 2. Stand the branch's code up against real infrastructure
 
@@ -115,14 +138,22 @@ are not committed; they live on the tracker. Add a row to your own local index (
 
 ### 7. Post it
 
-Post the Markdown to the tracker with the adapter from Configuration. For `jira-server`, run
-the Markdown through the WIKI conversion table in
-[references/card-format.md](references/card-format.md) first: Jira Server renders WIKI markup
-and posts Markdown raw, so an unconverted card looks broken and has to be edited in place.
+Post the Markdown to the tracker with the adapter from Configuration, converting first on
+whichever path needs it:
+
+- **WIKI** - `jira-server`, and Jira Cloud via `/rest/api/2`. Run the Markdown through the
+  conversion table in [references/card-format.md](references/card-format.md). Both render WIKI
+  markup and post Markdown raw, so an unconverted card looks broken and has to be edited in
+  place.
+- **ADF** - Jira Cloud via `/rest/api/3`. The body is a JSON document, not a string; posting
+  Markdown there is rejected outright or stored as one literal paragraph. Convert, or post to
+  `/rest/api/2` with WIKI instead - the simpler choice when no ADF converter is at hand.
+- **Markdown as-is** - GitHub and Linear.
 
 Read the comment back and check for leaked source markup before declaring it posted. For the
 WIKI path, that means counting `## ` and `|---|` occurrences in the rendered body; both must
-be zero.
+be zero. For ADF, confirm the response body parsed as a document rather than a single
+paragraph of escaped Markdown.
 
 ### 8. Link it from the PR body
 

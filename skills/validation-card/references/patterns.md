@@ -30,14 +30,24 @@ The single most persuasive paragraph a card can contain. Revert the fix, run the
 *real captured artifact*, print the wrong outputs and their count, restore the fix, show the
 count is zero.
 
+On the usual clean branch the fix is already **committed**, so `git stash` will not remove it -
+stash only saves working-tree and index changes, and on a clean tree it saves nothing at all.
+Both runs then exercise the fixed code and the counter-check silently proves nothing, which is
+worse than omitting it. Move the *commit*:
+
 ```
-git stash        # or: git revert the fix commit onto a scratch branch
+git rev-parse HEAD                      # remember the exact revision to return to
+git checkout --detach HEAD~1            # or the fix commit's parent, if it is not HEAD
 <run the real entry point over the captured input>
   -> 8 wrongful FATAL verdicts across 3 real inputs
-git stash pop
+git checkout <the revision from step 1>
 <run again>
   -> 0
 ```
+
+`git revert --no-commit <fix-sha>` on a scratch branch works equally well when the fix is not
+the tip. Either way, print both revisions in the card so the reader can see the two runs were
+against different code.
 
 That converts "I fixed a bug" into a measured blast radius. It is also the only way to
 substantiate a claim that a new guard catches the bug it was written for: without the revert,
