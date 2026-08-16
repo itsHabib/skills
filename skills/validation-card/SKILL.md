@@ -93,11 +93,14 @@ either way, prove where you are before running anything:
 
 ```bash
 test "$(git rev-parse HEAD)" = "$SUBJECT" || { echo "checkout is not the PR head; stop"; exit 1; }
+git diff --quiet && git diff --cached --quiet || { echo "worktree is dirty; stop"; exit 1; }
 ```
 
-A local branch that is behind the remote, or carries unpushed commits, fails this - which is
-the point. Comparing HEAD to a SHA you read out of that same checkout would pass in exactly
-the cases worth catching.
+A local branch that is behind the remote, or carries unpushed commits, fails the first check -
+which is the point. Comparing HEAD to a SHA you read out of that same checkout would pass in
+exactly the cases worth catching. The second check matters just as much: `rev-parse HEAD`
+reports the committed revision only, so staged or unstaged edits to tracked files leave the
+SHA matching while validation exercises something no reviewer will ever see.
 
 Name the checkout you used and the verified `$SUBJECT` in the card.
 
