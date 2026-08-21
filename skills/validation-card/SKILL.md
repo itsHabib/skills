@@ -1,6 +1,13 @@
 ---
 name: validation-card
-description: Run a branch's real validation against live infrastructure and post a reproducible "validation card" as a comment on the tracking issue, then link it from the PR body. Use when the user says "validation card", "validate this branch and post it", "post the validation", "card this PR", "/validation-card", or when a PR needs evidence beyond CI before merge. NOT for writing the PR description itself (that is /write-pr) and NOT a substitute for CI - a card exists to show what CI cannot: live runs against real infra, before/after through the real entry point, and proof a guard fails on the bug it claims to catch.
+description: >-
+  Run a branch's real validation against live infrastructure and post a
+  reproducible validation card as a comment on the tracking issue, then link
+  it from the PR body. Use when the user says "validation card", "validate
+  this branch and post it", "post the validation", "card this PR", invokes
+  `/validation-card`, or when a PR needs evidence beyond CI before merge. It
+  is not the PR description and not a substitute for CI; it shows live runs,
+  before/after behavior, and proof a guard fails on the claimed bug.
 user_invocable: true
 argument-hint: "[tracker-key or PR ref] - omit to derive from the current branch"
 ---

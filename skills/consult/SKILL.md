@@ -1,6 +1,6 @@
 ---
 name: consult
-description: Summon another portfolio repo's steward agent and get a same-turn answer to a question about that repo — instead of asking the operator. Use when the user says "ask the <repo> agent", "what does the ship steward think", "consult roxiq about X", or invokes /consult <repo> "<question>". Also use PROACTIVELY mid-task, without being asked, whenever you're stuck on a KNOWLEDGE question about another portfolio repo's behavior, design, or conventions — consult that repo's steward before asking the operator. Only AUTHORITY questions (product direction, spend, irreversible calls) go to the operator.
+description: Summon another portfolio repo's steward agent and get a same-turn answer to a question about that repo — instead of asking the operator. Use when the user says "ask the <repo> agent", "what does the ship steward think", "consult payments-service about X", or invokes /consult <repo> "<question>". Also use PROACTIVELY mid-task, without being asked, whenever you're stuck on a KNOWLEDGE question about another portfolio repo's behavior, design, or conventions — consult that repo's steward before asking the operator. Only AUTHORITY questions (product direction, spend, irreversible calls) go to the operator.
 argument-hint: "<repo> \"<question>\" — repo is a portfolio directory name or path; several repos may be consulted in parallel"
 user_invocable: true
 ---

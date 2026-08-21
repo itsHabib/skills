@@ -1,14 +1,45 @@
-# skills
+#!/usr/bin/env bash
+# Render the canonical, harness-neutral dev-workbench managed block.
+# Read-only: emits markdown to stdout and never edits a target file.
 
+set -euo pipefail
+
+repo_name=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --repo)
+      [ $# -ge 2 ] || { echo "render-block.sh: --repo needs a name" >&2; exit 2; }
+      repo_name="$2"
+      shift 2
+      ;;
+    --repo=*) repo_name="${1#*=}"; shift ;;
+    *) echo "render-block.sh: unknown argument '$1'" >&2; exit 2 ;;
+  esac
+done
+
+[ -n "$repo_name" ] || { echo "render-block.sh: --repo is required" >&2; exit 2; }
+
+case "$repo_name" in
+  dossier) callout=' **This is dossier - the State plane work-item store - so dossier verbs are most directly relevant here.**' ;;
+  ship) callout=' **This is ship - the Execution plane driver - so Ship workflows are most directly relevant here.**' ;;
+  channel) callout=' **This is channel - the optional agent message bus itself.**' ;;
+  workbench) callout=' **This is workbench - the repository that hosts the Gate, Flare, Console, Escalate, review, and dispatch planes.**' ;;
+  skills) callout=' **This is the scrubbed public skills projection, not the private catch-all.**' ;;
+  hooks) callout=' **This is hooks - the cross-harness lifecycle bookkeeping layer.**' ;;
+  skill-sync) callout=' **This is skill-sync - a catalog projection engine for agent skill homes.**' ;;
+  *) callout='' ;;
+esac
+
+cat <<EOF
 <!-- BEGIN dev-workbench (managed by /dev-workbench skill - re-run to refresh; hand-edits inside this block will be overwritten) -->
 ## Dev workbench
 
-These MCPs, planes, and skills are available in Claude and Codex sessions on this machine; each harness injects tool signatures, so this is the map of how they compose, not a second verb manual. **This is the scrubbed public skills projection, not the private catch-all.** When the signal matches, call the verb. Knowledge questions about another portfolio repo go to `/consult`; authority questions - direction, spend, credentials, irreversible actions - go to the operator.
+These MCPs, planes, and skills are available in Claude and Codex sessions on this machine; each harness injects tool signatures, so this is the map of how they compose, not a second verb manual.${callout} When the signal matches, call the verb. Knowledge questions about another portfolio repo go to \`/consult\`; authority questions - direction, spend, credentials, irreversible actions - go to the operator.
 
 **MCPs (in-session):**
 - **dossier** - durable project memory: projects -> phases -> tasks -> artifacts.
 - **ship** - dispatch an agent and persist dispatch -> poll -> judgment -> land -> record.
-- **channel** - optional append-only agent message bus (`channel.post/read/list`); off the normal PR path and supersedes huddle.
+- **channel** - optional append-only agent message bus (\`channel.post/read/list\`); off the normal PR path and supersedes huddle.
 - **playwright** - browser automation when the task requires a real DOM.
 
 **Planes (workbench CLIs composed through exit codes and JSONL, not MCPs):**
@@ -27,16 +58,16 @@ These MCPs, planes, and skills are available in Claude and Codex sessions on thi
 
 ### The loop
 
-```text
+\`\`\`text
 dossier task -> /worktree-add -> spec -> ship driver (dispatch -> poll -> judgment -> land -> record)
   -> PR + CI -> /pr-risk -> reviewer panel -> /review-coordinator -> one findings artifact
   -> gate evaluates the exact head -> 0: emitted head-pinned merge command -> merge
   -> authoritative receipts -> dossier close-out -> /worktree-remove
-       \-> 2: park -> console / gate next -> human decision -> escalate -> gate resolve -> gate next
-       \-> attention or terminal receipt -> flare -> Slack (best effort; never gates)
-```
+       \\-> 2: park -> console / gate next -> human decision -> escalate -> gate resolve -> gate next
+       \\-> attention or terminal receipt -> flare -> Slack (best effort; never gates)
+\`\`\`
 
-`/work-driver` coordinates dispatch -> poll -> land and runs its own review triage inline. `/pr-risk` and `/review-coordinator` are explicit steps; the driver does not invoke them automatically.
+\`/work-driver\` coordinates dispatch -> poll -> land and runs its own review triage inline. \`/pr-risk\` and \`/review-coordinator\` are explicit steps; the driver does not invoke them automatically.
 
 ### Why this shape
 
@@ -46,18 +77,4 @@ Each layer owns one responsibility and can be replaced without rippling: dossier
 
 The contract planes are **State** (dossier plus run, verdict, grant, and receipt artifacts), **Execution** (Ship), **Verification** (review and Gate's escalate-only verifier ladder), **Capability** (scoped operator-minted grants), and **Observability** (Console, Flare, /wip, /shipped, /status). This section is **Composition**. Planes share typed artifacts - evidence -> verdict -> action - rather than call stacks.
 <!-- END dev-workbench -->
-
-<!-- BEGIN eng-philo (managed by /eng-philo — re-run to refresh; hand-edits inside this block will be overwritten) -->
-## Engineering principles
-
-How code is written here — Dave Cheney lineage ([Practical Go](https://dave.cheney.net/practical-go)): simplicity, clarity, line-of-sight. Apply on every change; the lint below catches the slips.
-
-1. **No `else` — line-of-sight.** Handle errors / edge cases with early returns and guard clauses; keep the happy path un-indented, flowing down the left margin. Reaching for `else` → return early instead.
-2. **Shallow nesting — ≤2 levels *per scope*.** A `for` + an `if` is the ceiling in one scope. The budget is per-scope, not per-function — a closure / anon fn is its own scope, so a `for`+`if` inside a closure is fine. Deeper in one scope → extract a function.
-3. **Policy vs mechanism.** Separate the decisions (policy: validation, state machines, business rules) from the plumbing (mechanism: persistence, transport, I/O). Mechanism is dumb and swappable; policy lives in a layer above it. Never let policy leak into a mechanism layer.
-4. **Composition of single-responsibility layers.** Each layer / package owns ~one responsibility; the app is a *composition* of them; any piece is swappable without rippling into the others. Dependencies flow one direction.
-5. **Small, sharp APIs.** Export the least callers need. Intention-revealing names. Accept the narrowest input, return concrete types. Make the zero value useful.
-6. **Errors are values; simplicity over cleverness.** Handle or propagate errors explicitly — never swallow. Readable > clever > short. A little copying beats a premature abstraction or dependency.
-
-_No code manifest detected — universals only; re-run `/eng-philo` once the repo has a stack manifest to add the idioms + enforcement block._
-<!-- END eng-philo -->
+EOF
