@@ -96,7 +96,7 @@ check_scrub() {
   local pattern reason hits
   while IFS='|' read -r pattern reason; do
     [[ -z "$pattern" ]] && continue
-    hits="$(grep -rnE "$pattern" skills/ 2>/dev/null || true)"
+    hits="$(grep -rniE "$pattern" skills/ 2>/dev/null || true)"
     [[ -z "$hits" ]] && continue
     while IFS= read -r hit; do
       fail "${hit%%:*}: ${reason} -> ${hit#*:}"
@@ -152,6 +152,17 @@ check_companion_files() {
   done < <(find skills -mindepth 2 -maxdepth 2 -name SKILL.md -type f | sort)
 }
 
+check_folded_discovery() {
+  local fixture output description
+  fixture="$(mktemp -d)"
+  mkdir -p "$fixture/.claude/skills/validation-card"
+  cp skills/validation-card/SKILL.md "$fixture/.claude/skills/validation-card/SKILL.md"
+  output="$(HOME="$fixture" bash skills/skills/discover.sh)"
+  description="$(printf '%s\n' "$output" | awk -F '\t' '$2 == "validation-card" { print $4; exit }')"
+  rm -rf "$fixture"
+  [[ "$description" == Run\ a\ branch* ]] || fail "skills/skills/discover.sh: folded description was not rendered"
+}
+
 echo "Checking SKILL.md frontmatter..."
 # Iterate directories, not the SKILL.md glob — a skill dir with no SKILL.md
 # must fail loudly instead of being silently skipped.
@@ -171,6 +182,9 @@ check_readme_consistency
 
 echo "Checking referenced companion files..."
 check_companion_files
+
+echo "Checking folded-description discovery..."
+check_folded_discovery
 
 if [[ "$warnings" -gt 0 ]]; then
   echo "Completed with $warnings warning(s)."

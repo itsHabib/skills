@@ -34,7 +34,11 @@ git_root=$(git -C "$repo_dir" rev-parse --show-toplevel 2>/dev/null || true)
 if [[ -n $git_root ]]; then
   repo_dir=$(cd "$git_root" && pwd -P)
   common_dir=$(git -C "$repo_dir" rev-parse --path-format=absolute --git-common-dir)
-  repo_name=$(basename "$(dirname "$common_dir")")
+  case "$common_dir" in
+    */.git) repo_name=$(basename "$(dirname "$common_dir")") ;;
+    */.git/modules/*) repo_name=$(basename "$common_dir") ;;
+    *) repo_name=$(basename "$repo_dir") ;;
+  esac
 fi
 block=$(bash "$skill_dir/render-block.sh" --repo "$repo_name")
 
