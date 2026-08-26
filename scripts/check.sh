@@ -78,21 +78,72 @@ check_frontmatter() {
 # transforms 2 and 3 part of the gate.
 #
 # Patterns are literal-ish EREs, one per line: <pattern>|<what it violates>
+#
+# Backslashes survive the quoted heredoc verbatim and are then consumed once by
+# the ERE, so one literal `\` is written `\\` here. The original Windows pattern
+# was `C:\\\\Users` - doubled one time too many. It asked for `C:\\Users`, two
+# real backslashes, and so never matched the single-backslash path that had
+# actually leaked. Same blind spot on the separator: `pers/` cannot see
+# `pers\ship`.
+#
+# The patterns describe the *shape* of an operator path rather than naming the
+# operator, so the gate stays useful without hardcoding an identity into a
+# public file.
 scrub_patterns() {
   cat <<'PATTERNS'
 pers/|SYNC.md #3: operator path root (use the ~/projects/ placeholder)
-C:\\\\Users|SYNC.md #3: Windows operator path
+pers\\|SYNC.md #3: operator path root, Windows separator (use ~/projects/)
+C:\\Users\\[A-Za-z0-9._<>-]+|SYNC.md #3: Windows operator home path
 \$HOME/pers|SYNC.md #3: operator path root
 PATTERNS
 }
 
+# Placeholder spellings SYNC.md blesses. /recover has to show a real
+# `C:\Users\you\projects` to explain how it decodes an encoded session path, so
+# the gate has to tell a documented placeholder from a live home directory.
+scrub_allowlist() {
+  cat <<'ALLOWED'
+C:\Users\you
+C:\Users\<name>
+C:\Users\<user>
+C:\Users\username
+ALLOWED
+}
+
+# True only when EVERY match on the line is a blessed placeholder. A line that
+# mixes `C:\Users\you` with a real home path still fails.
+scrub_line_is_allowed() {
+  local pattern="$1" line="$2" allowlist="$3"
+  local match ok found any=0
+
+  while IFS= read -r match; do
+    [[ -z "$match" ]] && continue
+    any=1
+    found=0
+    while IFS= read -r ok; do
+      [[ -z "$ok" ]] && continue
+      [[ "${match,,}" == "${ok,,}" ]] && { found=1; break; }
+    done <<<"$allowlist"
+    [[ "$found" -eq 0 ]] && return 1
+  done < <(printf '%s\n' "$line" | grep -oiE "$pattern" || true)
+
+  # No matches extracted means the line reached us some way we do not model;
+  # treat that as not-allowed rather than silently passing it.
+  [[ "$any" -eq 1 ]]
+}
+
 check_scrub() {
-  local pattern reason hits
+  local pattern reason hits hit line allowlist
+  allowlist="$(scrub_allowlist)"
+
   while IFS='|' read -r pattern reason; do
     [[ -z "$pattern" ]] && continue
-    hits="$(grep -rnE "$pattern" skills/ 2>/dev/null || true)"
+    hits="$(grep -rniE "$pattern" skills/ 2>/dev/null || true)"
     [[ -z "$hits" ]] && continue
     while IFS= read -r hit; do
+      line="${hit#*:}"
+      line="${line#*:}"
+      scrub_line_is_allowed "$pattern" "$line" "$allowlist" && continue
       fail "${hit%%:*}: ${reason} -> ${hit#*:}"
     done <<<"$hits"
   done < <(scrub_patterns)

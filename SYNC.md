@@ -17,9 +17,24 @@ Public transforms (apply to every synced file):
    `polish` / `prep-public` / `wip` (audit rules genericized), `work-driver`
    (credential bootstrap genericized).
 
-Before pushing: `scripts/check.sh` must pass AND
-`git grep -riE "<employer>|<operator-username>|<private-repo-names>" -- skills`
-must return nothing.
+Before pushing: `scripts/check.sh` must pass. Transforms 2 and 3 are part of
+that gate now — `check_scrub` carries the path and identifier patterns, so the
+scan is no longer a manual grep you have to remember. `scripts/check-selftest.sh`
+is the gate's own guard test; both run in CI.
+
+The manual grep is still worth running for anything the patterns cannot know
+about — a new employer, project or repo name:
+
+```
+git grep -riE "<employer>|<operator-username>|<private-repo-names>" -- skills
+```
+
+When it finds something, add the pattern to `check_scrub` rather than only
+fixing the line, or the same class of leak returns on the next sync.
+
+Branch tips count as published. A stale branch pushed here keeps serving
+whatever it was carrying even after `main` is clean, so scrub or delete
+abandoned branches instead of leaving them parked.
 
 Pending: `work-driver` `--engine session` + panel-from-config were scrubbed and
 synced 2026-07-20; the model-pool changes still await a scrubbed pass. `tdd` and
