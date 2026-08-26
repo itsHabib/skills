@@ -36,11 +36,14 @@ If you can't tell which case applies, ask the user one short question before chi
 Call `mcp__ccd_session__spawn_task` with:
 
 - **`title`** (under 60 chars, imperative, starts with a verb) — chip label and spawned session title. Examples: `Fix stale README badge`, `Remove dead config option`, `Add missing test for X`.
-- **`prompt`** — self-contained brief. Must include:
+- **`prompt`** — self-contained brief, target under 10 lines. Must include:
   - what to do (specific, not "clean this up")
   - file paths + line numbers when known
   - any decision or constraint from this conversation that the spawned session needs
   - acceptance criteria if non-obvious
+
+  Point at paths rather than pasting code; the chip inherits the repo and can open them.
+  A chip prompt that runs long is usually a task that wasn't scoped down far enough.
 - **`tldr`** (1–2 sentences, plain English, no code or paths) — tooltip text the user sees on hover.
 - **`cwd`** (optional) — only if the work belongs in a different repo than the current one. Absolute path.
 

@@ -41,6 +41,12 @@ The value is in the scoping. Resist dumping the whole session.
 
 Put this in the chip's `prompt`. Skip any section that's genuinely empty.
 
+**Target 12-15 lines.** One line per bullet, max 4 bullets under "Context it depends on".
+A packet longer than the thread is worth is a packet that failed to scope. If a fact is
+already written into a doc, card, or ticket, point at it by path or ID instead of
+restating it. Anything the sibling could get with one command (`gh pr view`, `git log`, a
+test run) is not context, it's noise; the sibling inherits the repo and can run those.
+
 ````
 Forked from another session that's still working its main task. This is a scoped
 hand-off of ONE thread that came up there — not the whole session. You already
