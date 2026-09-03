@@ -54,7 +54,7 @@ Don't use for:
 ## The canonical workbench (hardcoded, not discovered)
 
 `<portfolio-root>` below is the operator's portfolio root — resolve it to the first of
-`$PORTFOLIO_ROOT`, `~/dev`, `~/pers` that exists; never emit a hardcoded absolute root
+`$PORTFOLIO_ROOT` or `<portfolio-root>` that exists; never emit a hardcoded absolute root
 into a generated section.
 
 **MCP servers** (in-session, workflow order, dossier-first):
