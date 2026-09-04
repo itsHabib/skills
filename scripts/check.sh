@@ -83,6 +83,12 @@ scrub_patterns() {
 pers/|SYNC.md #3: operator path root (use the ~/projects/ placeholder)
 C:\\\\Users|SYNC.md #3: Windows operator path
 \$HOME/pers|SYNC.md #3: operator path root
+/Users/[A-Za-z0-9._-]+/|SYNC.md #3: macOS operator home path
+cc-skills|SYNC.md #3: private repository name
+roxiq|SYNC.md #2: private project name
+interject|SYNC.md #2: private project name
+ROX-[0-9]+|SYNC.md #2: private ticket key
+Hadrian|SYNC.md #2: private workflow name
 PATTERNS
 }
 
@@ -90,7 +96,7 @@ check_scrub() {
   local pattern reason hits
   while IFS='|' read -r pattern reason; do
     [[ -z "$pattern" ]] && continue
-    hits="$(grep -rnE "$pattern" skills/ 2>/dev/null || true)"
+    hits="$(grep -rniE "$pattern" skills/ 2>/dev/null || true)"
     [[ -z "$hits" ]] && continue
     while IFS= read -r hit; do
       fail "${hit%%:*}: ${reason} -> ${hit#*:}"
@@ -133,6 +139,30 @@ check_readme_consistency() {
   done
 }
 
+check_companion_files() {
+  local file dir ref
+  while IFS= read -r file; do
+    dir="$(dirname "$file")"
+    while IFS= read -r ref; do
+      [[ -z "$ref" ]] && continue
+      [[ -f "$dir/$ref" ]] && continue
+      fail "$file: references missing companion file '$ref'"
+    done < <(grep -oE '<this-skill-directory>/[A-Za-z0-9_-]+\.(sh|ps1|py|mjs)' "$file" \
+      | sed 's|<this-skill-directory>/||' | sort -u)
+  done < <(find skills -mindepth 2 -maxdepth 2 -name SKILL.md -type f | sort)
+}
+
+check_folded_discovery() {
+  local fixture output description
+  fixture="$(mktemp -d)"
+  mkdir -p "$fixture/.claude/skills/validation-card"
+  cp skills/validation-card/SKILL.md "$fixture/.claude/skills/validation-card/SKILL.md"
+  output="$(HOME="$fixture" bash skills/skills/discover.sh)"
+  description="$(printf '%s\n' "$output" | awk -F '\t' '$2 == "validation-card" { print $4; exit }')"
+  rm -rf "$fixture"
+  [[ "$description" == Run\ a\ branch* ]] || fail "skills/skills/discover.sh: folded description was not rendered"
+}
+
 echo "Checking SKILL.md frontmatter..."
 # Iterate directories, not the SKILL.md glob — a skill dir with no SKILL.md
 # must fail loudly instead of being silently skipped.
@@ -149,6 +179,12 @@ check_scrub
 
 echo "Checking README ↔ skills/ consistency..."
 check_readme_consistency
+
+echo "Checking referenced companion files..."
+check_companion_files
+
+echo "Checking folded-description discovery..."
+check_folded_discovery
 
 if [[ "$warnings" -gt 0 ]]; then
   echo "Completed with $warnings warning(s)."

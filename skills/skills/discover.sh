@@ -7,8 +7,8 @@
 #   project         <cwd>/.claude/skills/*/SKILL.md
 #   worktree:<br>   <cwd>/.claude/worktrees/*/.claude/skills/*/SKILL.md
 #
-# Assumes single-line `description:` frontmatter (the house convention). A
-# folded/multi-line description would be truncated to its first line.
+# Supports both single-line descriptions and YAML folded/literal block scalars.
+# Block scalar lines are joined for the one-row TSV output.
 set -euo pipefail
 
 emit_root() {
@@ -18,11 +18,36 @@ emit_root() {
   for f in "$dir"/*/SKILL.md; do
     [ -f "$f" ] || continue
     awk -v src="$label" '
+      { sub(/\r$/, "") }
       # frontmatter is the block between the first two --- fences
       /^---[[:space:]]*$/ { fm++; if (fm == 2) exit; next }
       fm == 1 {
+        if (description_block) {
+          if ($0 ~ /^[[:space:]]*$/) {
+            next
+          }
+          if ($0 ~ /^[[:space:]]+/) {
+            line = $0
+            sub(/^[[:space:]]+/, "", line)
+            sub(/[[:space:]]+$/, "", line)
+            if (line != "") {
+              if (desc != "") { desc = desc " " }
+              desc = desc line
+            }
+            next
+          }
+          description_block = 0
+        }
         if      ($0 ~ /^name:[[:space:]]*/)           { sub(/^name:[[:space:]]*/, "");           name = $0 }
-        else if ($0 ~ /^description:[[:space:]]*/)    { sub(/^description:[[:space:]]*/, "");    desc = $0 }
+        else if ($0 ~ /^description:[[:space:]]*/) {
+          sub(/^description:[[:space:]]*/, "")
+          if ($0 ~ /^[>|][+-]?$/) {
+            description_block = 1
+            desc = ""
+            next
+          }
+          desc = $0
+        }
         else if ($0 ~ /^user_invocable:[[:space:]]*/) { sub(/^user_invocable:[[:space:]]*/, ""); inv  = $0 }
       }
       END {
