@@ -15,11 +15,19 @@ Public transforms (apply to every synced file):
 6. Reader voice is second-person ("you/your"), not "the operator".
 7. Known divergent-by-design skills: `write-pr` (generic Jira config),
    `polish` / `prep-public` / `wip` (audit rules genericized), `work-driver`
-   (credential bootstrap genericized).
+   (credential bootstrap genericized), `hackathon` (private worked-example and
+   sibling-repo references dropped; scaffold root is `~/projects/`),
+   `parallel-work` (the Gate-authority paragraph generalized to "whatever the
+   repository designates"), `fact-check` (ledger `source:` enum is
+   `human`, not `operator`).
 
 Before pushing: `scripts/check.sh` must pass AND
 `git grep -riE "<employer>|<operator-username>|<private-repo-names>" -- skills`
 must return nothing.
+
+Synced 2026-09-03: `kickoff`, `fact-check`, `hackathon`, `parallel-work`,
+`work-contract`. `kickoff` supersedes `brief`, which stays published for now —
+retiring it is a separate call.
 
 Pending: `work-driver` `--engine session` + panel-from-config were scrubbed and
 synced 2026-07-20; the model-pool changes still await a scrubbed pass. `tdd` and

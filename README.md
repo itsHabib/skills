@@ -76,6 +76,11 @@ Copy individual dirs if you want a subset.
 | `/incident-learn` | Verify incident recovery, record the evidence-backed timeline, and turn gaps into owned preventive controls and safer maintenance automation. |
 | `/editorial-pass` | Multi-editor editorial pass over a draft in your voice — a mechanical AI-tell scan, six editor lenses fanned out via Workflow, and an editor-in-chief consolidation with verbatim fixes + a publish verdict. |
 | `/voice-learn` | Mine AI-draft → final edit pairs to converge the agent's writing on your real voice — capture the AI version before you edit, then learn the diff into a voice profile. Corpus is yours, local, never in the repo. |
+| `/kickoff` | Turn a task, spec, or unfamiliar code area into a code-anchored `kickoff.md` + a paste-ready handoff prompt — distills existing grounding, explores cold code when grounding is thin. Supersedes `/brief`. |
+| `/fact-check` | Extract every checkable claim in a draft into a ledger, then check each one by evidence source (your repos / the web / run it) — confirmed, contradicted, partial, or unverifiable, with a pointer each. Never "probably fine". |
+| `/hackathon` | Run a build competition — one topic, N independent entries in fresh sessions, fixed house rules and a 100-point rubric. Emits the pack, the launch prompts, and a blank scorecard; never scores anything itself. |
+| `/parallel-work` | Plan, run, inspect, or resume a bounded batch of repository work with Agent workers and Git worktrees — local parallelism with no task store, driver manifests, or cloud orchestration. |
+| `/work-contract` | Create, refresh, validate, or close one compact `WORK.md` — the smallest durable packet another capable model needs to resume a bounded task. Ships its own validator. |
 
 These encode one developer's workflow opinions. Fork and edit to match yours — the opinions ARE the value.
 
