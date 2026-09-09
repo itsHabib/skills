@@ -76,7 +76,7 @@ require_list_item() {
   local start=$2
   local end=$3
   awk -v start="$start" -v end="$end" \
-    'NR > start && NR < end && /^- / { found=1 } END { exit !found }' "$work_file" ||
+    'NR > start && NR < end && /^- / && substr($0, 3) ~ /[^[:space:]]/ { found=1 } END { exit !found }' "$work_file" ||
     fail section_empty "$heading needs at least one list item"
 }
 
