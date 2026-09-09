@@ -128,7 +128,7 @@ scrub_line_is_allowed() {
     found=0
     while IFS= read -r ok; do
       [[ -z "$ok" ]] && continue
-      [[ "${match,,}" == "${ok,,}" ]] && { found=1; break; }
+      [[ "$(printf '%s' "$match" | tr '[:upper:]' '[:lower:]')" == "$(printf '%s' "$ok" | tr '[:upper:]' '[:lower:]')" ]] && { found=1; break; }
     done <<<"$allowlist"
     [[ "$found" -eq 0 ]] && return 1
   done < <(printf '%s\n' "$line" | grep -oiE "$pattern" || true)
