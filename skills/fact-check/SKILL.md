@@ -27,7 +27,7 @@ handling throughout.
   is the parent of the draft's repo. Never assume a repo exists — `ls` it.
 - **CAVEATS** (optional): things you already know are shaky.
   They still go in the ledger; they just start with a note.
-- **OUT**: ledger + report dir. Default `$SCRATCHPAD/fact-check/<draft-slug>/`.
+- **OUT**: ledger + report dir. Default `${SCRATCHPAD:-${TMPDIR:-/tmp}}/fact-check/<draft-slug>/`. Use `SCRATCHPAD` when set; otherwise use the system temporary directory. Create the draft subdirectory before writing the ledger and report.
   Print the path in the report.
 
 ## Step 0 — Mechanical seed (deterministic, cheap)

@@ -76,7 +76,7 @@ require_list_item() {
   local start=$2
   local end=$3
   awk -v start="$start" -v end="$end" \
-    'NR > start && NR < end && /^- / { found=1 } END { exit !found }' "$work_file" ||
+    'NR > start && NR < end && /^- / && substr($0, 3) ~ /[^[:space:]]/ { found=1 } END { exit !found }' "$work_file" ||
     fail section_empty "$heading needs at least one list item"
 }
 
@@ -199,6 +199,10 @@ if [[ $status == blocked ]]; then
 fi
 if [[ $status != blocked ]]; then
   require_prefix next_handoff_missing "- Next:" "$handoff_start" "$document_end"
+  if awk -v start="$handoff_start" -v end="$document_end" \
+    'NR > start && NR < end && /^- Blocked:/ { found=1 } END { exit !found }' "$work_file"; then
+    fail nonblocked_has_blocked "non-blocked work cannot retain a Blocked handoff"
+  fi
 fi
 if [[ $status == "done" ]]; then
   require_prefix done_needs_verified_evidence "- Verified:" "$evidence_start" "$handoff_start"
