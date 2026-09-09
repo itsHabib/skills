@@ -41,7 +41,7 @@ domain facts you're unsure of with TODO rather than inventing confidently.
 
 ### Five load-bearing rules — parameterize the details, never delete the rule
 
-1. **One session, one fresh repo** at `~/projects/<slug>`. Entries never share
+1. **One session, one fresh repo** at `~/projects/<prefix><slug>`. Entries never share
    context, code, or progress reports.
 2. **Correctness is computed, never model-judged.** Grading, matching, gating,
    budgets live in deterministic, tested code; a model (if used at all) does
@@ -92,7 +92,7 @@ Launch one per session with:
 
 ## House rules (same for every entry — fairness is the point)
 
-- **One session, one repo.** Scaffold at `~/projects/<slug>`. <stack bias, e.g. Go
+- **One session, one repo.** Scaffold at `~/projects/<prefix><slug>`. <stack bias, e.g. Go
   stdlib or plain Node; vanilla web UI>; NO build steps, NO frameworks, NO
   new deps unless unavoidable.
 - **Keyless and local.** <what exists on this machine, what doesn't, how to
