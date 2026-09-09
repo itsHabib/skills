@@ -204,6 +204,14 @@ if [[ $status != blocked ]]; then
     fail nonblocked_has_blocked "non-blocked work cannot retain a Blocked handoff"
   fi
 fi
+handoff_prefix="- Next:"
+if [[ $status == blocked ]]; then
+  handoff_prefix="- Blocked:"
+fi
+handoff_count=$(awk -v prefix="$handoff_prefix" -v start="$handoff_start" -v end="$document_end" \
+  'NR > start && NR < end && index($0, prefix) == 1 { found++ } END { print found + 0 }' "$work_file")
+[[ $handoff_count -eq 1 ]] || fail handoff_count "require exactly one $handoff_prefix item"
+
 if [[ $status == "done" ]]; then
   require_prefix done_needs_verified_evidence "- Verified:" "$evidence_start" "$handoff_start"
   if awk -v start="$evidence_start" -v end="$handoff_start" \
