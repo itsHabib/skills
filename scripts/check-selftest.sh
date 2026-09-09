@@ -60,7 +60,7 @@ case_is() {
   make_fixture "$dir" "$body"
 
   status=0
-  output="$(cd "$dir" && bash scripts/check.sh 2>&1)" || status=$?
+  output="$(cd "$dir" && "$BASH" scripts/check.sh 2>&1)" || status=$?
   rm -rf "$dir"
 
   case "$expectation" in
@@ -106,6 +106,9 @@ case_is leak 'HOME-relative operator path root' \
 # A blessed placeholder alone is documentation, not a leak.
 case_is clean 'documented windows placeholder' \
   'Decode `C--Users-you-projects` back into `C:\Users\you\projects`.'
+
+case_is clean 'case-insensitive windows placeholder' \
+  'Decode C:\USERS\YOU\projects.'
 
 case_is clean 'placeholder path root' \
   'Source: `~/projects/dossier/`.'
