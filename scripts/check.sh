@@ -92,8 +92,9 @@ check_frontmatter() {
 scrub_patterns() {
   cat <<'PATTERNS'
 pers/|SYNC.md #3: operator path root (use the ~/projects/ placeholder)
-pers\\|SYNC.md #3: operator path root, Windows separator (use ~/projects/)
-C:\\Users\\[A-Za-z0-9._<>-]+|SYNC.md #3: Windows operator home path
+^pers\\|SYNC.md #3: operator path root, Windows separator (use ~/projects/)
+[[:space:]/\\`"'(]pers\\|SYNC.md #3: operator path component, Windows separator
+C:\\Users\\[^\\/:*?"`]+|SYNC.md #3: Windows operator home path
 \$HOME/pers|SYNC.md #3: operator path root
 /Users/[A-Za-z0-9._-]+/|SYNC.md #3: macOS operator home path
 cc-skills|SYNC.md #3: private repository name

@@ -117,6 +117,18 @@ case_is clean 'placeholder path root' \
 case_is leak 'placeholder alongside a real home path' \
   'Rewrite C:\Users\you\projects as C:\Users\Bob\projects.'
 
+case_is leak 'unicode windows profile' \
+  'C:\Users\李\projects'
+
+case_is leak 'placeholder prefix is not a complete profile' \
+  'C:\Users\you work\projects'
+
+case_is clean 'unrelated Windows directory suffix' \
+  'helpers\fixture'
+
+case_is leak 'Windows private root at start of line' \
+  'pers\gate\state'
+
 if [[ "$failures" -gt 0 ]]; then
   echo "FAILED: $failures scrub-gate case(s)." >&2
   exit 1
