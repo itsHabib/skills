@@ -55,8 +55,10 @@ status, and the smallest relevant source set. Define each task with:
 Parallelize only semantically independent tasks whose write paths do not
 overlap. Put dependent or overlapping tasks in later waves. If the split is
 clear and implementation is already authorized, show it briefly and proceed.
-Stop for input only when decomposition exposes a material product, data,
-publication, or architecture choice.
+Stop for input when decomposition exposes an unresolved authority or capability
+boundary, including credentials, spend, grants, irreversible operations, or a
+material product, data, publication, or architecture choice. Existing authorization
+for implementation does not settle a decision it did not cover.
 
 One run owns exactly one repository and one verified base commit. For a
 cross-repository goal, use ordered repository stages and record the exact

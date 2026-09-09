@@ -86,8 +86,8 @@ require_prefix() {
   local start=$3
   local end=$4
   awk -v prefix="$prefix" -v start="$start" -v end="$end" \
-    'NR > start && NR < end && index($0, prefix) == 1 { found=1 } END { exit !found }' "$work_file" ||
-    fail "$code" "missing $prefix item"
+    'NR > start && NR < end && index($0, prefix) == 1 { found=1; if (substr($0, length(prefix) + 1) !~ /[^[:space:]]/) bad=1 } END { exit !(found && !bad) }' "$work_file" ||
+    fail "$code" "missing nonempty $prefix item"
 }
 
 [[ -f $work_file ]] ||
@@ -184,6 +184,15 @@ bad_change=$(awk -v start="$change_start" -v end="$prove_start" \
 require_prefix green_proof_missing "- Green:" "$prove_start" "$stop_start"
 require_prefix red_proof_missing "- Red:" "$prove_start" "$stop_start"
 require_prefix last_handoff_missing "- Last:" "$handoff_start" "$document_end"
+
+conflicting_prefix="- Blocked:"
+if [[ $status == blocked ]]; then
+  conflicting_prefix="- Next:"
+fi
+if awk -v prefix="$conflicting_prefix" -v start="$handoff_start" -v end="$document_end" \
+  'NR > start && NR < end && index($0, prefix) == 1 { found=1 } END { exit !found }' "$work_file"; then
+  fail handoff_conflict "$conflicting_prefix conflicts with Status: $status"
+fi
 
 if [[ $status == blocked ]]; then
   require_prefix blocked_handoff_missing "- Blocked:" "$handoff_start" "$document_end"
