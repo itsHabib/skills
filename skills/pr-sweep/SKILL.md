@@ -85,12 +85,17 @@ Per PR — **unresolved review threads** (the signal that justifies this skill):
 
 ```bash
 owner="${repo%%/*}"; name="${repo##*/}"
-gh api graphql -f query="{repository(owner:\"$owner\",name:\"$name\"){pullRequest(number:$num){
-  reviewThreads(first:50){nodes{isResolved isOutdated comments(first:1){nodes{author{login} path line}}}}}}}" \
-  --jq '[.data.repository.pullRequest.reviewThreads.nodes[]
-         |select(.isResolved==false and .isOutdated==false)
-         |{bot:.comments.nodes[0].author.login, at:"\(.comments.nodes[0].path):\(.comments.nodes[0].line)"}]'
+gh api graphql --paginate -F owner="$owner" -F name="$name" -F num="$num" -f query='
+  query($owner:String!,$name:String!,$num:Int!,$endCursor:String){repository(owner:$owner,name:$name){
+    pullRequest(number:$num){reviewThreads(first:100,after:$endCursor){pageInfo{hasNextPage endCursor}
+      nodes{isResolved isOutdated comments(first:1){nodes{author{login} path line}}}}}}}' \
+  --jq '.data.repository.pullRequest.reviewThreads.nodes[]
+        |select(.isResolved==false and .isOutdated==false)
+        |{bot:.comments.nodes[0].author.login, at:"\(.comments.nodes[0].path):\(.comments.nodes[0].line)"}'
 ```
+
+One JSON object per open thread; count the lines. `--paginate` walks every page, so a PR with
+more than 100 threads is not reported clean.
 
 Notes that bite:
 - **zsh does not word-split unquoted expansions.** Iterate `repo:num` strings and slice with
@@ -134,7 +139,8 @@ findings outrank a rebase (the rebase would only have to happen again), and both
 a missing approval — there is nothing to approve until the findings are answered.
 
 ### 🟢 Ready — mint and merge
-`CLEAN` + every check green + ≥2 roster bots + **zero** unresolved threads + not a draft.
+`CLEAN` + every check green + ≥2 roster bots + **zero** unresolved threads + not a draft +
+`reviewDecision` is not `REVIEW_REQUIRED` (a required approval is still a blocker).
 Nothing blocks it but authorization, which is the operator's to grant.
 
 Emit the mint request — **never** a bare `gh pr merge`, never `--admin`:

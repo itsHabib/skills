@@ -6,8 +6,8 @@ mirror — every sync is a *scrubbed behavioral port*, never a byte-copy.
 Public transforms (apply to every synced file):
 
 1. `user_invocable: true` in frontmatter; frontmatter `name` == dir name.
-2. No work-related content: employer names, their hostnames, ticket keys, or
-   ticket-system URLs. `scripts/check.sh` reads these terms from an untracked
+2. No work-related content: employer names, their hostnames, work ticket keys,
+   or work ticket-system URLs. Tickets from the operator's own projects are fine. `scripts/check.sh` reads these terms from an untracked
    `.scrub-extra` file on the porting machine, so the list itself is never
    published.
 3. No operator-identifying paths: `C:\Users\<name>` and `~/pers/` roots →
