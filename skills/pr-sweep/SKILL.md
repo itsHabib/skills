@@ -70,6 +70,9 @@ gh search prs --author=@me --state=open --limit 60 \
   | grep -v -e '^<work-org>/' -e '^drop-party/'
 ```
 
+That `grep -v` is the `--scope pers` filter: drop it for `--scope all`. For `--repo`,
+keep only that repository's rows.
+
 Per PR — state, checks, panel, age:
 
 ```bash
