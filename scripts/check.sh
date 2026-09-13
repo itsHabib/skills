@@ -188,6 +188,11 @@ check_folded_discovery() {
   [[ "$description" == Run\ a\ branch* ]] || fail "skills/skills/discover.sh: folded description was not rendered"
 }
 
+check_work_contract_validator() {
+  bash skills/work-contract/scripts/test-check-work.sh \
+    || fail "skills/work-contract/scripts/test-check-work.sh failed"
+}
+
 echo "Checking SKILL.md frontmatter..."
 # Iterate directories, not the SKILL.md glob — a skill dir with no SKILL.md
 # must fail loudly instead of being silently skipped.
@@ -211,6 +216,9 @@ check_companion_files
 
 echo "Checking folded-description discovery..."
 check_folded_discovery
+
+echo "Checking the work-contract validator..."
+check_work_contract_validator
 
 if [[ "$warnings" -gt 0 ]]; then
   echo "Completed with $warnings warning(s)."

@@ -1,6 +1,6 @@
 ---
 name: push
-description: Push the current session's work to another agent surface so it pops up there as a live, resumable session — `push codex` teleports this conversation into the Codex desktop app as a real thread (transcript injection, zero tokens), `push chip` spins a Claude Code chip, `push cloud` is reserved. Use when the user says "push this to codex", "push codex", "hand this to codex", "get this session into my codex tab", "push this to a chip", or invokes /push [target]. Distinct from /continue (paste-ready prompt, no session created) and /chip (Claude-only, task-shaped) — /push materializes a real session on the target surface, pre-warmed with this session's context.
+description: Push the current session's work to another agent surface so it pops up there as a live, resumable session — `push codex` teleports this conversation into the Codex desktop app as a real thread (zero-token transcript injection, then one Codex warm-up turn by default), `push chip` spins a Claude Code chip, `push cloud` is reserved. Use when the user says "push this to codex", "push codex", "hand this to codex", "get this session into my codex tab", "push this to a chip", or invokes /push [target]. Distinct from /continue (paste-ready prompt, no session created) and /chip (Claude-only, task-shaped) — /push materializes a real session on the target surface, pre-warmed with this session's context.
 argument-hint: "<codex|chip> [focus] — target surface; optional focus narrows the handoff to one thread"
 user_invocable: true
 ---
@@ -44,7 +44,7 @@ Determine the working directory for the target session: the repo the work lives 
 
 ## Step 2a — target `codex` — transcript injection
 
-Codex's session store is plain files: rollout JSONL under `~/.codex/sessions/YYYY/MM/DD/` plus a `threads` row in `~/.codex/state_5.sqlite`. A fresh `codex app-server` serves hand-written threads via `thread/list` / `thread/read` (verified 2026-08, codex-cli 0.146), so an injected conversation is a genuine, resumable thread — no tokens spent. The desktop groups threads by project (`cwd` / git origin).
+Codex's session store is plain files: rollout JSONL under `~/.codex/sessions/YYYY/MM/DD/` plus a `threads` row in `~/.codex/state_5.sqlite`. A fresh `codex app-server` serves hand-written threads via `thread/list` / `thread/read` (verified 2026-08, codex-cli 0.146), so an injected conversation is a genuine, resumable thread. The injection itself spends no tokens; step 5's warm-up is the one model turn a push spends. The desktop groups threads by project (`cwd` / git origin).
 
 1. **Mint a UUIDv7 session id** (time-ordered, like every real Codex id):
    ```sh
