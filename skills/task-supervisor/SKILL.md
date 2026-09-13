@@ -19,11 +19,12 @@ Dispatch needs a backend this environment actually has; check before relying on 
 Fleet (`fleet` on PATH) provides the seats, dispatch, mail, checkpoints and run reports
 below. Ship (the `ship` MCP, or `/work-driver` over `ship driver`) dispatches, polls,
 judges, lands and records a task batch. The harness itself can run a subagent or new task
-per bounded brief, each in its own worktree. With none of these, status still comes from
-task/PR records and checkpoints, and facts only Fleet holds (seat occupancy, process
-state, hook activity, watcher health) are unknown. For execution, don't improvise a
-backend or a shell loop: return the concrete briefs as the plan and name the missing
-backend as the blocker.
+per bounded brief. A subagent may share the caller's checkout, so create a separate
+worktree for each brief first and never run two briefs in one checkout. With none of
+these, status still comes from task/PR records and checkpoints, and facts only Fleet
+holds (seat occupancy, process state, hook activity, watcher health) are unknown. For
+execution, don't improvise a backend or a shell loop: return the concrete briefs as the
+plan and name the missing backend as the blocker.
 
 Use the current task/PR records, latest work checkpoints and, with Fleet,
 `fleet status --all [--json]`. `fleet tail <address> [-f]` shows observed text/tools;
