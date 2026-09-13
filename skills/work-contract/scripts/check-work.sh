@@ -107,13 +107,16 @@ line_count=$(awk 'END { print NR }' "$work_file")
   fail too_large "$work_file has $line_count lines; maximum is 120"
 
 # A placeholder is TODO, TBD, FIXME, or an angle-bracketed word or phrase such as
-# <digest> or <exact command>, in prose or a code span. Literal markup passes by
-# its shape: closing (</ul>), self-closing (<br/>), attributed (<a href="x">) and
-# PascalCase JSX (<Button>) tags, and a tag closed on the same line (<li>x</li>).
-# A bare lowercase tag such as <dialog> reads exactly like <path>, so it fails.
+# <digest>, <exact command> or <Describe the change>, in prose or a code span.
+# Literal markup passes by its shape: a closing tag (</ul>), a JSX component name
+# alone (<Button>, <SVGIcon>), a tag name followed by an attribute (<a href="x">)
+# or by /> (<br/>), and a tag closed on the same line (<li>x</li>). The scan reads
+# inside markup too, so attribute values are checked. A bare lowercase tag such as
+# <dialog> reads exactly like <path>, so it fails.
 placeholders=$(awk '
   function markup(tag, line,   name) {
-    if (tag ~ /\/>$/ || tag ~ /^<[A-Z][a-z]/) return 1
+    if (tag ~ /^<[A-Z][A-Za-z0-9.]*[a-z][A-Za-z0-9.]*>$/) return 1
+    if (tag ~ /^<[A-Za-z][A-Za-z0-9._:-]*([[:space:]][^>]*)?\/>$/) return 1
     if (tag ~ /^<[A-Za-z][A-Za-z0-9._:-]*[[:space:]]+[A-Za-z_:][A-Za-z0-9._:-]*[[:space:]]*=/) return 1
     name = substr(tag, 2)
     sub(/[^A-Za-z0-9._:-].*$/, "", name)
