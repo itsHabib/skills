@@ -104,10 +104,18 @@ require_scrub_extra() {
 }
 
 check_scrub() {
-  local pattern reason hits
+  local pattern reason hits rc
   while IFS='|' read -r pattern reason; do
     [[ -z "$pattern" ]] && continue
-    hits="$(grep -rniE "$pattern" skills/ 2>/dev/null || true)"
+    rc=0
+    hits="$(grep -rniE "$pattern" skills/ 2>/dev/null)" || rc=$?
+    # grep exits 1 for "no match" and 2 for an error such as a malformed pattern.
+    # An error must fail the gate, not read as a clean tree. The pattern itself is
+    # not printed, so a work term never lands in a log.
+    if [[ "$rc" -gt 1 ]]; then
+      fail "invalid scrub pattern (${reason})"
+      continue
+    fi
     [[ -z "$hits" ]] && continue
     while IFS= read -r hit; do
       fail "${hit%%:*}: ${reason} -> ${hit#*:}"
