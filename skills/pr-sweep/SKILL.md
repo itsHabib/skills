@@ -141,6 +141,17 @@ When two apply, the blocker to name is the one that must move **first**: unresol
 findings outrank a rebase (the rebase would only have to happen again), and both outrank
 a missing approval — there is nothing to approve until the findings are answered.
 
+### ⚫ Rotting — decide: revive or close
+No movement in `--stale` days (default 14), read from `updatedAt`: a push, comment or review
+resets the clock. Include the age in days and a one-line read on whether the work still
+matters. Offer closing as a live option — an abandoned PR costs attention every sweep.
+
+Rotting outranks Ready and Needs your decision: whether idle work still matters comes before
+a grant or a sign-off. A green PR past `--stale` isn't blocked by authorization alone either;
+its checks are as old as its last push. When a rotting PR would otherwise be Ready, say so —
+reviving it is only the mint request. Agent stopped short stays above Rotting because its
+named blocker already says what reviving takes.
+
 ### 🟢 Ready — mint and merge
 `CLEAN` + every check green + ≥2 roster bots + **zero** unresolved threads + not a draft +
 `reviewDecision` is not `REVIEW_REQUIRED` (a required approval is still a blocker).
@@ -164,11 +175,6 @@ A human judgment blocks it, not work:
 - A finding whose fix crosses a human-only line (infra, spend, credentials, scope change).
 
 Say what the decision *is*, in one line. Don't restate the PR title.
-
-### ⚫ Rotting — decide: revive or close
-No movement in `--stale` days (default 14). Include the age in days and a one-line read on
-whether the work still matters. Offer closing as a live option — an abandoned PR costs
-attention every sweep.
 
 ## Output format
 
@@ -233,7 +239,7 @@ Observability plane — read-only, storeless views over State. Pick by question:
 
 Natural follow-ons, all operator-invoked: 🟡 band → `/chip` a `/drive <repo>#<n> — done =
 parked on readiness`; a messy panel → `/review-digest N` then `/review-coordinator N`;
-🟢 band → mint, then `gate gate`; ⚫ band → close.
+🟢 band → mint, then `gate gate`; ⚫ band → close, or mint to revive one that is otherwise ready.
 
 ## Source material
 
