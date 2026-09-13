@@ -104,9 +104,15 @@ require_scrub_extra() {
 }
 
 check_scrub() {
-  local pattern reason hits rc
-  while IFS='|' read -r pattern reason; do
-    [[ -z "$pattern" ]] && continue
+  local line pattern reason hits rc
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    # Split on the LAST "|": a pattern may itself be an alternation (a|b), and the
+    # reason never contains "|". A line with no reason gets a generic one, so the
+    # pattern is never echoed as its own reason.
+    pattern="${line%|*}"
+    reason="SYNC.md #2: work term"
+    [[ "$line" == *"|"* ]] && reason="${line##*|}"
     rc=0
     hits="$(grep -rniE "$pattern" skills/ 2>/dev/null)" || rc=$?
     # grep exits 1 for "no match" and 2 for an error such as a malformed pattern.
