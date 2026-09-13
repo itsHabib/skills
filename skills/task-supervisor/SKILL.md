@@ -15,16 +15,27 @@ For a status question, read and report without dispatching, messaging or schedul
 For a preparation request, produce a reviewable plan. For authorized execution, reconcile
 current work and advance it. There is no universal one-action or message quota.
 
-Use the current task/PR records, latest work checkpoints and `fleet status --all [--json]`.
-`fleet tail <address> [-f]` shows observed text/tools; `fleet run-report` shows retained
-attempts and provider-reported cost/turn totals. Worker process state, hook activity,
-assignment, task completion and watcher health are distinct facts. Missing evidence is
-unknown. Read the exact PR head/checks/reviews before claiming readiness.
+Dispatch needs a backend this environment actually has; check before relying on one.
+Fleet (`fleet` on PATH) provides the seats, dispatch, mail, checkpoints and run reports
+below. Ship (the `ship` MCP, or `/work-driver` over `ship driver`) dispatches, polls,
+judges, lands and records a task batch. The harness itself can run a subagent or new task
+per bounded brief, each in its own worktree. With none of these, status still comes from
+task/PR records and checkpoints, and facts only Fleet holds (seat occupancy, process
+state, hook activity, watcher health) are unknown. For execution, don't improvise a
+backend or a shell loop: return the concrete briefs as the plan and name the missing
+backend as the blocker.
+
+Use the current task/PR records, latest work checkpoints and, with Fleet,
+`fleet status --all [--json]`. `fleet tail <address> [-f]` shows observed text/tools;
+`fleet run-report` shows retained attempts and provider-reported cost/turn totals. Worker
+process state, hook activity, assignment, task completion and watcher health are distinct
+facts. Missing evidence is unknown. Read the exact PR head/checks/reviews before claiming
+readiness.
 
 Prioritize unblocking work already in progress. A free compatible seat can receive a
 concrete brief through `fleet dispatch ... --slot <seat> --brief "..."`; the Go watcher
 observes the assignment directly. Select another repository with the seat or `--repo`
-instead of changing the caller's identity. Read back the assignment after dispatch.
+instead of changing the caller's identity. Read back the assignment or run after dispatch.
 Do not repurpose a dirty tree or displace a live holder. Preserve unfinished work and
 checkpoints when replacing a session on the same branch.
 
@@ -41,11 +52,13 @@ Keep findings and receipts on the work/PR. Merges use Gate's existing grant and 
 head-pinned action. Never mint grants, widen authority or weaken checks to finish a queue.
 
 Checkpoint useful conclusions, unresolved questions and the next action before yielding:
-`fleet handoff role:<role> "..."`. Work-specific checkpoints use the branch instead.
+with Fleet, `fleet handoff role:<role> "..."` (work-specific checkpoints use the branch
+instead); without it, on the task or PR record.
 Latest handoffs are recovery context; mail is conversation and runtime records describe
 what was observed. Avoid a second ownership or effect journal inside Org.
 
 When waiting, yield so the existing Go watcher or desktop loop can wake the role. Keep
 polling out of shell scripts and role prompts. Once the agreed run outcome is reached,
-use `fleet stop address:<mailbox> "<reason>"`, leave a final checkpoint and finish normally.
-The stop prevents future starts without killing the session that records the result.
+stop a Fleet address with `fleet stop address:<mailbox> "<reason>"`, leave a final
+checkpoint and finish normally. The stop prevents future starts without killing the
+session that records the result.
