@@ -113,7 +113,8 @@ line_count=$(awk 'END { print NR }' "$work_file")
 # A bare lowercase tag such as <dialog> reads exactly like <path>, so it fails.
 placeholders=$(awk '
   function markup(tag, line,   name) {
-    if (tag ~ /\/>$/ || tag ~ /=/ || tag ~ /^<[A-Z][a-z]/) return 1
+    if (tag ~ /\/>$/ || tag ~ /^<[A-Z][a-z]/) return 1
+    if (tag ~ /^<[A-Za-z][A-Za-z0-9._:-]*[[:space:]]+[A-Za-z_:][A-Za-z0-9._:-]*[[:space:]]*=/) return 1
     name = substr(tag, 2)
     sub(/[^A-Za-z0-9._:-].*$/, "", name)
     return index(line, "</" name ">") > 0
@@ -124,7 +125,8 @@ placeholders=$(awk '
     while (match(rest, /<[A-Za-z][^>]*>/)) {
       tag = substr(rest, RSTART, RLENGTH)
       if (!markup(tag, line)) return 1
-      rest = substr(rest, RSTART + RLENGTH)
+      # Resume inside the tag so a placeholder in an attribute value is still read.
+      rest = substr(rest, RSTART + 1)
     }
     return 0
   }
