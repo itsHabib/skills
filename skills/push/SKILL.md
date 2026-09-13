@@ -56,9 +56,23 @@ Codex's session store is plain files: rollout JSONL under `~/.codex/sessions/YYY
    - **Plus one `event_msg` per turn** — the UI renders from the event stream, not from response_items (verified 2026-08: model saw injected response_item-only history, UI displayed none of it): user turns `{"type":"user_message","client_id":"<uuid4>","message":<text>,"images":[]}`, assistant turns `{"type":"agent_message","message":<text>}`. Emit the response_item and its event_msg adjacent, in turn order.
    - **First user message = the handoff packet.** Then the real turns of this session, condensed: keep the user's messages near-verbatim, condense long assistant turns, render tool activity as bracketed notes inside the assistant text (`[ran tests: 34 pass]`). Skip system noise.
    - **Final assistant message**: a short "state of play + next step" so the thread reads as parked, ready to continue.
-3. **Insert the thread row** (values copied from a real row where noted):
+3. **Insert the thread row** (values copied from a real row where noted). Titles and previews routinely contain quotes, so never paste values into SQL text. Write them to a JSON file with your file tool — keys `id`, `rollout_path`, `cwd`, `title`, `git_origin_url` (null when there is none), `cli_version`, `first_user_message`, `model`, `preview` — and bind them as parameters:
    ```sh
-   sqlite3 ~/.codex/state_5.sqlite "insert into threads (id, rollout_path, created_at, updated_at, source, model_provider, cwd, title, sandbox_policy, approval_mode, tokens_used, has_user_event, archived, git_origin_url, cli_version, first_user_message, memory_mode, model, reasoning_effort, thread_source, preview, history_mode, recency_at) values ('<id>', '<rollout_path>', strftime('%s','now'), strftime('%s','now'), 'vscode', 'openai', '<repo>', '<short imperative title>', '{\"type\":\"disabled\"}', 'never', 0, 0, 0, '<git origin or NULL>', '<cli_version>', '<first line of packet>', 'enabled', '<model from a real row>', 'high', 'user', '<last assistant line>', 'legacy', strftime('%s','now'))"
+   python3 - ~/.codex/state_5.sqlite "$TMPDIR/push-thread.json" <<'PY'
+   import json, sqlite3, sys
+   db, values = sys.argv[1], json.load(open(sys.argv[2]))
+   con = sqlite3.connect(db)
+   con.execute(
+       "insert into threads (id, rollout_path, created_at, updated_at, source, model_provider, cwd, title,"
+       " sandbox_policy, approval_mode, tokens_used, has_user_event, archived, git_origin_url, cli_version,"
+       " first_user_message, memory_mode, model, reasoning_effort, thread_source, preview, history_mode, recency_at)"
+       " values (:id, :rollout_path, strftime('%s','now'), strftime('%s','now'), 'vscode', 'openai', :cwd, :title,"
+       " '{\"type\":\"disabled\"}', 'never', 0, 0, 0, :git_origin_url, :cli_version, :first_user_message,"
+       " 'enabled', :model, 'high', 'user', :preview, 'legacy', strftime('%s','now'))",
+       values,
+   )
+   con.commit()
+   PY
    ```
    `source` must be `vscode` — the desktop list filters out other sources (verified: `exec` threads are hidden).
 4. **Append the index line** to `~/.codex/session_index.jsonl`:
@@ -70,7 +84,7 @@ Codex's session store is plain files: rollout JSONL under `~/.codex/sessions/YYY
    ```
    This does two jobs (verified live 2026-08): the operator opens a thread where Codex has already read the state and spoken last — nothing to type — and Codex's own writer rewrites the hand-made rollout into the full format (turn_context, world_state, event stream) that the UI renders cleanly; a raw injected skeleton can open blank until poked. The resume rewrites the thread title to the warm-up prompt, so re-set it:
    ```sh
-   sqlite3 ~/.codex/state_5.sqlite "update threads set title='<short imperative title>' where id='<id>'"
+   python3 -c 'import json, sqlite3, sys; v = json.load(open(sys.argv[2])); c = sqlite3.connect(sys.argv[1]); c.execute("update threads set title = :title where id = :id", v); c.commit()' ~/.codex/state_5.sqlite "$TMPDIR/push-thread.json"
    ```
 6. **Fire the live deep link**: `open "codex://threads/<id>"`. The Codex desktop (inside ChatGPT.app) fronts and opens the thread. A stale instance shows "Conversation not found" — harmless; the app refreshes its list on navigation, so **fire the link a second time** after a beat (verified live 2026-08: second fire landed with no restart).
 7. Report: title, id, project grouping, and `codex resume <id>` as the terminal route. If the deep link misses twice, the thread is guaranteed present on next app launch; *offer* (never just do — it kills in-flight Codex turns):

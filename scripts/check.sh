@@ -92,6 +92,17 @@ PATTERNS
   return 0
 }
 
+# Without .scrub-extra the work-term check cannot run, so a porting machine must not
+# pass silently. CI has no list (publishing it would defeat it), so it warns instead.
+require_scrub_extra() {
+  [[ -f .scrub-extra ]] && return 0
+  if [[ -n "${CI:-}" ]]; then
+    warn "no .scrub-extra in CI: work terms (SYNC.md #2) are checked on the porting machine"
+    return 0
+  fi
+  fail ".scrub-extra is missing: list your work terms in it (SYNC.md #2) before porting"
+}
+
 check_scrub() {
   local pattern reason hits
   while IFS='|' read -r pattern reason; do
@@ -175,6 +186,7 @@ for dir in skills/*/; do
 done
 
 echo "Checking public scrub (SYNC.md transforms)..."
+require_scrub_extra
 check_scrub
 
 echo "Checking README ↔ skills/ consistency..."
