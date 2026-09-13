@@ -54,7 +54,10 @@ implementer model earns its keep" — see [Per-model rollup](#per-model-rollup--
 
 ```bash
 DB="${SHIP_DB_PATH:-$HOME/.config/ship/state.db}"
-[ -f "$DB" ] || { echo "ship store not found at $DB (set SHIP_DB_PATH)" >&2; exit 1; }
+if [ -n "${SHIP_DB_PATH:-}" ] && [ ! -f "$DB" ]; then
+  echo "SHIP_DB_PATH points at a missing file: $DB" >&2; exit 1
+fi
+[ -f "$DB" ] || { echo "no ship store at $DB; classifying on footers and trailers" >&2; DB=; }
 ```
 
 **Windows:**
@@ -69,7 +72,17 @@ Desktop (connector), the canonical store is the virtualized one:
 `%LOCALAPPDATA%\Packages\<claude-desktop-pkg>\LocalCache\Roaming\ship\state.db`.
 That MSIX split is Windows-only — it has no macOS/Linux equivalent.
 
-Prefer `SHIP_DB_PATH` whenever it's set; report which store you read.
+Prefer `SHIP_DB_PATH` whenever it's set; report which store you read. A set
+`SHIP_DB_PATH` that names a missing file is a configuration error: stop there.
+
+**No store.** With `SHIP_DB_PATH` unset and no store at any location above, ship
+isn't installed here. Skip step 2 and classify from the other two sources:
+footer, then trailers, then human (step 4 with an empty engine set). Say so above
+the table. There are no `engine-*` rows without the store, and an engine-run PR
+classifies by its footer or trailers instead, so it can show as
+`seat-hand-driven`. `--by-model` then needs `--manifest`: the window-scoped
+rollup takes its streams from the store, and with a manifest the cells only the
+store supplies go `—`.
 
 ### 2. Pull engine facts (one query, keyed by pr_url)
 
