@@ -6,9 +6,12 @@ mirror — every sync is a *scrubbed behavioral port*, never a byte-copy.
 Public transforms (apply to every synced file):
 
 1. `user_invocable: true` in frontmatter; frontmatter `name` == dir name.
-2. No employer names, internal hostnames, or ticket-system URLs.
-3. No operator-identifying paths or repo names: `C:\Users\<name>`, `~/pers/`
-   roots, private `owner/repo` names → placeholders (`~/projects/`, `my-app`).
+2. No work-related content: employer names, their hostnames, ticket keys, or
+   ticket-system URLs. `scripts/check.sh` reads these terms from an untracked
+   `.scrub-extra` file on the porting machine, so the list itself is never
+   published.
+3. No operator-identifying paths: `C:\Users\<name>` and `~/pers/` roots →
+   placeholders (`~/projects/`). Naming the operator's own repositories is fine.
 4. Private local-binary paths → env vars with a `## Prerequisites` note.
 5. Memory-slug citations (`feedback_*`, `reference_*`) stripped from source
    material sections.
@@ -21,9 +24,7 @@ Public transforms (apply to every synced file):
    repository designates"), `fact-check` (ledger `source:` enum is
    `human`, not `operator`).
 
-Before pushing: `scripts/check.sh` must pass AND
-`git grep -riE "<employer>|<operator-username>|<private-repo-names>" -- skills`
-must return nothing.
+Before pushing: `scripts/check.sh` must pass with your `.scrub-extra` in place.
 
 Synced 2026-09-03: `kickoff`, `fact-check`, `hackathon`, `parallel-work`,
 `work-contract`. `kickoff` supersedes `brief`, which stays published for now —
