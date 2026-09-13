@@ -78,18 +78,18 @@ check_frontmatter() {
 # transforms 2 and 3 part of the gate.
 #
 # Patterns are literal-ish EREs, one per line: <pattern>|<what it violates>
+# Work terms (transform 2) never live in this public file: listing them here
+# would publish them. They come from an untracked .scrub-extra file, in the same
+# format, on the machine that ports skills.
 scrub_patterns() {
   cat <<'PATTERNS'
 pers/|SYNC.md #3: operator path root (use the ~/projects/ placeholder)
 C:\\\\Users|SYNC.md #3: Windows operator path
 \$HOME/pers|SYNC.md #3: operator path root
 /Users/[A-Za-z0-9._-]+/|SYNC.md #3: macOS operator home path
-cc-skills|SYNC.md #3: private repository name
-roxiq|SYNC.md #2: private project name
-interject|SYNC.md #2: private project name
-ROX-[0-9]+|SYNC.md #2: private ticket key
-Hadrian|SYNC.md #2: private workflow name
 PATTERNS
+  [[ -f .scrub-extra ]] && cat .scrub-extra
+  return 0
 }
 
 check_scrub() {
