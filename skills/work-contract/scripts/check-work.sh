@@ -79,8 +79,10 @@ require_list_item() {
   awk -v start="$start" -v end="$end" \
     'NR > start && NR < end && /^- / && substr($0, 3) ~ /[^[:space:]]/ { found=1 } END { exit !found }' "$work_file" ||
     fail section_empty "$heading needs at least one list item"
+  # A bare "-" in a fenced block is code, such as a diff removing a blank line.
   empty_line=$(awk -v start="$start" -v end="$end" \
-    'NR > start && NR < end && /^-[[:space:]]*$/ { print NR; exit }' "$work_file")
+    'NR > start && NR < end && /^(```|~~~)/ { fence = !fence; next }
+     NR > start && NR < end && !fence && /^-[[:space:]]*$/ { print NR; exit }' "$work_file")
   [[ -z $empty_line ]] ||
     fail list_item_empty "$heading has an empty list item on line $empty_line"
 }

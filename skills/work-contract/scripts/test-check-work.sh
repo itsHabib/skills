@@ -120,6 +120,10 @@ contract active "Plain outcome." $'- Existing contracts keep validating.\n- '
 expect list_item_empty "empty list item beside a filled one"
 contract active "Plain outcome." "- Existing contracts keep validating." "- Next: run the validator." "-"
 expect list_item_empty "bare dash in the handoff"
+contract active "Plain outcome." $'- Existing contracts keep validating.\n\n```diff\n-\n```\n\n~~~\n-\n~~~'
+expect pass "bare dash inside fenced blocks"
+contract active "Plain outcome." $'- Existing contracts keep validating.\n\n```diff\n-\n```\n-'
+expect list_item_empty "bare dash after a closed fence"
 contract active "Plain outcome." "- Existing contracts keep validating." \
   "- Next: run the validator." "- Blocked: waiting on review."
 expect nonblocked_has_blocked "Blocked handoff on active work"
