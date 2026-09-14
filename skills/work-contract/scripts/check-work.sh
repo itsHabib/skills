@@ -75,9 +75,14 @@ require_list_item() {
   local heading=$1
   local start=$2
   local end=$3
+  local empty_line
   awk -v start="$start" -v end="$end" \
     'NR > start && NR < end && /^- / && substr($0, 3) ~ /[^[:space:]]/ { found=1 } END { exit !found }' "$work_file" ||
     fail section_empty "$heading needs at least one list item"
+  empty_line=$(awk -v start="$start" -v end="$end" \
+    'NR > start && NR < end && /^-[[:space:]]*$/ { print NR; exit }' "$work_file")
+  [[ -z $empty_line ]] ||
+    fail list_item_empty "$heading has an empty list item on line $empty_line"
 }
 
 require_prefix() {

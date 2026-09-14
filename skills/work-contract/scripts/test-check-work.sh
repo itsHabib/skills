@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Runs check-work.sh against generated contracts: literal markup passes, unfilled
-# placeholders and malformed handoffs fail with their codes.
+# placeholders, empty list items, and malformed handoffs fail with their codes.
 set -euo pipefail
 
 validator="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/check-work.sh"
@@ -8,8 +8,17 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 repo="$tmp/repo"
 
+# The fixture commit must not depend on the caller's git config, so run it under
+# a global config whose signing fails and whose hook rejects. The hook is
+# prepare-commit-msg because --no-verify does not skip it.
+mkdir "$tmp/hooks"
+printf '#!/bin/sh\nexit 1\n' >"$tmp/hooks/prepare-commit-msg"
+chmod +x "$tmp/hooks/prepare-commit-msg"
+printf '[commit]\n\tgpgsign = true\n[gpg]\n\tprogram = false\n[core]\n\thooksPath = %s\n' "$tmp/hooks" >"$tmp/gitconfig"
+export GIT_CONFIG_GLOBAL="$tmp/gitconfig"
+
 git init -q "$repo"
-git -C "$repo" -c user.name=test -c user.email=test@example.invalid commit -q --allow-empty -m fixture
+git -C "$repo" -c commit.gpgsign=false -c core.hooksPath=/dev/null -c user.name=test -c user.email=test@example.invalid commit -q --allow-empty -m fixture
 sha=$(git -C "$repo" rev-parse HEAD)
 
 # contract STATUS OUTCOME PRESERVE [HANDOFF...] writes WORK.md. HANDOFF lines
@@ -107,6 +116,10 @@ outcome placeholder "TODO marker" "Finish the TODO list."
 # Handoff and list rules.
 contract active "Plain outcome." "- "
 expect section_empty "list item without content"
+contract active "Plain outcome." $'- Existing contracts keep validating.\n- '
+expect list_item_empty "empty list item beside a filled one"
+contract active "Plain outcome." "- Existing contracts keep validating." "- Next: run the validator." "-"
+expect list_item_empty "bare dash in the handoff"
 contract active "Plain outcome." "- Existing contracts keep validating." \
   "- Next: run the validator." "- Blocked: waiting on review."
 expect nonblocked_has_blocked "Blocked handoff on active work"
