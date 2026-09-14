@@ -80,7 +80,7 @@ check_frontmatter() {
 # Patterns are literal-ish EREs, one per line: <pattern>|<what it violates>
 # Work terms (transform 2) never live in this public file: listing them here
 # would publish them. They come from an untracked .scrub-extra file, in the same
-# format, on the machine that ports skills.
+# format, on the machine that ports skills, and are checked across the whole tree.
 scrub_patterns() {
   cat <<'PATTERNS'
 pers/|SYNC.md #3: operator path root (use the ~/projects/ placeholder)
@@ -88,8 +88,6 @@ C:\\\\Users|SYNC.md #3: Windows operator path
 \$HOME/pers|SYNC.md #3: operator path root
 /Users/[A-Za-z0-9._-]+/|SYNC.md #3: macOS operator home path
 PATTERNS
-  [[ -f .scrub-extra ]] && cat .scrub-extra
-  return 0
 }
 
 # Without .scrub-extra the work-term check cannot run, so a porting machine must not
@@ -103,8 +101,14 @@ require_scrub_extra() {
   fail ".scrub-extra is missing: list your work terms in it (SYNC.md #2) before porting"
 }
 
-check_scrub() {
-  local line pattern reason hits rc
+# Path rules search skills/ only, because this script and SYNC.md quote them.
+search_skills() { grep -rniE -e "$1" skills/; }
+# Work terms search every tracked or new file in the checkout, never the list itself.
+search_tree() { git grep --untracked -n -i -E -e "$1" -- . ':!.scrub-extra'; }
+
+# Reads "pattern|reason" lines from stdin and fails on every hit of $1's search.
+scan_patterns() {
+  local search=$1 line pattern reason hits rc
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
     # Split on the LAST "|": a pattern may itself be an alternation (a|b), and the
@@ -114,10 +118,10 @@ check_scrub() {
     reason="SYNC.md #2: work term"
     [[ "$line" == *"|"* ]] && reason="${line##*|}"
     rc=0
-    hits="$(grep -rniE "$pattern" skills/ 2>/dev/null)" || rc=$?
-    # grep exits 1 for "no match" and 2 for an error such as a malformed pattern.
-    # An error must fail the gate, not read as a clean tree. The pattern itself is
-    # not printed, so a work term never lands in a log.
+    hits="$("$search" "$pattern" 2>/dev/null)" || rc=$?
+    # Both searches exit 1 for "no match" and above 1 for an error such as a
+    # malformed pattern. An error must fail the gate, not read as a clean tree.
+    # The pattern itself is not printed, so a work term never lands in a log.
     if [[ "$rc" -gt 1 ]]; then
       fail "invalid scrub pattern (${reason})"
       continue
@@ -126,7 +130,13 @@ check_scrub() {
     while IFS= read -r hit; do
       fail "${hit%%:*}: ${reason} -> ${hit#*:}"
     done <<<"$hits"
-  done < <(scrub_patterns)
+  done
+}
+
+check_scrub() {
+  scan_patterns search_skills < <(scrub_patterns)
+  [[ -f .scrub-extra ]] && scan_patterns search_tree < .scrub-extra
+  return 0
 }
 
 check_readme_consistency() {
