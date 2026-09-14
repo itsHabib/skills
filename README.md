@@ -78,6 +78,22 @@ Copy individual dirs if you want a subset.
 | `/incident-learn` | Verify incident recovery, record the evidence-backed timeline, and turn gaps into owned preventive controls and safer maintenance automation. |
 | `/editorial-pass` | Multi-editor editorial pass over a draft in your voice — a mechanical AI-tell scan, six editor lenses fanned out via Workflow, and an editor-in-chief consolidation with verbatim fixes + a publish verdict. |
 | `/voice-learn` | Mine AI-draft → final edit pairs to converge the agent's writing on your real voice — capture the AI version before you edit, then learn the diff into a voice profile. Corpus is yours, local, never in the repo. |
+| `/kickoff` | Turn a task, spec, or unfamiliar code area into a code-anchored `kickoff.md` + a paste-ready handoff prompt — distills existing grounding, explores cold code when grounding is thin. Supersedes `/brief`. |
+| `/fact-check` | Extract every checkable claim in a draft into a ledger, then check each one by evidence source (your repos / the web / run it) — confirmed, contradicted, partial, or unverifiable, with a pointer each. Never "probably fine". |
+| `/hackathon` | Run a build competition — one topic, N independent entries in fresh sessions, fixed house rules and a 100-point rubric. Emits the pack, the launch prompts, and a blank scorecard; never scores anything itself. |
+| `/parallel-work` | Plan, run, inspect, or resume a bounded batch of repository work with Agent workers and Git worktrees — local parallelism with no task store, driver manifests, or cloud orchestration. |
+| `/work-contract` | Create, refresh, validate, or close one compact `WORK.md` — the smallest durable packet another capable model needs to resume a bounded task. Ships its own validator. |
+| `/channel` | Read or post to a shared local message bus between agent sessions, or set up direct peer coordination. Posting records a message; it doesn't wake a session or prove receipt. |
+| `/claim` | Record which unit of work (task, ticket, PR, or free text) this session owns, in a session-claims log that Claude and Codex share. |
+| `/release` | Release this session's claims, with an optional note that becomes the handoff. |
+| `/roster` | Show each session's claimed work, PRs, and last activity from the session-claims log. Read-only. |
+| `/pr-sweep` | Sweep every open PR you authored: the one thing blocking each merge, whose move it is, and how long it has waited. Read-only. |
+| `/provenance` | Attribute merged PRs to the pipeline that produced them (engine cloud or local, hand-driven, human), with model, effort, and review cycles. |
+| `/push` | Move the current session to another agent surface as a live, resumable session (`push codex`, `push chip`). |
+| `/self-play` | Run a generator against an adversarial verifier with a decidable win condition, compared with a baseline so each run is an experiment. |
+| `/task-owner` | Advance an assigned task through implementation, validation, review, and its authorized delivery boundary, resuming from task records. |
+| `/task-supervisor` | Lead a task set across workers or repositories: reconcile live progress and unblock delivery. Status requests stay read-only. |
+| `/task-verifier` | Verify a task or PR independently at its exact head and record an evidence-backed pass, fail, or insufficient verdict. |
 
 These encode one developer's workflow opinions. Fork and edit to match yours — the opinions ARE the value.
 

@@ -78,30 +78,118 @@ check_frontmatter() {
 # transforms 2 and 3 part of the gate.
 #
 # Patterns are literal-ish EREs, one per line: <pattern>|<what it violates>
+# Work terms (transform 2) never live in this public file: listing them here
+# would publish them. They come from an untracked .scrub-extra file, in the same
+# format, on the machine that ports skills, and are checked across the whole tree.
 scrub_patterns() {
   cat <<'PATTERNS'
 pers/|SYNC.md #3: operator path root (use the ~/projects/ placeholder)
 C:\\\\Users|SYNC.md #3: Windows operator path
 \$HOME/pers|SYNC.md #3: operator path root
 /Users/[A-Za-z0-9._-]+/|SYNC.md #3: macOS operator home path
-cc-skills|SYNC.md #3: private repository name
-roxiq|SYNC.md #2: private project name
-interject|SYNC.md #2: private project name
-ROX-[0-9]+|SYNC.md #2: private ticket key
-Hadrian|SYNC.md #2: private workflow name
 PATTERNS
 }
 
-check_scrub() {
-  local pattern reason hits
-  while IFS='|' read -r pattern reason; do
-    [[ -z "$pattern" ]] && continue
-    hits="$(grep -rniE "$pattern" skills/ 2>/dev/null || true)"
+# Without .scrub-extra the work-term check cannot run, so a porting machine must not
+# pass silently. CI has no list (publishing it would defeat it), so it warns instead.
+require_scrub_extra() {
+  [[ -f .scrub-extra ]] && return 0
+  if [[ -n "${CI:-}" ]]; then
+    warn "no .scrub-extra in CI: work terms (SYNC.md #2) are checked on the porting machine"
+    return 0
+  fi
+  fail ".scrub-extra is missing: list your work terms in it (SYNC.md #2) before porting"
+}
+
+# The list would publish every term at once, so it must stay untracked and ignored,
+# and each line must parse the way the scan reads it: "pattern|SYNC.md #n: reason",
+# POSIX classes only (grep -E and git grep -E silently never match \d, \b, \s).
+check_scrub_extra_file() {
+  [[ -f .scrub-extra ]] || return 0
+  git ls-files --error-unmatch .scrub-extra >/dev/null 2>&1 \
+    && fail ".scrub-extra is tracked: git rm --cached .scrub-extra"
+  git check-ignore -q .scrub-extra \
+    || fail ".scrub-extra is not gitignored: add it to .gitignore before porting"
+  local line patterns=0
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%$'\r'}"
+    [[ -z "${line// }" ]] && continue
+    patterns=$((patterns + 1))
+    [[ "$line" =~ \|SYNC\.md\ \# ]] || fail ".scrub-extra has a line without a '|SYNC.md #n: reason' suffix"
+    [[ "${line%|*}" =~ \\[A-Za-z] ]] && fail ".scrub-extra has a backslash escape; use POSIX classes such as [0-9]"
+  done <.scrub-extra
+  [[ "$patterns" -gt 0 ]] || fail ".scrub-extra lists no patterns, so no work term would be caught"
+  return 0
+}
+
+# Path rules search skills/ only, because this script and SYNC.md quote them.
+search_skills() { grep -rniE -e "$1" skills/; }
+# Work terms search every tracked or new file in the checkout, never the list itself,
+search_tree() { git grep --untracked -n -i -E -e "$1" -- . ':!.scrub-extra'; }
+# what HEAD commits, including tracked files an ignore rule would otherwise hide,
+search_head() { git grep -n -i -E -e "$1" HEAD -- . ':!.scrub-extra'; }
+# every file name,
+search_names() {
+  local names
+  names=$(git ls-files -co --exclude-standard) || return 2
+  grep -i -E -e "$1" <<<"$names"
+}
+# and what a squash merge copies into main: the branch commits' messages and
+# identities, the lines they add (a term added then removed still ships in the
+# branch history), and the branch name. Removed lines are not scanned, because
+# removing a term is the fix.
+search_log() {
+  local meta diff added
+  meta=$(git log --format='%h %an <%ae> %cn <%ce>%n%B' origin/main..HEAD) || return 2
+  diff=$(git log -p --format= origin/main..HEAD) || return 2
+  added=$(grep '^+' <<<"$diff" | grep -v '^+++' || true)
+  grep -n -i -E -e "$1" <<<"$meta
+$added
+branch: $(git rev-parse --abbrev-ref HEAD)"
+}
+
+# Reads "pattern|reason" lines from stdin and fails on every hit of $1's search.
+scan_patterns() {
+  local search=$1 line pattern reason hits rc
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%$'\r'}"
+    [[ -z "${line// }" ]] && continue
+    # Split on the LAST "|": a pattern may itself be an alternation (a|b), and the
+    # reason never contains "|". A line with no reason gets a generic one, so the
+    # pattern is never echoed as its own reason.
+    pattern="${line%|*}"
+    reason="SYNC.md #2: work term"
+    [[ "$line" == *"|"* ]] && reason="${line##*|}"
+    rc=0
+    hits="$("$search" "$pattern" 2>/dev/null)" || rc=$?
+    # Every search exits 1 for "no match" and above 1 for an error such as a
+    # malformed pattern. An error must fail the gate, not read as a clean tree.
+    # The pattern is never printed, but a hit prints its line: keep the list out
+    # of CI, where that output would be public.
+    if [[ "$rc" -gt 1 ]]; then
+      fail "invalid scrub pattern (${reason})"
+      continue
+    fi
     [[ -z "$hits" ]] && continue
     while IFS= read -r hit; do
       fail "${hit%%:*}: ${reason} -> ${hit#*:}"
     done <<<"$hits"
-  done < <(scrub_patterns)
+  done
+}
+
+check_scrub() {
+  scan_patterns search_skills < <(scrub_patterns)
+  [[ -f .scrub-extra ]] || return 0
+  check_scrub_extra_file
+  scan_patterns search_tree < .scrub-extra
+  scan_patterns search_head < .scrub-extra
+  scan_patterns search_names < .scrub-extra
+  if ! git rev-parse -q --verify origin/main >/dev/null; then
+    fail "no origin/main: fetch it so the branch's commits can be scanned for work terms"
+    return 0
+  fi
+  scan_patterns search_log < .scrub-extra
+  return 0
 }
 
 check_readme_consistency() {
@@ -175,6 +263,7 @@ for dir in skills/*/; do
 done
 
 echo "Checking public scrub (SYNC.md transforms)..."
+require_scrub_extra
 check_scrub
 
 echo "Checking README ↔ skills/ consistency..."
