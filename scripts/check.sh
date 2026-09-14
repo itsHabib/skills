@@ -110,13 +110,15 @@ check_scrub_extra_file() {
     && fail ".scrub-extra is tracked: git rm --cached .scrub-extra"
   git check-ignore -q .scrub-extra \
     || fail ".scrub-extra is not gitignored: add it to .gitignore before porting"
-  local line
+  local line patterns=0
   while IFS= read -r line || [[ -n "$line" ]]; do
     line="${line%$'\r'}"
-    [[ -z "$line" ]] && continue
+    [[ -z "${line// }" ]] && continue
+    patterns=$((patterns + 1))
     [[ "$line" =~ \|SYNC\.md\ \# ]] || fail ".scrub-extra has a line without a '|SYNC.md #n: reason' suffix"
     [[ "${line%|*}" =~ \\[A-Za-z] ]] && fail ".scrub-extra has a backslash escape; use POSIX classes such as [0-9]"
   done <.scrub-extra
+  [[ "$patterns" -gt 0 ]] || fail ".scrub-extra lists no patterns, so no work term would be caught"
   return 0
 }
 
@@ -124,17 +126,34 @@ check_scrub_extra_file() {
 search_skills() { grep -rniE -e "$1" skills/; }
 # Work terms search every tracked or new file in the checkout, never the list itself,
 search_tree() { git grep --untracked -n -i -E -e "$1" -- . ':!.scrub-extra'; }
+# what HEAD commits, including tracked files an ignore rule would otherwise hide,
+search_head() { git grep -n -i -E -e "$1" HEAD -- . ':!.scrub-extra'; }
 # every file name,
-search_names() { grep -i -E -e "$1" < <(git ls-files -co --exclude-standard); }
-# and the messages and identities of the commits a squash merge copies into main.
-search_log() { grep -n -i -E -e "$1" < <(git log --format='%h %an <%ae> %cn <%ce>%n%B' origin/main..HEAD); }
+search_names() {
+  local names
+  names=$(git ls-files -co --exclude-standard) || return 2
+  grep -i -E -e "$1" <<<"$names"
+}
+# and what a squash merge copies into main: the branch commits' messages and
+# identities, the lines they add (a term added then removed still ships in the
+# branch history), and the branch name. Removed lines are not scanned, because
+# removing a term is the fix.
+search_log() {
+  local meta diff added
+  meta=$(git log --format='%h %an <%ae> %cn <%ce>%n%B' origin/main..HEAD) || return 2
+  diff=$(git log -p --format= origin/main..HEAD) || return 2
+  added=$(grep '^+' <<<"$diff" | grep -v '^+++' || true)
+  grep -n -i -E -e "$1" <<<"$meta
+$added
+branch: $(git rev-parse --abbrev-ref HEAD)"
+}
 
 # Reads "pattern|reason" lines from stdin and fails on every hit of $1's search.
 scan_patterns() {
   local search=$1 line pattern reason hits rc
   while IFS= read -r line || [[ -n "$line" ]]; do
     line="${line%$'\r'}"
-    [[ -z "$line" ]] && continue
+    [[ -z "${line// }" ]] && continue
     # Split on the LAST "|": a pattern may itself be an alternation (a|b), and the
     # reason never contains "|". A line with no reason gets a generic one, so the
     # pattern is never echoed as its own reason.
@@ -163,9 +182,10 @@ check_scrub() {
   [[ -f .scrub-extra ]] || return 0
   check_scrub_extra_file
   scan_patterns search_tree < .scrub-extra
+  scan_patterns search_head < .scrub-extra
   scan_patterns search_names < .scrub-extra
   if ! git rev-parse -q --verify origin/main >/dev/null; then
-    warn "no origin/main: commit messages and identities were not scanned for work terms"
+    fail "no origin/main: fetch it so the branch's commits can be scanned for work terms"
     return 0
   fi
   scan_patterns search_log < .scrub-extra
