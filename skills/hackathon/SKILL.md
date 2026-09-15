@@ -20,9 +20,39 @@ self-reports, three promoted. The earlier agent-orchestrated attempt at the same
 run silently dropped one slot and never ran the judge, which is why the barrier
 and the re-run are rules, not suggestions.
 
-Four verbs, usually hours-to-days apart. Bare `/hackathon`: no pack for the
-topic at hand, prep; pack exists, entries not started, launch; every slot
-terminal, judge; scoreboard ratified, archive.
+## The loop at a glance
+
+    prep     topic + ideas  ->  pack: README (rules, rubric), one brief per entry, anti-clone grid
+    launch   one fresh isolated builder per brief (paste prompts, or spawn background agents)
+             each ends in RESULT.json (facts) + test-output.txt (verbatim)  ->  RUN.md ledger
+    judge    barrier: every slot terminal  ->  re-run test_cmd + demo_cmd from clean
+             -> honesty multiplier -> PROMOTE / SEED / PARK / DROP -> SCOREBOARD.md
+    you      ratify the scoreboard; promote winners (repo mode: a draft PR from hack/<slug>)
+    archive  freeze the wave on a shelf with its rules, scorecard, and per-entry briefs
+
+Bare `/hackathon` picks the verb from the pack state:
+
+| State | Verb |
+|---|---|
+| no pack for this topic | prep |
+| pack exists, RUN.md empty | launch |
+| every slot terminal in RUN.md | judge |
+| SCOREBOARD.md ratified | archive |
+
+## Taking pieces without taking the skill
+
+Each part stands alone. Steal in this order of payoff:
+
+1. **Judge re-runs from clean.** Nothing is green until a separate agent ran
+   the suite itself. Drop this into any "N agents tried X" workflow first.
+2. **Facts-only result contract.** `RESULT.json` with commands, counts, and
+   status, never a self-score. It makes completion and comparison mechanical.
+3. **Hard barrier.** Judge only when every slot is done, failed, or recorded
+   as never-started. Prevents the silent-drop failure.
+4. **Anti-clone grid.** One distinct (domain x archetype) cell per builder.
+5. **Honesty multiplier.** Claimed green, re-ran red: x0.4, cannot promote.
+6. **Stub-kill test.** One test that goes red when the core is stubbed, so a
+   green suite certifies the interesting part.
 
 ## The rules that never move
 
@@ -70,6 +100,8 @@ agent, a bare "chat with your docs" clone, a thin wrapper with no real logic.
 | Slot | Slug | Domain | Archetype | Seed idea (optional) |
 |---|---|---|---|---|
 | 01 | `<slug>` | <domain> | <archetype> | <one line> |
+| 02 | `tracelens` | agent observability | trajectory analyzer | JSONL agent trace in, loops / retry storms / cost hotspots out, one fix per finding |
+| 03 | `warden` | security | capability guard | deny-by-default policy over proposed tool calls, returns allow/deny + matched rule |
 
 Pin or allow-list a stack per cell when diversity matters. On 2026-06-30 all
 ten entries rationally picked the default stack; monoculture is an artifact of
@@ -173,6 +205,21 @@ RESULT.json schema (no subjective self-score; the judge scores):
       "status": "done" | "failed", "reason": "one line if failed",
       "whats_stubbed": ["..."], "whats_local": ["negative controls", "fixtures"],
       "graduate_pitch": "one sentence"
+    }
+
+Filled example from a real entry:
+
+    {
+      "slot": "05", "slug": "tracelens", "one_liner": "agent trace in, ranked loop/cost findings out",
+      "domain": "agent observability", "archetype": "trajectory analyzer", "stack": "go",
+      "mechanism_hook": "detect/*.go: each detector walks the step graph and emits evidence steps",
+      "test_cmd": "go test -count=1 ./...", "demo_cmd": "go run ./cmd/demo",
+      "stub_kill_test": "TestDetectorsFindNothingWhenWalkerStubbed",
+      "self_reported": "green", "build_ok": true,
+      "tests_total": 22, "tests_passed": 22, "loc": 780,
+      "status": "done", "reason": "",
+      "whats_stubbed": ["cost table is a fixed map"], "whats_local": ["negative-control traces"],
+      "graduate_pitch": "wire as a -json gate on every agent run so loops and retry storms fail CI"
     }
 
 ## Judging (after every slot is terminal)
@@ -303,6 +350,9 @@ the field: stacks, deps, isolation violations, secrets touched.>
 
 | Rank | Slot | Score | Tests (judge re-run) | Demo | Mechanism | Would use | Badge | Signal | One-line pitch |
 |---|---|---|---|---|---|---|---|---|---|
+| 1 | 05-tracelens | 93 | 22 tests, 0.21s, exit 0 | 24/25 | 14/15 | 18/20 | VERIFIED | PROMOTE | agent trace in, ranked loop and cost findings with a fix each |
+| 7 | 03-reapply | 71 | 16 tests, 0.20s, exit 0 | 20/25 | 9/15 | 15/20 | VERIFIED | SEED | fuzzy patch applier, refuses with a typed conflict |
+| 10 | 08-gclint | 34 | judge re-run exit 1 | 18/25 | 11/15 | 14/20 | DISHONEST | DROP | self-reported green, suite red on re-run |
 
 ## Proposed PROMOTE cards
 ### <slug> - <score> · <domain> / <archetype>
