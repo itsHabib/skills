@@ -42,6 +42,19 @@ the evidence changes; drop unhelpful roles. Continue the authorized task through
 its requested outcome or an actual blocker, within the existing budget. This
 skill adds no approval gate or required review round.
 
+## Adapt the structure
+
+Treat this skill as a starting point. Invent or combine useful structure for
+this task: a work coordinator, specialist roles, a hypothesis ledger, a design
+comparison, staged experiments, a verification loop, or something better.
+The table above is not an exhaustive menu or a fixed team topology. Use your
+judgment about when to add, change or remove structure; keep its overhead
+proportional to the progress it produces.
+
+Record what you added and why in the use note, including what you would change
+in this skill. Reuse successful patterns when their context fits. A good local
+experiment is a candidate improvement, not automatically a universal rule.
+
 ## Leave a small use note
 
 At a meaningful checkpoint or completion, record a short, candid account:
