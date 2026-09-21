@@ -21,7 +21,7 @@ def save(note, directory):
     record = dict(note, schema='agent-boost-use.v1', recorded_at=datetime.now(timezone.utc).isoformat())
     payload = (json.dumps(record, ensure_ascii=False, indent=2) + '\n').encode()
     if len(payload) > 16384:
-        raise ValueError('keep the use note below 16 KiB')
+        raise ValueError('encoded record including metadata exceeds 16 KiB')
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     path = directory / (uuid.uuid4().hex + '.json')
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
@@ -38,9 +38,10 @@ def main():
         raw = sys.stdin.buffer.read(16385)
         if len(raw) > 16384:
             raise ValueError('keep the use note below 16 KiB')
-        print(save(json.loads(raw), args.directory.expanduser()))
+        path = save(json.loads(raw), args.directory.expanduser())
     except (ValueError, OSError) as error:
         parser.exit(1, f'record not saved: {error}\n')
+    print(path)
 
 
 if __name__ == '__main__':

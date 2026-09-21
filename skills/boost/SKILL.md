@@ -55,11 +55,12 @@ Use the bundled recorder, resolving its path relative to this SKILL.md:
 
 ```sh
 python3 <skill-directory>/scripts/record.py <<'JSON'
-{"task":"brief non-sensitive description","model":"actual model or unknown","strategy":"solo / specific helper or check","outcome":"unclear","evidence":"observed result or artifact reference","opinion":"what to keep, change or remove; overhead if known"}
+{"task":"brief non-sensitive description","model":"actual model or unknown","strategy":"solo / specific helper or check","outcome":"unclear","evidence":"observed result or artifact reference","opinion":"what to keep, change or remove","elapsed_seconds":null,"estimated_cost_usd":null}
 JSON
 ```
 
-`outcome` is `helped`, `no_change`, `hurt`, or `unclear`. The recorder saves one
+Choose `outcome` deliberately: `helped`, `no_change`, `hurt`, or `unclear`.
+Leave optional time/cost fields null when unknown. The recorder saves one
 private local JSON file under `~/.local/state/agent-boost/uses/` and prints its
 path. `--directory PATH` chooses another local destination. Keep notes concise;
 exclude secrets, raw work material and sensitive identifiers. Nothing uploads
