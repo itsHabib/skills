@@ -164,6 +164,12 @@ Record correctness, wall time, available token/cost evidence, strategy changes,
 and the agent's opinion. Prefer cost per correctly completed task; unknown cost
 stays unknown. Several cheap calls may cost more than one stronger call.
 
-**Evidence:** prospective. The Sonnet/Haiku comparison has not run yet. Keep
-real-task use notes too; they can suggest recipes without pretending to measure
-a causal advantage over a solo baseline.
+**Evidence:** a synthetic exact-geometry pilot found no critic rescue. Sonnet
+and Haiku calls hit deadlines; local Llama 3.2 1B returned invalid/empty code and
+an unhelpful critic. Removing stray closing XML tags from one Sonnet solo
+candidate made it pass 18/18 cases (post-hoc formatting diagnostic, not a boost
+win). A source-only schema and an explicitly supplied algorithm guide also
+failed for local 1B/7B models. These are small observations, not capability
+ceilings. Next test narrower, separately verified components. Keep execution
+failures separate from mathematical errors; never ask a critic to invent a
+diagnosis of code that was not produced.
