@@ -17,6 +17,12 @@ Infer the outcome, available evidence, uncertainty and practical budget from
 context. Keep the intake to a few lines; ask only about missing information
 that changes the next action. Start doing useful work immediately.
 
+For concrete starting points, read the relevant section of
+[recipes](references/recipes.md): algorithms, engineering design, integration,
+concurrency, boundary testing, stalled execution, or cheaper-model comparisons.
+Each gives a helper prompt, useful artifacts, an effectiveness check and its
+current evidence status. Load only what is useful.
+
 Choose assistance for the actual uncertainty. These are examples, not stages:
 
 | Need | Useful intervention |
