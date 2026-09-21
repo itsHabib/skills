@@ -43,7 +43,12 @@ If helpers are unavailable, perform the useful check locally and continue;
 do not call self-review independent verification.
 
 Integrate by testing the proposed change against the task's acceptance evidence.
-Agreement or an agent saying "looks good" is not verification. Adapt the help as
+Agreement or an agent saying "looks good" is not verification. Give the worker
+concrete execution feedback and room to inspect, edit and retry. A short deadline
+measures completion within that budget, not inability. Track time to a verified
+result as well as eventual correctness; count helpers and failed work. If tests
+are green but a requirement is missing, add a development check and repair. Keep
+any final evaluation separate. Adapt the help as
 the evidence changes; drop unhelpful roles. Continue the authorized task through
 its requested outcome or an actual blocker, within the existing budget. This
 skill adds no approval gate or required review round.

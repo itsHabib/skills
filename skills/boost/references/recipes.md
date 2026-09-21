@@ -145,7 +145,7 @@ map when needed, updated handoff with the true blocker and completed work.
 remaining blocker. More messages, plans or roles alone are not progress.
 Remove coordination that consumes effort without changing delivery.
 
-**Evidence:** prospective as a measured boost intervention.
+**Evidence:** one focused Haiku continuation of a stalled local 7B geometry run produced a subsequently accepted candidate in 35 seconds. This changed models, so it demonstrates a useful escalation, not same-model uplift. The run reached its call allowance without declaring completion; external checks established correctness.
 
 ## Comparing cheaper models with assistance
 
@@ -170,6 +170,36 @@ an unhelpful critic. Removing stray closing XML tags from one Sonnet solo
 candidate made it pass 18/18 cases (post-hoc formatting diagnostic, not a boost
 win). A source-only schema and an explicitly supplied algorithm guide also
 failed for local 1B/7B models. These are small observations, not capability
-ceilings. Next test narrower, separately verified components. Keep execution
+ceilings. A later iterative repair experiment let workers inspect, edit, test and retry: Haiku produced an accepted geometry candidate in 40 seconds; local 7B still failed. A prose lesson did not rescue it. Reusing verified source fixed its geometry, but it stalled on a CLI requirement. Keep execution
 failures separate from mathematical errors; never ask a critic to invent a
 diagnosis of code that was not produced.
+
+## 7. A repair loop with checks and reusable work
+
+**Use when:** repeated edits are not converging, or tests pass while the actual
+contract is still unmet.
+
+**Working pattern:** retain the current files and failing command; run relevant
+tests after edits. For a missing requirement, supply a caller-owned development
+check whose output goes back to the worker. Keep final evaluation separate. If
+progress stalls, hand a fresh worker the current patch and raw failures. Preserve
+original regression tests and include all prior spend when assessing the rescue.
+
+**Helper prompt:**
+> Keep correct work intact. Reproduce this observed failure against this contract.
+> Make the smallest justified repair, then run regression and development checks.
+> Green tests do not excuse an unmet requirement. Return the patch and evidence.
+
+**Useful artifacts:** source snapshots, executable check, per-call receipts, and
+a short continuation packet. Export accepted code as an inspectable dependency
+when useful; bind its evidence to the exact task and source. Distill lessons
+without final answers, then test them on new work before promoting them.
+
+**Evidence:** Haiku initially passed visible tests but missed required compact
+JSON output. An external development check exposed the defect; the same model
+produced a fully accepted patch in 23 seconds (45 seconds to self-completion,
+$0.119 reported CLI cost). This is a concrete verifier-guided repair. A fresh full-task CLI run also passed in 122 seconds for $0.210. These runs do
+not establish an advantage from extra agents or broad self-learning.
+
+Runnable Python/Docker implementation, negative trials and receipts:
+[Boost workloop](https://github.com/itsHabib/specialist-workshop/tree/codex/boost-workloop/experiments/boost_workloop).
