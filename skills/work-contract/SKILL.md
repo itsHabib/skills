@@ -101,6 +101,9 @@ The validator rejects TODO, TBD, FIXME, and angle-bracketed placeholders such as
 `<digest>`. Literal markup passes when its shape shows it: `</ul>`, `<br/>`,
 `<a href="x">`, `<Button>`, or `<li>Item</li>`. Name a bare lowercase element
 without brackets (the `dialog` element), because `<dialog>` reads like `<path>`.
+It also rejects an empty item in the Preserve, Change, Stop, Evidence, and
+Handoff lists. Keep each item's text on its dash line: a bare `-` counts as
+empty even when its text continues on the next line.
 If the repository has its own `make work` or equivalent, run that too; the
 repository-owned check may be stricter. Report the contract path, status,
 subject, stop boundary, and validator result.
