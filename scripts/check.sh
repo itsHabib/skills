@@ -86,6 +86,11 @@ check_frontmatter() {
 # actually leaked. Same blind spot on the separator: `pers/` cannot see
 # `pers\ship`.
 #
+# The Windows home pattern matches `\\{1,2}` between components: a real Windows
+# path is single-backslash (`C:\Users\name`), but the identical path embedded in
+# JSON or a shell-escaped string doubles every backslash (`C:\\Users\\name`) and
+# must be caught too - matching only one width re-opens the other.
+#
 # The patterns describe the *shape* of an operator path rather than naming the
 # operator, so the gate stays useful without hardcoding an identity into a
 # public file.
@@ -94,7 +99,7 @@ scrub_patterns() {
 pers/|SYNC.md #3: operator path root (use the ~/projects/ placeholder)
 ^pers\\|SYNC.md #3: operator path root, Windows separator (use ~/projects/)
 [[:space:]/\\`"'(]pers\\|SYNC.md #3: operator path component, Windows separator
-C:\\Users\\[^\\/:*?"`]+|SYNC.md #3: Windows operator home path
+C:\\{1,2}Users\\{1,2}[^\\/:*?"`]+|SYNC.md #3: Windows operator home path
 \$HOME/pers|SYNC.md #3: operator path root
 /Users/[A-Za-z0-9._-]+/|SYNC.md #3: macOS operator home path
 cc-skills|SYNC.md #3: private repository name
@@ -118,7 +123,10 @@ ALLOWED
 }
 
 # True only when EVERY match on the line is a blessed placeholder. A line that
-# mixes `C:\Users\you` with a real home path still fails.
+# mixes `C:\Users\you` with a real home path still fails. Matches are
+# backslash-normalized first (a JSON-escaped `C:\\Users\\you` is the same
+# placeholder as `C:\Users\you`, just doubled) so the allowlist only has to
+# spell each placeholder once, at its single-backslash width.
 scrub_line_is_allowed() {
   local pattern="$1" line="$2" allowlist="$3"
   local match ok found any=0
@@ -129,7 +137,7 @@ scrub_line_is_allowed() {
     found=0
     while IFS= read -r ok; do
       [[ -z "$ok" ]] && continue
-      [[ "$(printf '%s' "$match" | tr '[:upper:]' '[:lower:]')" == "$(printf '%s' "$ok" | tr '[:upper:]' '[:lower:]')" ]] && { found=1; break; }
+      [[ "$(printf '%s' "$match" | tr '[:upper:]' '[:lower:]' | sed -E 's/\\+/\\/g')" == "$(printf '%s' "$ok" | tr '[:upper:]' '[:lower:]')" ]] && { found=1; break; }
     done <<<"$allowlist"
     [[ "$found" -eq 0 ]] && return 1
   done < <(printf '%s\n' "$line" | grep -oiE "$pattern" || true)

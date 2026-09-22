@@ -94,6 +94,12 @@ case_is leak 'windows home path with .keys' \
 case_is leak 'windows home path in a cd' \
   '   cd C:\Users\Bob\pers\ship'
 
+case_is leak 'windows home path, JSON-escaped' \
+  '   {"cmd": "type C:\\Users\\Bob\\pers\\ship\\.keys"}'
+
+case_is clean 'JSON-escaped windows placeholder' \
+  '   {"cmd": "decode C:\\Users\\you\\projects"}'
+
 case_is leak 'operator path root, posix separator' \
   'Source: `~/pers/dossier/`.'
 
