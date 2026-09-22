@@ -97,6 +97,10 @@ bash <this-skill-directory>/scripts/check-work.sh --root "$repo_root" --json
 ```
 
 Replace `<this-skill-directory>` with the directory containing this `SKILL.md`.
+The validator rejects TODO, TBD, FIXME, and angle-bracketed placeholders such as
+`<digest>`. Literal markup passes when its shape shows it: `</ul>`, `<br/>`,
+`<a href="x">`, `<Button>`, or `<li>Item</li>`. Name a bare lowercase element
+without brackets (the `dialog` element), because `<dialog>` reads like `<path>`.
 If the repository has its own `make work` or equivalent, run that too; the
 repository-owned check may be stricter. Report the contract path, status,
 subject, stop boundary, and validator result.

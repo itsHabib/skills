@@ -106,7 +106,37 @@ line_count=$(awk 'END { print NR }' "$work_file")
 [[ $line_count -le 120 ]] ||
   fail too_large "$work_file has $line_count lines; maximum is 120"
 
-if tail -n +2 "$work_file" | grep -En '(^|[^A-Za-z])(TODO|TBD|FIXME)([^A-Za-z]|$)|<[A-Za-z][^>]*>'; then
+# A placeholder is TODO, TBD, FIXME, or an angle-bracketed word or phrase such as
+# <digest>, <exact command> or <Describe the change>, in prose or a code span.
+# Literal markup passes by its shape: a closing tag (</ul>), a JSX component name
+# alone (<Button>, <SVGIcon>), a tag name followed by an attribute (<a href="x">)
+# or by /> (<br/>), and a tag closed on the same line (<li>x</li>). The scan reads
+# inside markup too, so attribute values are checked. A bare lowercase tag such as
+# <dialog> reads exactly like <path>, so it fails.
+placeholders=$(awk '
+  function markup(tag, line,   name) {
+    if (tag ~ /^<[A-Z][A-Za-z0-9.]*[a-z][A-Za-z0-9.]*>$/) return 1
+    if (tag ~ /^<[A-Za-z][A-Za-z0-9._:-]*([[:space:]][^>]*)?\/>$/) return 1
+    if (tag ~ /^<[A-Za-z][A-Za-z0-9._:-]*[[:space:]]+[A-Za-z_:][A-Za-z0-9._:-]*[[:space:]]*=/) return 1
+    name = substr(tag, 2)
+    sub(/[^A-Za-z0-9._:-].*$/, "", name)
+    return index(line, "</" name ">") > 0
+  }
+  function placeholder(line,   rest, tag) {
+    if (line ~ /(^|[^A-Za-z])(TODO|TBD|FIXME)([^A-Za-z]|$)/) return 1
+    rest = line
+    while (match(rest, /<[A-Za-z][^>]*>/)) {
+      tag = substr(rest, RSTART, RLENGTH)
+      if (!markup(tag, line)) return 1
+      # Resume inside the tag so a placeholder in an attribute value is still read.
+      rest = substr(rest, RSTART + 1)
+    }
+    return 0
+  }
+  NR > 1 && placeholder($0) { print NR ":" $0 }
+' "$work_file")
+if [[ -n $placeholders ]]; then
+  printf '%s\n' "$placeholders"
   fail placeholder "replace every placeholder before validation"
 fi
 
