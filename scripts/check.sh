@@ -205,10 +205,19 @@ check_companion_files() {
 }
 
 check_folded_discovery() {
-  # Only meaningful against the real registry; an isolated fixture tree (the
-  # selftest's, or any other minimal check.sh invocation) has neither file and
-  # must not crash the rest of the gate over a check that does not apply to it.
-  [[ -f skills/validation-card/SKILL.md && -f skills/skills/discover.sh ]] || return 0
+  # An isolated fixture tree (the selftest's, or any other minimal check.sh
+  # invocation) has neither of these two files, and the check does not apply
+  # to it. A real registry has both. Anything in between is a broken
+  # registry, not a fixture, and must fail loudly rather than skip — skipping
+  # on a missing discover.sh would turn a broken registry command into
+  # passing CI.
+  if [[ ! -f skills/validation-card/SKILL.md && ! -f skills/skills/discover.sh ]]; then
+    return 0
+  fi
+  if [[ ! -f skills/validation-card/SKILL.md || ! -f skills/skills/discover.sh ]]; then
+    fail "folded-description discovery needs both skills/validation-card/SKILL.md and skills/skills/discover.sh; only one is present"
+    return 0
+  fi
 
   local fixture output description
   fixture="$(mktemp -d)"
