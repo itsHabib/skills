@@ -205,6 +205,11 @@ check_companion_files() {
 }
 
 check_folded_discovery() {
+  # Only meaningful against the real registry; an isolated fixture tree (the
+  # selftest's, or any other minimal check.sh invocation) has neither file and
+  # must not crash the rest of the gate over a check that does not apply to it.
+  [[ -f skills/validation-card/SKILL.md && -f skills/skills/discover.sh ]] || return 0
+
   local fixture output description
   fixture="$(mktemp -d)"
   mkdir -p "$fixture/.claude/skills/validation-card"
