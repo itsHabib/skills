@@ -127,44 +127,47 @@ class CheckTest(unittest.TestCase):
     def test_signal_records_interruption_cleans_group_and_restores_handlers(self):
         for sig in (signal.SIGTERM, signal.SIGINT):
             with self.subTest(signal=sig):
-                marker = self.repo / f'late-{sig}'
-                ready = self.repo / f'ready-{sig}'
-                restored = self.repo / f'restored-{sig}'
-                child = ('import signal,time,pathlib; signal.signal(signal.SIGTERM,signal.SIG_IGN); '
-                         f'pathlib.Path({str(ready)!r}).touch(); time.sleep(.8); '
-                         f'pathlib.Path({str(marker)!r}).touch()')
-                command = ('import subprocess,sys,time; '
-                           f'subprocess.Popen([sys.executable,"-c",{child!r}]); time.sleep(10)')
-                wrapper = (
-                    'import importlib.util,signal,sys,pathlib; '
-                    f'spec=importlib.util.spec_from_file_location("check",{str(Path(CHECK.__file__))!r}); '
-                    'm=importlib.util.module_from_spec(spec); spec.loader.exec_module(m); '
-                    'prior={s:signal.getsignal(s) for s in (signal.SIGTERM,signal.SIGINT)}; '
-                    f'out,result=m.run({str(self.repo)!r},["solver.py"],'
-                    f'[sys.executable,"-c",{command!r}],{str(self.output)!r}); '
-                    'assert prior=={s:signal.getsignal(s) for s in prior}; '
-                    f'pathlib.Path({str(restored)!r}).touch(); print(out); '
-                    'sys.exit(128+result["interruption_signal"])')
-                process = subprocess.Popen([sys.executable, '-c', wrapper],
-                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                try:
-                    deadline = time.monotonic() + 5
-                    while not ready.exists() and process.poll() is None and time.monotonic() < deadline:
-                        time.sleep(.01)
-                    self.assertTrue(ready.exists(), 'check child did not start')
-                    process.send_signal(sig)
-                    stdout, stderr = process.communicate(timeout=5)
-                    self.assertEqual(process.returncode, 128 + sig, stderr)
-                    receipt = json.loads((Path(stdout.strip()) / 'result.json').read_text())
-                    self.assertEqual(receipt['status'], 'interrupted')
-                    self.assertEqual(receipt['interruption_signal'], sig)
-                    self.assertTrue(restored.exists())
-                    time.sleep(.85)
-                    self.assertFalse(marker.exists(), 'launched child survived recorder signal')
-                finally:
-                    if process.poll() is None:
-                        process.kill()
-                    process.wait()
+                self.check_signal_cleanup(sig)
+
+    def check_signal_cleanup(self, sig):
+        marker = self.repo / f'late-{sig}'
+        ready = self.repo / f'ready-{sig}'
+        restored = self.repo / f'restored-{sig}'
+        child = ('import signal,time,pathlib; signal.signal(signal.SIGTERM,signal.SIG_IGN); '
+                 f'pathlib.Path({str(ready)!r}).touch(); time.sleep(.8); '
+                 f'pathlib.Path({str(marker)!r}).touch()')
+        command = ('import subprocess,sys,time; '
+                   f'subprocess.Popen([sys.executable,"-c",{child!r}]); time.sleep(10)')
+        wrapper = (
+            'import importlib.util,signal,sys,pathlib; '
+            f'spec=importlib.util.spec_from_file_location("check",{str(Path(CHECK.__file__))!r}); '
+            'm=importlib.util.module_from_spec(spec); spec.loader.exec_module(m); '
+            'prior={s:signal.getsignal(s) for s in (signal.SIGTERM,signal.SIGINT)}; '
+            f'out,result=m.run({str(self.repo)!r},["solver.py"],'
+            f'[sys.executable,"-c",{command!r}],{str(self.output)!r}); '
+            'assert prior=={s:signal.getsignal(s) for s in prior}; '
+            f'pathlib.Path({str(restored)!r}).touch(); print(out); '
+            'sys.exit(128+result["interruption_signal"])')
+        process = subprocess.Popen([sys.executable, '-c', wrapper],
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        try:
+            deadline = time.monotonic() + 5
+            while not ready.exists() and process.poll() is None and time.monotonic() < deadline:
+                time.sleep(.01)
+            self.assertTrue(ready.exists(), 'check child did not start')
+            process.send_signal(sig)
+            stdout, stderr = process.communicate(timeout=5)
+            self.assertEqual(process.returncode, 128 + sig, stderr)
+            receipt = json.loads((Path(stdout.strip()) / 'result.json').read_text())
+            self.assertEqual(receipt['status'], 'interrupted')
+            self.assertEqual(receipt['interruption_signal'], sig)
+            self.assertTrue(restored.exists())
+            time.sleep(.85)
+            self.assertFalse(marker.exists(), 'launched child survived recorder signal')
+        finally:
+            if process.poll() is None:
+                process.kill()
+            process.wait()
 
 
 if __name__ == '__main__':
