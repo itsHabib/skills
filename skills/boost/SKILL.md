@@ -1,92 +1,90 @@
 ---
 name: boost
-description: Improve execution of a difficult engineering, algorithm, debugging, or integration task using a brief intake, targeted assistance and evidence, then record what helped. Use when asked to boost a session, unblock an agent, add a thinking partner, or use /boost on ongoing work.
 argument-hint: "[task or current difficulty]"
 user_invocable: true
+description: Unblock difficult engineering, algorithm, debugging or research work with a focused experiment or side-agent investigation and a verified handback. Use when asked to boost a task, add a thinking partner, challenge an approach or stop repeated unproductive attempts.
 ---
 
 # Boost
 
-Help the current agent deliver the requested outcome. Use this on real work;
-there is no need to prove a model is weak first. No stronger model, special
-platform, permanent team, or cloud runtime is required.
+Improve the active task using the smallest investigation that could change the
+next action. Work with the available tools and model. No Python setup, special
+runtime, permanent team or additional approval step is required by this skill.
+Preserve the user's scope, permissions and resource constraints.
 
-## Intake, then work
+## Start with one decision
 
-Infer the outcome, available evidence, uncertainty and practical budget from
-context. Keep the intake to a few lines; ask only about missing information
-that changes the next action. Start doing useful work immediately.
+Infer the goal and acceptance criteria from the current task. Reuse current
+source and evidence; ask only for missing information that changes the work.
+Briefly state the ordinary next action, the unresolved question that might
+change it, and the cheapest check that would distinguish the possible answers.
+Then run the check. If the next step is already justified, take it; do not invent
+uncertainty or a second hypothesis to follow a template.
 
-For concrete starting points, read the relevant section of
-[recipes](references/recipes.md): algorithms, engineering design, integration,
-concurrency, boundary testing, stalled execution, or cheaper-model comparisons.
-Each gives a helper prompt, useful artifacts, an effectiveness check and its
-current evidence status. Load only what is useful.
+Useful evidence includes a reproducer, independent derivation, small exact
+oracle, counterexample, profile or a tested alternative. If execution is
+unavailable, inspect or derive what you can and name the missing evidence.
+A plan or another agent's agreement is not a result.
 
-Choose assistance for the actual uncertainty. These are examples, not stages:
+Choose the reference needed for this question; do not load all of them:
 
-| Need | Useful intervention |
+| Uncertainty | Read |
 |---|---|
-| Unclear problem or design tradeoff | Clarify constraints; compare concrete alternatives and a cheap prototype |
-| Algorithm or invariant might be wrong | Independent derivation, small exhaustive oracle, counterexample search |
-| Integration failure | Trace the contract across components; reproduce the earliest mismatch |
-| Apparently correct code | Challenge boundary sizes, failure recovery, environment assumptions and output handling |
-| Repeated unproductive attempts | Fresh diagnosis from raw evidence, without the existing explanation |
-| Agent keeps parking itself | Separate missing authority from uncertainty; use existing authorization and available tools |
+| Engineering boundaries, design, reliability or an uncertain research claim | The relevant [recipe](references/recipes.md) |
+| Algorithm correctness, performance or selecting candidates | [Algorithm improvement](references/algorithm-improvement.md) |
+| An investigation is stuck and needs a question without a solution hint | [Questions to unstick an agent](references/questions.md) |
+| A side agent would help, or the user requests one | [Helper missions and handback](references/helpers.md) |
+| Choosing helpers or comparing effort | [Models and effort](references/models.md) |
+| Research inspiration and its limits | [Primary research](references/research.md) |
 
-A tool, test, tighter representation or direct repair may be enough. When a
-helper would add value and delegation is available, use an available model
-(the same model is fine). Give it the goal, relevant raw evidence, constraints,
-a bounded question and the requested artifact. Let an independent investigator
-form a view before showing it your preferred diagnosis. Avoid duplicate edits.
-If helpers are unavailable, perform the useful check locally and continue;
-do not call self-review independent verification.
+## Use help when it changes the work
 
-Integrate by testing the proposed change against the task's acceptance evidence.
-Agreement or an agent saying "looks good" is not verification. Give the worker
-concrete execution feedback and room to inspect, edit and retry. A short deadline
-measures completion within that budget, not inability. Track time to a verified
-result as well as eventual correctness; count helpers and failed work. If tests
-are green but a requirement is missing, add a development check and repair. Keep
-any final evaluation separate. Adapt the help as
-the evidence changes; drop unhelpful roles. Continue the authorized task through
-its requested outcome or an actual blocker, within the existing budget. This
-skill adds no approval gate or required review round.
+When the user asks for a helper, dispatch one through available native agent
+tools. Otherwise use a helper for a concrete question that benefits from an
+independent view or parallel investigation. Prepare its small packet yourself
+from existing context; do not make the user assemble it.
 
-## Adapt the structure
+For a fresh diagnosis, create an actual fresh context with the contract, source
+and raw evidence, without your favored explanation. An inherited conversation
+remains informed by that history; label it accordingly. A different model family
+does not guarantee independent errors. Give writers separate edit ownership.
 
-Treat this skill as a starting point. Invent or combine useful structure for
-this task: a work coordinator, specialist roles, a hypothesis ledger, a design
-comparison, staged experiments, a verification loop, or something better.
-The table above is not an exhaustive menu or a fixed team topology. Use your
-judgment about when to add, change or remove structure; keep its overhead
-proportional to the progress it produces.
+Ask for evidence or an artifact the lead can check. Keep doing useful independent
+work while the helper investigates. Add another helper only for a separate useful
+question. If delegation is unavailable, perform the check locally; when the user
+wants a separate session, provide the prepared mission to paste there.
 
-Record what you added and why in the use note, including what you would change
-in this skill. Reuse successful patterns when their context fits. A good local
-experiment is a candidate improvement, not automatically a universal rule.
+If you are the helper receiving a bounded mission, answer that question and
+return your evidence to the lead. Do not take over the whole task or recursively
+create a team unless the assignment calls for it.
 
-## Leave a small use note
+## Verify, integrate and continue
 
-At a meaningful checkpoint or completion, record a short, candid account:
-what task you attempted, which model actually ran, the chosen intervention,
-what changed, evidence, and your opinion of the skill. Include help that added
-nothing, harmed progress, or was unavailable. Report unknown time/cost as unknown.
-Successful work alone does not prove the skill caused improvement. Opinions
-are feedback, not measured uplift.
+Test the returned artifact against the actual caller's contract or check the
+argument against its assumptions. Accept, reject or defer substantive findings
+with a reason and evidence. Integrate what helps, then continue to the authorized
+outcome or a real blocker. Receiving a report is not completion.
 
-Use the bundled recorder, resolving its path relative to this SKILL.md:
+Keep the best checked implementation while exploring. Separate correctness from
+quality and uncertainty. Include setup costs and unfavorable cases in performance
+claims. Keep development feedback separate from final evaluation; a revealed
+final case becomes development data. More search cannot recover information the
+inputs do not contain.
 
-```sh
-python3 <skill-directory>/scripts/record.py <<'JSON'
-{"task":"brief non-sensitive description","model":"actual model or unknown","strategy":"solo / specific helper or check","outcome":"unclear","evidence":"observed result or artifact reference","opinion":"what to keep, change or remove","elapsed_seconds":null,"estimated_cost_usd":null}
-JSON
-```
+Drop unhelpful roles or process. A result may confirm the current action or rule
+out an approach; do not manufacture a success story. A successful task does not
+establish that Boost beats an ordinary attempt with comparable effort.
 
-Choose `outcome` deliberately: `helped`, `no_change`, `hurt`, or `unclear`.
-Leave optional time/cost fields null when unknown. The recorder saves one
-private local JSON file under `~/.local/state/agent-boost/uses/` and prints its
-path. `--directory PATH` chooses another local destination. Keep notes concise;
-exclude secrets, raw work material and sensitive identifiers. Nothing uploads
-or enters a repository automatically. If recording is unavailable, leave the
-same short note in the task handoff; do not delay the actual delivery.
+## Leave a short handback
+
+Use the existing task response or handoff. State:
+
+- the question checked and what actually ran;
+- the finding, artifact and reproduction command or derivation;
+- what you accepted, rejected or deferred, and its effect on the deliverable;
+- remaining uncertainty and what would settle it.
+
+Keep this proportional to the task. No separate log or script invocation is
+required. If durable local receipts or feedback summaries would be useful,
+[optional Python utilities](references/utilities.md) are available. Missing
+Python must never block use or delivery.

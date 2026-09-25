@@ -1,205 +1,173 @@
-# Recipes to adapt, not a required sequence
+# Recipes to adapt
 
-Read the recipe matching the current uncertainty. Give helpers the actual
-contract and relevant raw evidence; fill in the bracketed context. These
-prompts work with the same model as the main worker. Combine or invent better
-approaches when useful. Keep artifact size proportional to the decision.
+Choose the recipe that addresses the current uncertainty. Replace bracketed
+context with the actual contract and raw evidence. Each prompt can guide your
+own next pass or a helper using an existing approved model. Keep the work
+bounded by a concrete output, a check and a stopping condition.
 
-**Evidence labels:** observed means a specific check or intervention produced
-an observable result; prospective means the approach still needs a real trial.
-Neither label establishes general model uplift. A favorable agent opinion is
-feedback, not a controlled comparison.
+These are proposed working methods, not evidence of improved model capability.
+Record what changed on the task and count all attempts when comparing effort.
+For algorithm work, also see [algorithm improvement](algorithm-improvement.md).
 
-## 1. Algorithm: independent derivation + counterexamples
+## 1. Algorithm correctness: derive and try to falsify
 
-**Use when:** correctness or complexity is uncertain, or repeated patches fix
-examples without explaining the invariant.
+**Use when:** patches fix individual examples without establishing why the
+algorithm works, or correctness and complexity are uncertain.
 
-**Helper prompt:**
-> Given [contract, bounds, examples], independently derive an algorithm and
-> its invariant. Do not assume the current approach is right. Return the key
-> argument, complexity, and a small exhaustive oracle or discriminating cases.
-> Separate a proof from checks that merely support it.
+**Prompt:**
 
-**Useful artifacts:** short derivation, executable small-case oracle, minimized
-counterexample, implementation and replay command.
+> Given [contract, input bounds and examples], derive an algorithm and its
+> invariant without assuming the current approach is correct. Return the
+> argument, complexity, and an executable small-case oracle or discriminating
+> cases. Separate a proof from finite checks that support it.
 
-**Check whether it helped:** replay the counterexample before and after; compare
-fresh cases against the oracle and exercise scale separately. Preserve the
-original contract. If the only difference is more attempts, record that.
+**Deliver and check:** retain the derivation, minimized counterexample and
+replay command. Compare the implementation with an independently constructed
+oracle on fresh cases; exercise scale separately. Preserve the original
+contract, including ties, numeric precision and output requirements.
 
-**Evidence:** exact synthetic flow and lease solvers were checked against
-independent enumeration. Both solo models passed the screened cases; no team
-advantage was established. Derivation helpers remain prospective.
+## 2. Engineering design: test the assumption that decides
 
-## 2. Engineering design: alternatives + discriminating prototype
+**Use when:** several designs look plausible and the choice depends on failure
+behavior, latency, resource use or operational complexity.
 
-**Use when:** several architectures look plausible and the choice depends on
-failure behavior, latency, resource use or operational complexity.
+**Prompt:**
 
-**Helper prompt:**
-> Given [outcome, constraints, load and failure assumptions], propose the
-> simplest adequate design and a materially different alternative. Name the
-> assumption most likely to reverse your recommendation. Specify a cheap
-> prototype or experiment that could distinguish them, including a rejection
-> condition. Do not turn unknown requirements into invented requirements.
+> Given [outcome, constraints, workload and failure assumptions], propose the
+> simplest adequate design and one materially different alternative. Name the
+> assumption most likely to reverse the choice. Specify a small runnable
+> experiment that distinguishes them, with a rejection condition. Identify
+> unknown requirements without inventing answers.
 
-**Useful artifacts:** compact decision table, runnable prototype, measured
-result and a short decision with remaining uncertainty.
+**Deliver and check:** build the discriminating prototype, run the stated
+workload and record which observation changed the choice. If the options do
+not differ on the required outcome, prefer the simpler one. Limit conclusions
+to what the prototype exercised.
 
-**Check whether it helped:** show which observation changed the design or
-eliminated unnecessary machinery. Passing a prototype does not prove production
-readiness. If neither option differs on what matters, choose the simpler one.
+## 3. Integration: find the earliest broken contract
 
-**Evidence:** prospective; no measured design-quality gain yet.
+**Use when:** components pass their own checks but the combined workflow fails,
+or retries and configuration changes are obscuring the cause.
 
-## 3. Integration: follow the earliest broken contract
+**Prompt:**
 
-**Use when:** components pass their own tests but the combined workflow fails,
-or retries and configuration changes are hiding the original cause.
+> Trace [input or event] through [components] using [code, logs and failing
+> command]. Find the earliest observable mismatch with the contract. Consider
+> state, units, identity, ordering and error translation where relevant. Return
+> a minimal reproducer and a check that distinguishes your explanation from
+> the nearest alternative. Mark missing evidence.
 
-**Helper prompt:**
-> Trace [input/event] through [components] using [code, logs, failing command].
-> Identify the earliest observable mismatch with the contract, including state,
-> units, identity, ordering and error translation where relevant. Return a
-> minimal reproducer and a test that distinguishes your explanation from the
-> nearest alternative. Mark missing evidence instead of filling it in.
+**Deliver and check:** retain a short event trace and an executable boundary
+test. Reproduce and resolve the same end-to-end failure; establish that the
+test fails without the fix. Exercise real boundaries when mocks would hide
+the suspected behavior.
 
-**Useful artifacts:** concise event trace, component-boundary test, reproducer,
-verified patch. Use real boundaries when mocks would conceal the failure.
+## 4. Reliability: challenge the invariant
 
-**Check whether it helped:** the same end-to-end failure is reproduced and
-resolved; the test fails without the fix. A mocked happy path is insufficient.
+**Use when:** correctness depends on retries, leases, deduplication, restoration
+or operations spanning multiple state changes.
 
-**Evidence:** prospective as a helper strategy. One source review did identify
-an error-reporting defect in the feedback recorder; a driver reproduced and
-fixed it. That supports the concrete finding, not skill-level uplift.
+**Prompt:**
 
-## 4. Concurrency and reliability: challenge the invariant
+> Given [state machine, contract and implementation], try to violate
+> [invariant]. Include overlapping operations and interruption between relevant
+> steps. Consider delayed replies and identity reuse where applicable. Return
+> the smallest legal failing history and an executable replay or model.
+> Distinguish safety, liveness and assumptions outside the model.
 
-**Use when:** the design depends on leases, retries, deduplication, restoration,
-atomic claims or operations that span more than one state change.
+**Deliver and check:** replay the failing schedule before and after repair,
+then challenge the repair with fresh schedules. State the bounds of any model
+or fault-injection run. Finite tests do not establish a general proof, and a
+successful retry does not establish exactly-once effects.
 
-**Helper prompt:**
-> Given [state machine, consistency contract and implementation], try to
-> violate [invariant]. Include overlapping operations and interruption between
-> relevant steps; consider identity reuse or delayed replies if applicable.
-> Return the smallest legal failing history and an executable replay or model.
-> Distinguish safety, liveness, bounded-model evidence and unproved assumptions.
+## 5. Performance and boundaries: measure the complete workload
 
-**Useful artifacts:** short state model, minimized schedule, fault-injection
-replay, regression test. The artifact may be a tiny local program.
+**Use when:** typical cases pass but large inputs, numeric extremes, output
+size, runtime behavior or resource limits may change the result.
 
-**Check whether it helped:** demonstrate the original invariant violation,
-then test the repaired transition under the same schedule and fresh schedules.
-Do not describe finite tests as a general proof or infer exactly-once effects
-from a successful retry alone.
+**Prompt:**
 
-**Evidence:** a synthetic lease-history checker matched independent permutation
-enumeration; solo models solved the sample task. Production integration and
-an LLM reliability-helper advantage remain untested.
+> Given [contract, implementation, baseline and workload], find valid cases
+> that challenge untested assumptions. Profile the complete operation before
+> proposing changes. Return runnable cases, expected behavior, measurements
+> and one change aimed at the observed bottleneck. Check the reference too.
 
-## 5. Boundary and environment critic
+**Deliver and check:** preserve correctness while comparing baseline and
+candidate under the same conditions. Include setup, serialization and other
+required work in timing; report repeated measurements, variation and
+regressions. Keep fresh evaluation cases separate from repair examples. Stop
+if the apparent gain disappears within measurement noise.
 
-**Use when:** normal examples pass but the contract permits large inputs,
-degeneracies, different runtimes, resource limits or unusually large outputs.
+## 6. Research: test whether the question is identifiable
 
-**Helper prompt:**
-> Given [contract, implementation and existing tests], find assumptions the
-> tests leave unchallenged. Pick relevant boundary cases, including output
-> representation and runtime behavior. Return executable cases, expected
-> behavior and why each could distinguish a real defect. Check the reference
-> implementation too; avoid invalid inputs outside the contract.
+**Use when:** several explanations fit the observations, a benchmark is a
+proxy for the intended outcome, or more analysis may not answer the question.
 
-**Useful artifacts:** small adversarial corpus, failing trace, minimized case,
-root-cause control, replay command. Keep fresh evaluation cases separate from
-examples used to repair the implementation.
+**Prompt:**
 
-**Check whether it helped:** a valid boundary input fails before repair and
-passes after it. Isolate the mechanism with a minimal control; do not credit
-that manually supplied fix as an unassisted model success.
+> Given [question, available evidence and proposed conclusion], identify
+> plausible competing explanations when the evidence admits them; do not
+> invent alternatives. Identify an observation or intervention that would
+> distinguish them, or try to falsify the remaining explanation. State required assumptions,
+> confounders and a result that would change the conclusion. If the evidence
+> cannot identify the answer, specify the smallest additional measurement or
+> narrow the claim to what is supported.
 
-**Evidence:** observed in synthetic exact geometry. A valid 60-vertex input
-produced a 12,147-character rational answer. Two returned programs failed on
-Python's integer-string limit; a serialization-only control fixed both. An
-earlier candidate already handled it. This demonstrates the value of that
-boundary check, not a stable stronger-model gap or a tested LLM critic policy.
+**Deliver and check:** produce a compact hypothesis table and a runnable
+analysis or bounded experiment with its decision rule fixed in advance.
+Check that the proposed measurement actually separates the explanations.
+Report unresolved ambiguity; a plausible narrative is not a causal result.
 
-## 6. Stalled execution: fresh diagnosis + useful work coordination
+## 7. Stalled repair: give the worker decisive feedback
 
-**Use when:** a session repeats the same attempt, loses track of dependencies,
-or parks on uncertainty while authorized work could continue.
+**Use when:** edits repeat without convergence, or visible tests pass while
+the actual requirement remains unmet.
 
-**Helper prompt:**
-> Here are [goal, current state, attempts, raw evidence and actual constraints].
-> Give a fresh diagnosis without assuming the previous explanation is right.
-> Identify the next action that reduces uncertainty or delivers value. If
-> several work items need coordination, propose only the roles or tracking
-> needed to keep them moving. Name actual missing authority separately from
-> things the worker can investigate now. Return a concrete next action.
+**Prompt:**
 
-**Useful artifacts:** executable next step, short hypothesis ledger or work
-map when needed, updated handoff with the true blocker and completed work.
+> Here are [goal, current patch, failed attempts and raw check output]. Keep
+> correct work intact. Reproduce the failure and question the current diagnosis.
+> Make the smallest justified repair, then run regression and development
+> checks. Return the patch, evidence and any remaining blocker.
 
-**Check whether it helped:** record the substantive work unblocked and the
-remaining blocker. More messages, plans or roles alone are not progress.
-Remove coordination that consumes effort without changing delivery.
+**Deliver and check:** use a caller-owned development check for the missing
+requirement and feed its output back to the worker. Keep final evaluation
+separate. If the same approach stalls, give a fresh helper the current files
+and raw failure rather than restarting everything. Stop on verified completion,
+the agreed budget or a concrete blocker; plans and messages alone are not
+progress.
 
-**Evidence:** one focused Haiku continuation of a stalled local 7B geometry run produced a subsequently accepted candidate in 35 seconds. This changed models, so it demonstrates a useful escalation, not same-model uplift. The run reached its call allowance without declaring completion; external checks established correctness.
+## 8. Candidate search and selection: trust the evaluator first
 
-## Comparing cheaper models with assistance
+**Use when:** selecting among formulations, heuristics or parameter choices,
+especially when search produces only small or inconsistent gains.
 
-Use Sonnet, Haiku, or another available cheaper model without depending on a
-stronger model's answer. Begin with tasks the model can meaningfully attempt;
-diagnose transport, output-format and runtime failures separately.
+Before generating more candidates:
 
-Compare solo, boost with same-model helpers, and solo with a comparable total
-budget. Let boost choose or invent its strategy. Count intake, helpers, retries,
-verification and consolidation in its cost and time. Freeze acceptance criteria
-and fresh final cases before calls; do not repair against those final answers.
-Existing stronger-model results are reference observations, not a matched
-control unless task, budget and environment match.
+- Validate feasibility separately from the score. Use exact checks where the
+  contract requires exactness, and explicit tolerances where it permits them.
+- Test the evaluator with known-valid, known-invalid and deliberately defective
+  candidates. Confirm that known-better solutions rank above known-worse ones.
+- Measure the caller's objective. A faster inner loop matters only to the
+  extent that it improves the required workload.
+- Check room for improvement with a lower bound or a known better feasible
+  solution, when available.
+- Freeze the acceptance rules, search budget and final evaluation cases before
+  search. Candidate generation must not silently change the evaluator.
 
-Record correctness, wall time, available token/cost evidence, strategy changes,
-and the agent's opinion. Prefer cost per correctly completed task; unknown cost
-stays unknown. Several cheap calls may cost more than one stronger call.
+**Prompt:**
 
-**Evidence:** a synthetic exact-geometry pilot found no critic rescue. Sonnet
-and Haiku calls hit deadlines; local Llama 3.2 1B returned invalid/empty code and
-an unhelpful critic. Removing stray closing XML tags from one Sonnet solo
-candidate made it pass 18/18 cases (post-hoc formatting diagnostic, not a boost
-win). A source-only schema and an explicitly supplied algorithm guide also
-failed for local 1B/7B models. These are small observations, not capability
-ceilings. A later iterative repair experiment let workers inspect, edit, test and retry: Haiku produced an accepted geometry candidate in 40 seconds; local 7B still failed. A prose lesson did not rescue it. Reusing verified source fixed its geometry, but it stalled on a CLI requirement. Keep execution
-failures separate from mathematical errors; never ask a critic to invent a
-diagnosis of code that was not produced.
+> Given [contract, feasibility rules, objective, validated evaluator and
+> development results], propose one materially different formulation. Return
+> a runnable candidate and explain where you expect it to beat or lose to the
+> incumbent. Stay within [budget] and mark anything you have not run.
 
-## 7. A repair loop with checks and reusable work
+**Deliver and check:** retain the best checked incumbent and a candidate table.
+Select using development cases, then run the final evaluation on the frozen
+holdout. Report feasibility, the caller's objective, variation and
+regressions across the workload. If the holdout guides another repair, it has
+become development data and a new final evaluation is needed.
 
-**Use when:** repeated edits are not converging, or tests pass while the actual
-contract is still unmet.
-
-**Working pattern:** retain the current files and failing command; run relevant
-tests after edits. For a missing requirement, supply a caller-owned development
-check whose output goes back to the worker. Keep final evaluation separate. If
-progress stalls, hand a fresh worker the current patch and raw failures. Preserve
-original regression tests and include all prior spend when assessing the rescue.
-
-**Helper prompt:**
-> Keep correct work intact. Reproduce this observed failure against this contract.
-> Make the smallest justified repair, then run regression and development checks.
-> Green tests do not excuse an unmet requirement. Return the patch and evidence.
-
-**Useful artifacts:** source snapshots, executable check, per-call receipts, and
-a short continuation packet. Export accepted code as an inspectable dependency
-when useful; bind its evidence to the exact task and source. Distill lessons
-without final answers, then test them on new work before promoting them.
-
-**Evidence:** Haiku initially passed visible tests but missed required compact
-JSON output. An external development check exposed the defect; the same model
-produced a fully accepted patch in 23 seconds (45 seconds to self-completion,
-$0.119 reported CLI cost). This is a concrete verifier-guided repair. A fresh full-task CLI run also passed in 122 seconds for $0.210. These runs do
-not establish an advantage from extra agents or broad self-learning.
-
-Runnable Python/Docker implementation, negative trials and receipts:
-[Boost workloop](https://github.com/itsHabib/specialist-workshop/tree/codex/boost-workloop/experiments/boost_workloop).
+Keep the incumbent when candidates do not meet the acceptance rule. Any claim
+that assistance itself helped also needs a comparable ordinary-work budget,
+including generation, failed attempts, verification and integration.

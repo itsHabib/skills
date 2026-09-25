@@ -1,4 +1,4 @@
 interface:
   display_name: "Boost"
   short_description: "Targeted help for difficult engineering work"
-  default_prompt: "Use $boost on this task, keep working, and record what helped."
+  default_prompt: "Use $boost on this task. Test the important uncertainty, verify any helper findings, and finish the deliverable."
