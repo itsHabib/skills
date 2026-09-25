@@ -12,6 +12,7 @@ Questions that improve how an agent investigates without supplying the answer.
 | It passes the supplied examples | What’s the simplest new case that could break it? |
 | It’s solving everything at once | Which uncertainty is blocking the rest? |
 | Two approaches disagree | What’s the smallest input where their answers differ? |
+| It treats unlike cases alike | Which cases need different decisions but look the same to your approach? What information would distinguish them? |
 | The results look suspiciously good | Could your evaluator reward the wrong behavior? |
 | It’s stuck in one approach | What would a fundamentally different explanation predict? |
 | It claims success | What did you demonstrate, and what are you still assuming? |
