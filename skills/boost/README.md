@@ -43,6 +43,16 @@ The lead prepares the packet and dispatches through native tools. For an existin
 separate session, use the [side-agent mission](references/helpers.md). That file
 also explains fresh versus inherited context and the lead's handback step.
 
+## For an ongoing research loop
+
+> /boost Run a research loop on this task. Keep one problem and one active question at a time. At meaningful evidence checkpoints, have a research partner inspect the current inputs, candidate, evaluator and raw results, choose the question most likely to change our next decision, and investigate it. Verify the evidence, use it to continue the work, and repeat when new evidence warrants another round. Preserve the best checked result and stay within the task's scope and resource limits.
+
+The lead supplies the context and uses native helpers when available. Without
+delegation, it performs the checks itself. The skill guides the active session;
+it does not start background workers. The short record is **observation ->
+question -> check -> result -> next action**, kept in the existing task notes.
+There is no need for a separate arena service or Python runner.
+
 ## Useful requests
 
 - `/boost the integration test fails only after reconnect; locate the earliest broken contract`
@@ -55,7 +65,10 @@ change our decision and test it now; return the evidence.** If a useful report
 sits unused, ask: **Verify this result, record its disposition and continue the
 deliverable.**
 
-For a lighter steer, choose one question from [Questions to unstick an agent](references/questions.md), then ask the agent to run the experiment. The table is part of this skill bundle.
+Boost chooses from [Questions to unstick an agent](references/questions.md) at
+evidence checkpoints without waiting for you to diagnose a stall. You can also
+use the table for a lighter steer. In either case, one question should lead to a
+check and a decision, rather than another list of questions.
 
 ## Optional utilities
 
