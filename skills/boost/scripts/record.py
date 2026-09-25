@@ -30,15 +30,24 @@ def save(note, directory):
     return path
 
 
+def read_input(source):
+    """Return at most 16 KiB + 1 bytes from a file, or from stdin by default."""
+    if source is None:
+        return sys.stdin.buffer.read(16385)
+    with open(source.expanduser(), 'rb') as stream:
+        return stream.read(16385)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--directory', type=Path, default=Path.home()/'.local/state/agent-boost/uses')
+    parser.add_argument('--file', type=Path, help='read the note from this UTF-8 JSON file instead of stdin')
     args = parser.parse_args()
     try:
-        raw = sys.stdin.buffer.read(16385)
+        raw = read_input(args.file)
         if len(raw) > 16384:
             raise ValueError('keep the use note below 16 KiB')
-        path = save(json.loads(raw), args.directory.expanduser())
+        path = save(json.loads(raw.decode('utf-8-sig')), args.directory.expanduser())
     except (ValueError, OSError) as error:
         parser.exit(1, f'record not saved: {error}\n')
     print(path)
