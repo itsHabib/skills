@@ -5,6 +5,13 @@ agent choose a useful experiment or delegate a focused investigation, verify the
 result and finish the active task. It works with the agent and tools you already
 use. Python is optional.
 
+## Research inspiration
+
+[Research inspiration](references/research.md) describes mechanisms from Google
+DeepMind's FunSearch, AlphaEvolve and AlphaDev. These inspire the workflow; they
+do not establish that this skill improves a model's performance. Judge it by the
+checked result and the effort it adds on your task.
+
 ## Install or update
 
 1. Choose your agent's skill directory: normally `~/.claude/skills/` for
@@ -50,15 +57,10 @@ deliverable.**
 
 For a lighter steer, choose one question from [Questions to unstick an agent](references/questions.md), then ask the agent to run the experiment. The table is part of this skill bundle.
 
-## Optional utilities and research
+## Optional utilities
 
 The normal workflow uses Markdown and the project's own tools. Existing
 [Python utilities](references/utilities.md) can save local execution receipts or
 summarize feedback when wanted. They do not orchestrate the agents and are not
 required to run Boost. Task-specific experiments may use whatever language or
 tools the project needs.
-
-[Research inspiration](references/research.md) describes mechanisms from Google
-DeepMind's FunSearch, AlphaEvolve and AlphaDev. These inspire the workflow; they
-do not establish that this skill improves a model's performance. Judge it by the
-checked result and the effort it adds on your task.

@@ -12,6 +12,13 @@ next action. Work with the available tools and model. No Python setup, special
 runtime, permanent team or additional approval step is required by this skill.
 Preserve the user's scope, permissions and resource constraints.
 
+## Research inspiration
+
+Boost takes inspiration from Google DeepMind’s FunSearch, AlphaEvolve and
+AlphaDev. See [the research and proposed adaptations](references/research.md)
+for the mechanisms and their limits. Boost does not reproduce those systems;
+their results do not establish a performance gain for this skill.
+
 ## Start with one decision
 
 Infer the goal and acceptance criteria from the current task. Reuse current
@@ -35,7 +42,6 @@ Choose the reference needed for this question; do not load all of them:
 | An investigation is stuck and needs a question without a solution hint | [Questions to unstick an agent](references/questions.md) |
 | A side agent would help, or the user requests one | [Helper missions and handback](references/helpers.md) |
 | Choosing helpers or comparing effort | [Models and effort](references/models.md) |
-| Research inspiration and its limits | [Primary research](references/research.md) |
 
 ## Use help when it changes the work
 
