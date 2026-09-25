@@ -39,9 +39,36 @@ Choose the reference needed for this question; do not load all of them:
 |---|---|
 | Engineering boundaries, design, reliability or an uncertain research claim | The relevant [recipe](references/recipes.md) |
 | Algorithm correctness, performance or selecting candidates | [Algorithm improvement](references/algorithm-improvement.md) |
-| An investigation is stuck and needs a question without a solution hint | [Questions to unstick an agent](references/questions.md) |
+| A research checkpoint or stuck investigation needs a useful question | [Questions to unstick an agent](references/questions.md) |
 | A side agent would help, or the user requests one | [Helper missions and handback](references/helpers.md) |
 | Choosing helpers or comparing effort | [Models and effort](references/models.md) |
+
+## Revisit the question during work
+
+Reassess at meaningful evidence checkpoints: a result contradicts expectations,
+a new failure appears, attempts repeat without new evidence, the goal or input
+contract changes, or you are about to accept an improvement or claim completion.
+Compare the evidence with the required outcome. If ordinary work is justified,
+continue it. Otherwise choose the question most likely to change the next action;
+use the [question table](references/questions.md) when helpful. Do not wait for
+the user to notice the gap, and do not turn every tool call into a review.
+
+Keep one active question. Ground it in a concrete observation, state what result
+would change the decision, and run the smallest useful check. Use existing task
+notes for a short record: **observation -> question -> check -> result -> next
+action**. Preserve an unresolved check across handoffs; no new log format is
+required. Generate questions for investigation, not a questionnaire for the user.
+
+For an ongoing research loop, give one helper the latest candidate, input
+contract, evaluator and raw evidence. Ask it to select and investigate one
+consequential question; use the existing [helper mission](references/helpers.md).
+The lead verifies the result and uses it before commissioning another round.
+Repeat with changed evidence when useful. Do not re-review unchanged work or
+repeat a settled question without a specific remaining check. A partner may
+find no reason to change course. Return to implementation when the question is
+settled; at an evidence or resource limit, record the unresolved point and
+continue whatever authorized work remains possible. This is a loop within the
+active task, not a background service supplied by the skill.
 
 ## Use help when it changes the work
 
