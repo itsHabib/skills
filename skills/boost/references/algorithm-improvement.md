@@ -18,6 +18,11 @@ known-good control and deliberate defects. A checker sharing the candidate's
 core algorithm can share its mistake. Floating-point checks need explicit
 error bounds; passing finite cases is not a general proof.
 
+When a quantity guides a repair, distinguish what it measures from the change
+the caller can make. A local error, a whole-result discrepancy and an allowed
+correction may differ. Apply the proposed correction and check the full
+requirement, including constraints it could break.
+
 Before writing another patch, ask what observation would distinguish the
 current explanation from an alternative. Run that probe. Concrete failed
 inputs and measurements are usually better feedback than another general
@@ -70,6 +75,10 @@ a final failure guides repair, it is development evidence; retain that result
 and use fresh cases for a later evaluation. Report both the selected final
 candidate and the incumbent so a bad last attempt does not erase a useful
 earlier result or silently disappear from the record.
+
+Choose evaluation cases from the caller's required workload. Name required
+regimes absent from the evaluation and limit the conclusion accordingly;
+freshness alone does not establish coverage.
 
 Save portable lessons only after testing them: what failed, what observation
 changed the approach, and when the fix applies. Source reuse can be more useful

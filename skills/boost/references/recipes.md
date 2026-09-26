@@ -118,6 +118,11 @@ analysis or bounded experiment with its decision rule fixed in advance.
 Check that the proposed measurement actually separates the explanations.
 Report unresolved ambiguity; a plausible narrative is not a causal result.
 
+If the same observed inputs admit different required answers, name the input
+set and assumptions under which the ambiguity holds. Seek a distinguishing
+measurement, narrow the claim or preserve an unknown result. This does not
+establish that the answer is unknowable with other inputs.
+
 ## 7. Stalled repair: give the worker decisive feedback
 
 **Use when:** edits repeat without convergence, or visible tests pass while
@@ -150,6 +155,14 @@ Before generating more candidates:
   candidates. Confirm that known-better solutions rank above known-worse ones.
 - Measure the caller's objective. A faster inner loop matters only to the
   extent that it improves the required workload.
+- When scoring predicted outcomes, distinguish simulated behavior from assumed
+  success. Compare a selected candidate with an independent execution or known
+  answer at the point the outcome is observed. Agreement on cases used to tune
+  the predictor is calibration evidence. If the check is unavailable, retain
+  the prediction and uncertainty without calling the outcome verified.
+- Keep required outputs and acceptance limits independent of the candidate.
+  Unknown cases remain unresolved; an aggregate score cannot waive a hard
+  requirement or hide a critical failure.
 - Check room for improvement with a lower bound or a known better feasible
   solution, when available.
 - Freeze the acceptance rules, search budget and final evaluation cases before

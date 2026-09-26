@@ -23,6 +23,9 @@ their results do not establish a performance gain for this skill.
 
 Infer the goal and acceptance criteria from the current task. Reuse current
 source and evidence; ask only for missing information that changes the work.
+When a score or prediction drives the next action, identify what it actually
+observes and where the required outcome can be checked. A measured proxy can
+still assume the behavior you need to establish.
 Briefly state the ordinary next action, the unresolved question that might
 change it, and the cheapest check that would distinguish the possible answers.
 Then run the check. If the next step is already justified, take it; do not invent

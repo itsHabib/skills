@@ -20,10 +20,13 @@ specific evidence; this table supplies examples, not a list to cycle through.
 | Two approaches disagree | What’s the smallest input where their answers differ? |
 | It treats unlike cases alike | Which cases need different decisions but look the same to your approach? What information would distinguish them? |
 | A rule uses information from completed examples | Could it still make the decision using only information available at decision time? |
+| A number is being used to choose a repair | What does it measure, and does applying the implied change satisfy the whole requirement? |
+| A predictor agrees with examples | Where can you check its recommendation against an executed outcome? Which behavior or inputs did it assume? |
 | Success is measured only on what it returns | Could it pass by omitting a difficult required case? |
 | It disagrees with a reference answer | Which disagreements violate requirements, and which are acceptable alternatives? |
 | Two reported improvements seem comparable | Are they solving the same problem on the same inputs under the same conditions? |
 | The results look suspiciously good | Could your evaluator reward the wrong behavior? |
+| An aggregate score looks good | Which required cases or serious failures could that summary hide? |
 | It’s stuck in one approach | What would a fundamentally different explanation predict? |
 | It claims success | What did you demonstrate, and what are you still assuming? |
 | It requests more resources | What can you establish with what you already have? |
