@@ -43,6 +43,7 @@ Copy individual dirs if you want a subset.
 | `/status` | In-flight 4-section status (What happened / What's next / What I recommend / What I need). |
 | `/track` | Give a waiting agent a sense of elapsed time — an anchor file plus a `/loop` heartbeat reporting `+10m · 47m total · waiting on X`. A session has no clock, so between two turns a 3-second reply and a 3-hour silence are identical; this makes the cumulative total visible. Reports time only — it never does the work or acts on a timeout. |
 | `/skills` | Skill librarian — discover every skill on disk (personal / project / stranded in worktrees) and either lay them all out in a grouped table or recommend the best fit for a task you describe, with the exact command to type. |
+| `/cut` | Find the smallest solution that preserves the intended outcome — audit a spec, diff, or review findings and apply concrete simplifications when edits are authorized. |
 | `/worktree-add` | Create a worktree at `.claude/worktrees/<branch>/`. |
 | `/worktree-list` | List worktrees with dirty state + PR/CI. |
 | `/worktree-remove` | Remove a worktree, dirty-state aware. |
