@@ -16,3 +16,8 @@ jobs:
 
       - name: Run registry checks
         run: bash scripts/check.sh
+
+      # The scrub gate is only worth its exit code if the patterns still match
+      # what leaks, so the gate's own guard test runs beside it.
+      - name: Run scrub-gate self-test
+        run: bash scripts/check-selftest.sh
