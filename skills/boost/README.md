@@ -43,6 +43,13 @@ The lead prepares the packet and dispatches through native tools. For an existin
 separate session, use the [side-agent mission](references/helpers.md). That file
 also explains fresh versus inherited context and the lead's handback step.
 
+For complementary investigations toward one result:
+
+> /boost Form a small temporary subteam for this task if the work can usefully split. Own the deliverable and integration. Give helpers distinct questions, a shared acceptance check and separate edit ownership. Keep useful work moving, verify their contributions and test the combined result. Stay within the existing budget and shrink the team when extra help stops paying off.
+
+See [temporary subteams](references/helpers.md#temporary-subteam) for the pattern.
+Use only the helpers the task needs; a team is optional.
+
 ## For an ongoing research loop
 
 > /boost Run a research loop on this task. Keep one problem and one active question at a time. At meaningful evidence checkpoints, have a research partner inspect the current inputs, candidate, evaluator and raw results, choose the question most likely to change our next decision, and investigate it. Verify the evidence, use it to continue the work, and repeat when new evidence warrants another round. Preserve the best checked result and stay within the task's scope and resource limits.

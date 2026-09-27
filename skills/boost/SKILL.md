@@ -43,7 +43,7 @@ Choose the reference needed for this question; do not load all of them:
 | Engineering boundaries, design, reliability or an uncertain research claim | The relevant [recipe](references/recipes.md) |
 | Algorithm correctness, performance or selecting candidates | [Algorithm improvement](references/algorithm-improvement.md) |
 | A research checkpoint or stuck investigation needs a useful question | [Questions to unstick an agent](references/questions.md) |
-| A side agent would help, or the user requests one | [Helper missions and handback](references/helpers.md) |
+| A helper or small subteam would help, or the user requests one | [Helper missions and handback](references/helpers.md) |
 | Choosing helpers or comparing effort | [Models and effort](references/models.md) |
 
 ## Revisit the question during work
@@ -56,13 +56,14 @@ continue it. Otherwise choose the question most likely to change the next action
 use the [question table](references/questions.md) when helpful. Do not wait for
 the user to notice the gap, and do not turn every tool call into a review.
 
-Keep one active question. Ground it in a concrete observation, state what result
+Keep one active decision. Each helper gets one bounded question that bears on it.
+Ground each question in a concrete observation, state what result
 would change the decision, and run the smallest useful check. Use existing task
 notes for a short record: **observation -> question -> check -> result -> next
 action**. Preserve an unresolved check across handoffs; no new log format is
 required. Generate questions for investigation, not a questionnaire for the user.
 
-For an ongoing research loop, give one helper the latest candidate, input
+For a focused ongoing research loop, give one helper the latest candidate, input
 contract, evaluator and raw evidence. Ask it to select and investigate one
 consequential question; use the existing [helper mission](references/helpers.md).
 The lead verifies the result and uses it before commissioning another round.
@@ -87,7 +88,9 @@ does not guarantee independent errors. Give writers separate edit ownership.
 
 Ask for evidence or an artifact the lead can check. Keep doing useful independent
 work while the helper investigates. Add another helper only for a separate useful
-question. If delegation is unavailable, perform the check locally; when the user
+question. When complementary questions can progress independently toward one
+result, use a [temporary subteam](references/helpers.md#temporary-subteam).
+If delegation is unavailable, perform the check locally; when the user
 wants a separate session, provide the prepared mission to paste there.
 
 If you are the helper receiving a bounded mission, answer that question and

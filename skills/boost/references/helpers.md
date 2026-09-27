@@ -1,9 +1,26 @@
 # Helper missions and handback
 
 Use native delegation when available. The lead selects a question that could
-change its next action and prepares the packet from the current task. Start with
+change its next action and prepares the packet from the current task. Default to
 one helper; add another only for a separate useful question that can progress
 independently. Use existing resource limits; a helper does not expand authority.
+
+## Temporary subteam
+
+When complementary investigations would help, form a temporary subteam around
+one result. The lead owns the deliverable and integration. Assign distinct
+questions based on the missing evidence, with one shared acceptance check and
+a clear place where each contribution will be used. Choose the smallest useful
+team; no fixed roster is required.
+
+For example, one helper can investigate a bottleneck while another prepares
+independent counterexamples. Share the relevant input contract and revision,
+and keep their edit ownership separate. Parallelize work that is ready; a check
+that depends on a new artifact must wait for that artifact. The lead continues
+useful work, verifies the returned contributions, resolves disagreements with
+evidence, and checks the combined result against the actual caller. Follow the
+handback steps below. End or shrink the subteam when its questions are settled
+or further delegation stops helping.
 
 ## The packet
 
