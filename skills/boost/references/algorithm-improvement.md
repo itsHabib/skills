@@ -18,6 +18,9 @@ known-good control and deliberate defects. A checker sharing the candidate's
 core algorithm can share its mistake. Floating-point checks need explicit
 error bounds; passing finite cases is not a general proof.
 
+For a worst-case guarantee, show what bounds the untested region; nominal
+sample density or stable perturbations alone cannot supply that bound.
+
 When a quantity guides a repair, distinguish what it measures from the change
 the caller can make. A local error, a whole-result discrepancy and an allowed
 correction may differ. Apply the proposed correction and check the full
