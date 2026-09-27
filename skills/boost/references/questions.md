@@ -8,6 +8,10 @@ the required outcome. Prefer the question whose answer could most change the
 next action and can be checked with available resources. Adapt it to the
 specific evidence; this table supplies examples, not a list to cycle through.
 
+Before choosing one, ask: **Would plausible answers lead to different next
+actions?** If not, drop the question and continue the justified work. A check
+that confirms the current action can still be valuable.
+
 | When… | Ask… |
 |---|---|
 | It has several explanations | What’s the smallest experiment that would distinguish them? |

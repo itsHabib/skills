@@ -14,9 +14,14 @@ algorithm is the bottleneck.
 Build the cheapest trustworthy check for the uncertainty: a slow exact oracle
 on small inputs, independent implementation, exhaustive enumeration, invariant,
 metamorphic relation, or minimized regression. Validate the checker against a
-known-good control and deliberate defects. A checker sharing the candidate's
-core algorithm can share its mistake. Floating-point checks need explicit
-error bounds; passing finite cases is not a general proof.
+known-good control and deliberate defects; reuse validation that applies to the
+current contract. Shared parsing, preprocessing, algorithms, data or assumptions
+can hide the same mistake on both sides. Prefer a check that bypasses the relevant
+shared dependency; agreement on an unchanged baseline only checks alignment.
+Numerical checks need established resolution and error bounds. Nominal resolution
+does not bound all errors, and an unexplained discrepancy does not establish the
+evaluator's uncertainty. An unresolved gap remains inconclusive. Passing finite
+cases is not a general proof.
 
 For a worst-case guarantee, show what bounds the untested region; nominal
 sample density or stable perturbations alone cannot supply that bound.

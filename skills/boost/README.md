@@ -42,6 +42,8 @@ Paste into the active lead session:
 The lead prepares the packet and dispatches through native tools. For an existing
 separate session, use the [side-agent mission](references/helpers.md). That file
 also explains fresh versus inherited context and the lead's handback step.
+Give each helper a time or effort limit within the existing budget and require
+partial findings at that limit. Useful evidence should survive a stalled attempt.
 
 For complementary investigations toward one result:
 

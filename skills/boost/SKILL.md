@@ -28,8 +28,20 @@ observes and where the required outcome can be checked. A measured proxy can
 still assume the behavior you need to establish.
 Briefly state the ordinary next action, the unresolved question that might
 change it, and the cheapest check that would distinguish the possible answers.
-Then run the check. If the next step is already justified, take it; do not invent
+For a confirmatory check, record expected observations under the relevant
+explanations, including what should change and what must stay unchanged, before
+seeing the result; check both. For exploration, state what outcomes would change
+the decision; unknown outcomes are allowed. If the next step is already justified,
+take it; do not invent
 uncertainty or a second hypothesis to follow a template.
+
+Before relying on an evaluator, identify a relevant way it could be wrong and
+check an appropriate known-answer control or deliberate defect; reuse applicable
+existing evidence. Identify dependencies shared with the candidate that could
+hide the suspected failure, and prefer a check that bypasses them. Baseline
+agreement alone is not validation. For numerical comparisons, record established
+resolution and uncertainty; a gap the evaluator cannot resolve is inconclusive,
+not proof of either a defect or correctness. Then run the discriminating check.
 
 Useful evidence includes a reproducer, independent derivation, small exact
 oracle, counterexample, profile or a tested alternative. If execution is
@@ -70,7 +82,8 @@ The lead verifies the result and uses it before commissioning another round.
 Repeat with changed evidence when useful. Do not re-review unchanged work or
 repeat a settled question without a specific remaining check. A partner may
 find no reason to change course. Return to implementation when the question is
-settled; at an evidence or resource limit, record the unresolved point and
+settled or no further question would change the next action; briefly record why.
+At an evidence or resource limit, record the unresolved point and
 continue whatever authorized work remains possible. This is a loop within the
 active task, not a background service supplied by the skill.
 
@@ -110,6 +123,12 @@ claims. Keep development feedback separate from final evaluation; a revealed
 final case becomes development data. More search cannot recover information the
 inputs do not contain.
 
+Before carrying a consequential claim into the deliverable, check that the raw
+evidence supports it, including missing, excluded and no-output cases. Use a fresh
+partner when an independent challenge would help; otherwise briefly explain why
+direct verification suffices or limit the claim. Put corrections to earlier
+claims next to the current conclusion, preserving the evidence that changed it.
+
 Drop unhelpful roles or process. A result may confirm the current action or rule
 out an approach; do not manufacture a success story. A successful task does not
 establish that Boost beats an ordinary attempt with comparable effort.
@@ -122,6 +141,10 @@ Use the existing task response or handoff. State:
 - the finding, artifact and reproduction command or derivation;
 - what you accepted, rejected or deferred, and its effect on the deliverable;
 - remaining uncertainty and what would settle it.
+
+For substantive investigations, add a compact effort line: evaluations and edits,
+including failed work and verification; distinguish expensive and cheap calls
+when useful. Include measured time or cost if available, and mark unknowns.
 
 Keep this proportional to the task. No separate log or script invocation is
 required. If durable local receipts or feedback summaries would be useful,
