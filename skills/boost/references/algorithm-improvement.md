@@ -20,7 +20,10 @@ can hide the same mistake on both sides. Prefer a check that bypasses the releva
 shared dependency; agreement on an unchanged baseline only checks alignment.
 Numerical checks need established resolution and error bounds. Nominal resolution
 does not bound all errors, and an unexplained discrepancy does not establish the
-evaluator's uncertainty. An unresolved gap remains inconclusive. Passing finite
+evaluator's uncertainty. Apply the requirement to the full range allowed by that
+uncertainty, even when the displayed values match. If that range crosses the
+decision boundary, refine the check or report inconclusive. For a bound, a
+symmetric comparison tolerance can hide an invalid underestimate. Passing finite
 cases is not a general proof.
 
 For a worst-case guarantee, show what bounds the untested region; nominal

@@ -40,8 +40,10 @@ check an appropriate known-answer control or deliberate defect; reuse applicable
 existing evidence. Identify dependencies shared with the candidate that could
 hide the suspected failure, and prefer a check that bypasses them. Baseline
 agreement alone is not validation. For numerical comparisons, record established
-resolution and uncertainty; a gap the evaluator cannot resolve is inconclusive,
-not proof of either a defect or correctness. Then run the discriminating check.
+resolution and uncertainty, including for apparent matches. Accept only when the
+full range allowed by that uncertainty meets the requirement; if it crosses the
+decision boundary, refine the check or report inconclusive. Then run the
+discriminating check.
 
 Useful evidence includes a reproducer, independent derivation, small exact
 oracle, counterexample, profile or a tested alternative. If execution is

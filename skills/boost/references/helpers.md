@@ -38,9 +38,11 @@ Keep it short and link existing artifacts:
 - **Return:** artifact location and handback route. Return useful partial evidence
   and remaining uncertainty at the limit, without waiting for the lead to ask.
 
-Checkpoint useful findings before a long operation. A prompt cannot force a
-handback after a hard kill; the lead should inspect retained artifacts, reclaim
-timed-out work and decide what remains useful instead of silently repeating it.
+Save useful findings as they are discovered to the agreed artifact or lead
+handback channel, especially near the limit and before long operations. A prompt
+cannot force a handback after a hard kill; the lead should inspect retained
+artifacts, reclaim timed-out work and decide what remains useful instead of
+silently repeating it.
 
 For fresh diagnosis, use a genuinely fresh context and omit the lead's favored
 explanation. Do not hide necessary facts. For review of a specific proposal,
@@ -52,9 +54,9 @@ conversation is not a fresh investigation.
 The lead fills in the question and supplies the packet. Use the same mission in
 a native subagent or a separate session:
 
-> You are the Boost partner for this task. Answer **[one concrete unresolved question]** using the supplied packet within **[time or effort limit]**. Read the Boost skill supplied by the lead. Inspect the relevant inputs and execute the smallest experiment, derivation or counterexample that could change the decision. Before trusting the checker, inspect its validation or exercise a relevant known-answer control or deliberate defect. Account for shared failure modes and established numerical uncertainty. Before a confirmatory check, record expected changes and what must stay unchanged; for exploration, state how different outcomes would affect the decision. Preserve the best checked baseline and include an unfavorable case when proposing an improvement.
+> You are the Boost partner for this task. Answer **[one concrete unresolved question]** using the supplied packet within **[time or effort limit]**. Read the Boost skill supplied by the lead. Inspect the relevant inputs and execute the smallest experiment, derivation or counterexample that could change the decision. Before trusting the checker, inspect its validation or exercise a relevant known-answer control or deliberate defect. Account for shared failure modes and established numerical uncertainty. If that uncertainty allows both passing and failing outcomes, refine the check or report inconclusive, even when displayed values match. Before a confirmatory check, record expected changes and what must stay unchanged; for exploration, state how different outcomes would affect the decision. Preserve the best checked baseline and include an unfavorable case when proposing an improvement.
 >
-> Work only within the assigned edit scope; propose a diff if none is given. Do not launch more helpers by default. Checkpoint findings before long operations and return useful partial work at the limit without another request. If evidence is missing, identify what would settle the question and complete the useful work available. Hand back a runnable probe, checked patch or concrete finding: conclusion, artifact, command and observed result, assumptions and next action. Distinguish measurements from inference. Include evaluations and edits, failed work and verification, with measured effort where available; mark unknowns. A useful negative result is valid.
+> Work only within the assigned edit scope; propose a diff if none is given. Do not launch more helpers by default. Save useful findings as you discover them to the agreed artifact or lead handback channel, especially near the limit and before long operations. Return useful partial work at the limit without another request. If evidence is missing, identify what would settle the question and complete the useful work available. Hand back a runnable probe, checked patch or concrete finding: conclusion, artifact, command and observed result, assumptions and next action. Distinguish measurements from inference. Include evaluations and edits, failed work and verification, with measured effort where available; mark unknowns. A useful negative result is valid.
 
 The lead may tailor the mission with a [recipe](recipes.md). Give the helper the
 skill's actual path or contents; do not assume the lead's loaded skills transfer.
