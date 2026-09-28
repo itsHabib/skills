@@ -11,6 +11,10 @@ correctness requirements from an objective such as runtime, memory or packing
 quality. A faster invalid answer cannot win. Profile before assuming the
 algorithm is the bottleneck.
 
+Use [evaluation and evidence](evaluation.md) when measurements decide acceptance:
+replay the actual caller, establish the quantity and correspondence being scored,
+and preserve inputs, effective configuration and criteria for final comparison.
+
 Build the cheapest trustworthy check for the uncertainty: a slow exact oracle
 on small inputs, independent implementation, exhaustive enumeration, invariant,
 metamorphic relation, or minimized regression. Validate the checker against a

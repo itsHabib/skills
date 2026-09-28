@@ -30,11 +30,14 @@ Keep it short and link existing artifacts:
   the observation that could change it. For a confirmatory check, include expected
   changes and relevant behavior that must remain unchanged.
 - **Inputs:** source revision or snapshot, relevant files, raw results and a
-  reproduction command. Preserve relevant failed experiments and constraints.
-  For evaluation, include how the checker was validated, shared dependencies that
-  could conceal the failure, and established numerical uncertainty when relevant.
+  reproduction command through the actual caller with effective configuration.
+  Preserve relevant failed experiments and constraints. For evaluation, use the
+  relevant [evidence checks](evaluation.md), including how the checker was
+  validated. Keep withheld answers out of candidate-building packets.
 - **Scope:** allowed edits, separate ownership for concurrent writers, shared
   resources to avoid and a concrete time or effort limit within the task's budget.
+  Verification preserves the tested subject; implementation may edit an assigned
+  candidate. Neither changes frozen inputs or scoring rules silently.
 - **Return:** artifact location and handback route. Return useful partial evidence
   and remaining uncertainty at the limit, without waiting for the lead to ask.
 
@@ -44,19 +47,33 @@ cannot force a handback after a hard kill; the lead should inspect retained
 artifacts, reclaim timed-out work and decide what remains useful instead of
 silently repeating it.
 
+For a long or interruption-prone mission, choose a concrete checkpoint cadence
+suited to the work, such as after each small batch of sources. Budget reading
+missions for saved findings, not an open-ended survey. Use native completion
+notifications; add a fallback only when notification risk warrants it and an
+existing authorized mechanism supports it. This skill does not authorize new
+schedules or background monitoring.
+
 For fresh diagnosis, use a genuinely fresh context and omit the lead's favored
 explanation. Do not hide necessary facts. For review of a specific proposal,
 include that proposal and call it review. A neutral prompt inside an inherited
 conversation is not a fresh investigation.
+
+An existing peer can register criteria before a shared experiment. Supply the
+proposed change, predicted changed and unchanged behavior, measures and scored
+units, and expected output locations. Let it challenge the criteria before the
+run; preserve its independent scoring afterward. Exposure to the proposal makes
+this proposal review, not fresh diagnosis. Contact existing sessions only within
+authorized coordination; a peer cannot supply missing operator permission.
 
 ## Ready-to-use side-agent mission
 
 The lead fills in the question and supplies the packet. Use the same mission in
 a native subagent or a separate session:
 
-> You are the Boost partner for this task. Answer **[one concrete unresolved question]** using the supplied packet within **[time or effort limit]**. Read the Boost skill supplied by the lead. Inspect the relevant inputs and execute the smallest experiment, derivation or counterexample that could change the decision. Before trusting the checker, inspect its validation or exercise a relevant known-answer control or deliberate defect. Account for shared failure modes and established numerical uncertainty. If that uncertainty allows both passing and failing outcomes, refine the check or report inconclusive, even when displayed values match. Before a confirmatory check, record expected changes and what must stay unchanged; for exploration, state how different outcomes would affect the decision. Preserve the best checked baseline and include an unfavorable case when proposing an improvement.
+> You are the Boost partner for this task. Answer **[one concrete unresolved question]** using the supplied packet within **[time or effort limit]**. Read the supplied Boost skill and relevant reference. Run the smallest experiment, derivation or counterexample that could change the decision. Check actual inputs, execution path and the evaluator's validation before trusting a measurement. Use known-answer controls that could reveal a shared defect; account for established uncertainty even when displayed values match. If uncertainty permits both passing and failing outcomes, refine the check or report inconclusive. Before confirmation, record expected changes, what must stay unchanged and how outcomes affect the decision. Preserve the best checked baseline and include an unfavorable case when proposing an improvement.
 >
-> Work only within the assigned edit scope; propose a diff if none is given. Do not launch more helpers by default. Save useful findings as you discover them to the agreed artifact or lead handback channel, especially near the limit and before long operations. Return useful partial work at the limit without another request. If evidence is missing, identify what would settle the question and complete the useful work available. Hand back a runnable probe, checked patch or concrete finding: conclusion, artifact, command and observed result, assumptions and next action. Distinguish measurements from inference. Include evaluations and edits, failed work and verification, with measured effort where available; mark unknowns. A useful negative result is valid.
+> Work within your edit scope; propose a diff if none is given. Preserve frozen inputs and criteria; do not use withheld answers to build candidates. Do not launch helpers by default. Save findings as discovered, following **[checkpoint cadence if needed]**, especially before long operations. Return useful partial work at the limit without another request. Hand back a runnable probe, checked patch or concrete finding: conclusion, artifact, command and observed result, evaluator controls, material invalidated attempts, assumptions and next action. Distinguish measurements from inference and name missing evidence. Include failed work and verification in effort; mark unknowns. A useful negative result is valid.
 
 The lead may tailor the mission with a [recipe](recipes.md). Give the helper the
 skill's actual path or contents; do not assume the lead's loaded skills transfer.

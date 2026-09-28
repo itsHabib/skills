@@ -12,6 +12,10 @@ Before choosing one, ask: **Would plausible answers lead to different next
 actions?** If not, drop the question and continue the justified work. A check
 that confirms the current action can still be valuable.
 
+Costly reversal or a downstream contract makes a fork consequential, but a cheap
+discriminating check can also be worth doing. Routine wiring with a settled
+contract usually needs implementation and validation, not a research mission.
+
 | When… | Ask… |
 |---|---|
 | It has several explanations | What’s the smallest experiment that would distinguish them? |
@@ -29,6 +33,9 @@ that confirms the current action can still be valuable.
 | Success is measured only on what it returns | Could it pass by omitting a difficult required case? |
 | It disagrees with a reference answer | Which disagreements violate requirements, and which are acceptable alternatives? |
 | Two reported improvements seem comparable | Are they solving the same problem on the same inputs under the same conditions? |
+| Another component depends on an identifier | What can change without the thing named changing? Does this ID preserve that identity across those changes? |
+| A helper reproduces a result differently from the caller | Did both execute the same entry point, effective defaults and input revision? |
+| A whole class has the same offset or scale error | Which unit conversion, transform or configuration could cause it, and what observation would distinguish those causes? |
 | The results look suspiciously good | Could your evaluator reward the wrong behavior? |
 | An aggregate score looks good | Which required cases or serious failures could that summary hide? |
 | It’s stuck in one approach | What would a fundamentally different explanation predict? |

@@ -5,6 +5,12 @@ agent choose a useful experiment or delegate a focused investigation, verify the
 result and finish the active task. It works with the agent and tools you already
 use. Python is optional.
 
+The short handback is the record: what was uncertain, what ran, the evidence and
+what changed. Use your existing task notes; no separate service or receipt tool
+is needed. For measured decisions, Boost checks the actual inputs and execution
+path, validates the evaluator, and preserves failures and unresolved cases.
+See [evaluation and evidence](references/evaluation.md) for that conditional path.
+
 ## Research inspiration
 
 [Research inspiration](references/research.md) describes mechanisms from Google

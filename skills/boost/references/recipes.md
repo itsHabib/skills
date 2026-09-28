@@ -118,6 +118,9 @@ analysis or bounded experiment with its decision rule fixed in advance.
 Check that the proposed measurement actually separates the explanations.
 Report unresolved ambiguity; a plausible narrative is not a causal result.
 
+For a measured or frozen comparison, use [evaluation and evidence](evaluation.md)
+to validate the quantity, pairing and controls before interpreting a result.
+
 If the same observed inputs admit different required answers, name the input
 set and assumptions under which the ambiguity holds. Seek a distinguishing
 measurement, narrow the claim or preserve an unknown result. This does not
@@ -148,6 +151,9 @@ progress.
 especially when search produces only small or inconsistent gains.
 
 Before generating more candidates:
+
+Use [evaluation and evidence](evaluation.md) for the actual execution path,
+scored units, exclusions, uncertainty and frozen rules. Then:
 
 - Validate feasibility separately from the score. Use exact checks where the
   contract requires exactness, and explicit tolerances where it permits them.

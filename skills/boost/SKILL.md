@@ -8,147 +8,108 @@ description: Unblock difficult engineering, algorithm, debugging or research wor
 # Boost
 
 Improve the active task using the smallest investigation that could change the
-next action. Work with the available tools and model. No Python setup, special
-runtime, permanent team or additional approval step is required by this skill.
-Preserve the user's scope, permissions and resource constraints.
+next action. Use the available tools and model within the user's scope,
+permissions and resources. This skill requires no extra approval, Python setup,
+special runtime or permanent team.
 
-## Research inspiration
+## The working loop
 
-Boost takes inspiration from Google DeepMind’s FunSearch, AlphaEvolve and
-AlphaDev. See [the research and proposed adaptations](references/research.md)
-for the mechanisms and their limits. Boost does not reproduce those systems;
-their results do not establish a performance gain for this skill.
+1. Name the next decision and the observation that makes it uncertain. If the
+   next action is already justified, take it; do not invent a research fork.
+2. Choose the cheapest check whose possible answers would change that decision.
+   Use the actual inputs and execution path; validate the checker before trusting
+   its result. A lookalike call or baseline agreement can share the same defect.
+3. For confirmation, record expected changes, what must stay unchanged, and what
+   each outcome would mean before running. Exploration may have unknown outcomes.
+4. Run the check or give a bounded question to a helper. Keep useful work moving.
+5. Verify the evidence, integrate what helps, and continue to the authorized
+   outcome or a real blocker. A report or another agent's agreement is not a result.
 
-## Start with one decision
+The existing task response or handoff is the record:
+**observation -> question -> check -> result -> next action**.
+No separate log or script invocation is required.
 
-Infer the goal and acceptance criteria from the current task. Reuse current
-source and evidence; ask only for missing information that changes the work.
-When a score or prediction drives the next action, identify what it actually
-observes and where the required outcome can be checked. A measured proxy can
-still assume the behavior you need to establish.
-Briefly state the ordinary next action, the unresolved question that might
-change it, and the cheapest check that would distinguish the possible answers.
-For a confirmatory check, record expected observations under the relevant
-explanations, including what should change and what must stay unchanged, before
-seeing the result; check both. For exploration, state what outcomes would change
-the decision; unknown outcomes are allowed. If the next step is already justified,
-take it; do not invent
-uncertainty or a second hypothesis to follow a template.
+## Choose the check
 
-Before relying on an evaluator, identify a relevant way it could be wrong and
-check an appropriate known-answer control or deliberate defect; reuse applicable
-existing evidence. Identify dependencies shared with the candidate that could
-hide the suspected failure, and prefer a check that bypasses them. Baseline
-agreement alone is not validation. For numerical comparisons, record established
-resolution and uncertainty, including for apparent matches. Accept only when the
-full range allowed by that uncertainty meets the requirement; if it crosses the
-decision boundary, refine the check or report inconclusive. Then run the
-discriminating check.
+Infer the goal and acceptance criteria from the task; reuse existing evidence.
+Ask only for missing information that changes the work. A reproducer, exact
+oracle, independent derivation, counterexample, profile or tested alternative can
+settle the question. If execution is unavailable, check what you can and name
+the missing evidence. Include consequential setup, waiting, storage, memory and
+cleanup costs when choosing a check; respect exclusive resource ownership.
 
-Useful evidence includes a reproducer, independent derivation, small exact
-oracle, counterexample, profile or a tested alternative. If execution is
-unavailable, inspect or derive what you can and name the missing evidence.
-A plan or another agent's agreement is not a result.
+For measurements or frozen evaluations that decide acceptance, read
+[evaluation and evidence](references/evaluation.md) before running: it covers
+input and call identity, metric and pairing controls, uncertainty, exclusions,
+provenance and protecting final evaluation. Reuse validation only when it applies
+to the current contract. Missing required inputs or outputs cannot count as success.
 
-Choose the reference needed for this question; do not load all of them:
+Read other references only as needed:
 
 | Uncertainty | Read |
 |---|---|
-| Engineering boundaries, design, reliability or an uncertain research claim | The relevant [recipe](references/recipes.md) |
+| Engineering boundaries, design, reliability or a research claim | Relevant [recipe](references/recipes.md) |
 | Algorithm correctness, performance or selecting candidates | [Algorithm improvement](references/algorithm-improvement.md) |
-| A research checkpoint or stuck investigation needs a useful question | [Questions to unstick an agent](references/questions.md) |
-| A helper or small subteam would help, or the user requests one | [Helper missions and handback](references/helpers.md) |
+| A checkpoint or stuck investigation needs a useful question | [Questions](references/questions.md) |
+| A helper or small subteam would help, or the user requests one | [Helper missions](references/helpers.md) |
 | Choosing helpers or comparing effort | [Models and effort](references/models.md) |
 
-## Revisit the question during work
+## Use help where it changes the work
 
-Reassess at meaningful evidence checkpoints: a result contradicts expectations,
-a new failure appears, attempts repeat without new evidence, the goal or input
-contract changes, or you are about to accept an improvement or claim completion.
-Compare the evidence with the required outcome. If ordinary work is justified,
-continue it. Otherwise choose the question most likely to change the next action;
-use the [question table](references/questions.md) when helpful. Do not wait for
-the user to notice the gap, and do not turn every tool call into a review.
+When the user requests a helper, dispatch through native tools. Otherwise use
+one for a concrete question that benefits from parallel work or an independent
+view. Prepare its packet from current context; give it an artifact to return,
+edit ownership and a time or effort limit. Add helpers only for separate useful
+questions. Complementary investigations can form a [temporary subteam](references/helpers.md#temporary-subteam);
+the lead still owns integration and the combined result.
 
-Keep one active decision. Each helper gets one bounded question that bears on it.
-Ground each question in a concrete observation, state what result
-would change the decision, and run the smallest useful check. Use existing task
-notes for a short record: **observation -> question -> check -> result -> next
-action**. Preserve an unresolved check across handoffs; no new log format is
-required. Generate questions for investigation, not a questionnaire for the user.
+For fresh diagnosis, create an actual fresh context with the contract, source and
+raw evidence, without your favored explanation. Inherited history is not fresh;
+a different model family does not guarantee independent errors. Proposal review
+may include the proposal and should be labeled accordingly. Peer agreement or
+relayed permission does not expand authority; check the authoritative instruction
+and its scope before an action that needs authorization.
 
-For a focused ongoing research loop, give one helper the latest candidate, input
-contract, evaluator and raw evidence. Ask it to select and investigate one
-consequential question; use the existing [helper mission](references/helpers.md).
-The lead verifies the result and uses it before commissioning another round.
-Repeat with changed evidence when useful. Do not re-review unchanged work or
-repeat a settled question without a specific remaining check. A partner may
-find no reason to change course. Return to implementation when the question is
-settled or no further question would change the next action; briefly record why.
-At an evidence or resource limit, record the unresolved point and
-continue whatever authorized work remains possible. This is a loop within the
-active task, not a background service supplied by the skill.
-
-## Use help when it changes the work
-
-When the user asks for a helper, dispatch one through available native agent
-tools. Otherwise use a helper for a concrete question that benefits from an
-independent view or parallel investigation. Prepare its small packet yourself
-from existing context; do not make the user assemble it.
-
-For a fresh diagnosis, create an actual fresh context with the contract, source
-and raw evidence, without your favored explanation. An inherited conversation
-remains informed by that history; label it accordingly. A different model family
-does not guarantee independent errors. Give writers separate edit ownership.
-
-Ask for evidence or an artifact the lead can check. Keep doing useful independent
-work while the helper investigates. Add another helper only for a separate useful
-question. When complementary questions can progress independently toward one
-result, use a [temporary subteam](references/helpers.md#temporary-subteam).
-If delegation is unavailable, perform the check locally; when the user
-wants a separate session, provide the prepared mission to paste there.
-
-If you are the helper receiving a bounded mission, answer that question and
-return your evidence to the lead. Do not take over the whole task or recursively
-create a team unless the assignment calls for it.
+Continue useful independent work while waiting. If delegation is unavailable,
+perform the check locally; supply a prepared mission when a separate session is
+wanted. Helpers answer their assigned question, preserve partial findings and
+return evidence. They do not take over the task or recursively create a team
+unless assigned to do so.
 
 ## Verify, integrate and continue
 
-Test the returned artifact against the actual caller's contract or check the
-argument against its assumptions. Accept, reject or defer substantive findings
-with a reason and evidence. Integrate what helps, then continue to the authorized
-outcome or a real blocker. Receiving a report is not completion.
+Test contributions against the actual caller's contract; an existing consumer's
+test or authorized review can expose a missed boundary. Check claimed causes
+against evidence from the failed run or a discriminating reproduction. Logs may
+suggest an explanation without proving it. Accept, reject or defer substantive
+findings with evidence, and use the result in the deliverable.
 
-Keep the best checked implementation while exploring. Separate correctness from
-quality and uncertainty. Include setup costs and unfavorable cases in performance
-claims. Keep development feedback separate from final evaluation; a revealed
-final case becomes development data. More search cannot recover information the
-inputs do not contain.
+Preserve the best checked implementation while exploring. Keep correctness,
+quality and uncertainty distinct. An aggregate score cannot waive a hard
+requirement. Include unfavorable cases and required setup in performance claims.
+Check consequential numbers against their source artifacts, including omitted
+and no-output cases. Put corrections next to the current conclusion and retain
+the evidence that changed it. A revealed final case becomes development data.
 
-Before carrying a consequential claim into the deliverable, check that the raw
-evidence supports it, including missing, excluded and no-output cases. Use a fresh
-partner when an independent challenge would help; otherwise briefly explain why
-direct verification suffices or limit the claim. Put corrections to earlier
-claims next to the current conclusion, preserving the evidence that changed it.
+Reassess when results contradict expectations, attempts repeat without new
+evidence, the input contract changes or a completion claim is approaching. Keep
+one active decision; use the [question table](references/questions.md) if useful.
+Do not re-review unchanged work or repeat a settled question without a remaining
+check. Use each helper result before commissioning another round. At a resource
+limit, retain the unresolved point and continue authorized work that remains.
+This loop belongs to the active task; it does not start a background service.
 
-Drop unhelpful roles or process. A result may confirm the current action or rule
-out an approach; do not manufacture a success story. A successful task does not
-establish that Boost beats an ordinary attempt with comparable effort.
+## Hand back what changed
 
-## Leave a short handback
+State the question, what actually ran, the artifact and reproduction command or
+derivation, what you accepted/rejected/deferred and its effect, and what remains
+uncertain. For measured conclusions, include what validated the evaluator.
+Retain material invalidated attempts and why they failed; omit an activity diary.
+For substantive investigations, include evaluations, edits and verification,
+including failed work. Report measured time or cost when available; mark unknowns.
 
-Use the existing task response or handoff. State:
-
-- the question checked and what actually ran;
-- the finding, artifact and reproduction command or derivation;
-- what you accepted, rejected or deferred, and its effect on the deliverable;
-- remaining uncertainty and what would settle it.
-
-For substantive investigations, add a compact effort line: evaluations and edits,
-including failed work and verification; distinguish expensive and cheap calls
-when useful. Include measured time or cost if available, and mark unknowns.
-
-Keep this proportional to the task. No separate log or script invocation is
-required. If durable local receipts or feedback summaries would be useful,
-[optional Python utilities](references/utilities.md) are available. Missing
-Python must never block use or delivery.
+Keep this proportional. [Python utilities](references/utilities.md) are optional.
+A useful negative result is valid; task success alone does not establish that
+Boost beats comparable ordinary effort. [Research inspiration](references/research.md)
+describes mechanisms from FunSearch, AlphaEvolve and AlphaDev, not demonstrated
+performance gains for this skill.
