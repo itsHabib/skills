@@ -89,8 +89,8 @@ enough:
 
 | Ticket | Draft on disk | What makes it worth reading |
 |---|---|---|
-| KEY-961 | `key961-validation-comment.md` | Gold standard: unit -> integration -> live, plus the exhaustive-input table |
-| KEY-971 | `key971-validation-comment.md` | Best counter-check; also states the abstain path |
+| KEY-101 | `key101-validation-comment.md` | Gold standard: unit -> integration -> live, plus the exhaustive-input table |
+| KEY-102 | `key102-validation-comment.md` | Best counter-check; also states the abstain path |
 
 Add a row whenever you post a card, and note what makes it worth reading rather than what it
 covered. Read one or two before writing a new one.
