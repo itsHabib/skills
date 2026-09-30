@@ -56,6 +56,12 @@ recommendation runtime-verified from code inspection alone. If execution is
 unavailable or forbidden, label the finding inspection-only and return the
 specific missing check; do not expand permissions to obtain a stronger claim.
 
+For a new or adapted scorer, a focused peer review before trusting its rankings
+can check class precedence, unit/group correspondence, phase boundaries and
+missing-answer handling. Supply its contract and known-answer controls. An
+existing scorer's author may help, but shared authorship can share blind spots;
+review supplements executable checks and does not establish correctness alone.
+
 Save useful findings as they are discovered to the agreed artifact or lead
 handback channel, especially near the limit and before long operations. A prompt
 cannot force a handback after a hard kill; the lead should inspect retained

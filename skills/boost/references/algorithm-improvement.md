@@ -45,6 +45,31 @@ request to "think harder."
 
 ## Keep useful work while exploring
 
+### Reuse one scorer when the comparison recurs
+
+Before generating more candidates for the same question, reuse an adequate
+scorer or extract the smallest shared entry point from the one-off comparisons.
+Separate the reference answers and their provenance from the scoring code that
+compares a candidate's per-unit output with them. Neither the expected units nor
+their reference answers may be supplied or changed by the candidate being judged.
+Keep input identities, grouping and scoring rules consistent across candidates.
+
+When an earlier result exists, validate the extracted scorer by replaying that
+candidate and reconciling its score and retained coverage/failure records under
+the declared comparison rule. Otherwise establish known-answer controls.
+Exact deterministic results should reproduce exactly; variable
+measurements use their established repeatability rule. Resolve differences before
+trusting new rankings. This replay checks extraction, not reference correctness;
+retain known-answer and deliberate-defect checks for the underlying measurement.
+
+Return [grouped results, missing answers and new failures](evaluation.md#freeze-a-meaningful-comparison)
+through that same entry point for every candidate. Reuse only the mechanics whose
+contracts match when adapting it to another question; sharing a scorer shape
+does not establish that the new labels, phases or aggregation are correct.
+An existing test or small script can be enough; no scorer framework is required.
+
+### Compare against the incumbent
+
 Preserve the best checked implementation as the incumbent. Try candidate
 changes in an isolated copy or branch so a failed experiment cannot erase it.
 Compare complete outputs and requirements, not just a summary score. Record

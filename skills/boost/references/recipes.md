@@ -155,6 +155,8 @@ Before generating more candidates:
 Use [evaluation and evidence](evaluation.md) for the actual execution path,
 scored units, exclusions, uncertainty and frozen rules. Then:
 
+- If the comparison will recur, [reuse or extract one scorer](algorithm-improvement.md#reuse-one-scorer-when-the-comparison-recurs)
+  and validate it before judging new candidates.
 - Validate feasibility separately from the score. Use exact checks where the
   contract requires exactness, and explicit tolerances where it permits them.
 - Test the evaluator with known-valid, known-invalid and deliberately defective

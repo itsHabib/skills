@@ -79,6 +79,23 @@ answer; check mixed groups where aggregation could hide the distinction. Report
 total, excluded, failed, empty and scored units with their relevant denominators.
 A no-op control may prove alignment without testing the claimed improvement.
 
+When units share a source or experimental condition, report results by the
+relevant group as well as pooled, with both unit and group counts. State the
+basis for treating groups as independent; group labels alone do not establish
+independence. Many correlated units must not stand in for many independent cases.
+
+Derive expected units from the evaluation contract, not the candidate's output.
+Report absent candidate answers as **MISSING**, retaining their identities and
+the expected denominator. Apply the declared failure or unknown policy; reduced
+coverage must not improve a candidate's standing by silently dropping units.
+Reject or resolve duplicate and unexpected identities before scoring joins.
+
+Compare with the incumbent by identity, especially for the most costly error
+class. Retain each newly failing unit and its group even if the pooled score
+improves. Investigate those regressions before adoption and apply the frozen
+acceptance rule: an explanation cannot waive a hard requirement. If tradeoffs are
+allowed, account for their declared costs rather than inventing a universal ban.
+
 Estimate exclusion consequences using permitted development data or metadata.
 Keep held-out outcomes out of rule design and candidate selection. If an allowed
 exclusion depends on held-out outcomes, freeze its procedure and coverage rule
@@ -112,6 +129,11 @@ Do not alter the original score or relax criteria to turn it into a pass.
 An explicit section in the existing record is enough; a new file is optional.
 When results guide a repair, those cases become development evidence. A later
 confirmatory claim needs a fresh evaluation with rules fixed beforehand.
+
+A reusable scorer makes repeated selection cheap. Cases used to choose or revise
+candidates are development data, even if each candidate is called a frozen
+version. Keep a sealed final set and a predeclared evaluation procedure; freezing
+another version does not restore the independence of already revealed cases.
 
 State what was validated, what failed and what was not tested. Keep unresolved
 cases visible even when the aggregate looks good. Follow through on the decision:
