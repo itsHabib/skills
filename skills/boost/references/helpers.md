@@ -33,7 +33,8 @@ Keep it short and link existing artifacts:
   stating its meaning and basis. Name a supported rival prediction when one
   exists. Keep comparison with the lead's frozen answer outside a blind helper's
   packet. Do not invent a band or a rival to fill the packet. Keep prediction
-  uncertainty, measurement error and acceptance tolerance distinct.
+  uncertainty, measurement error and acceptance tolerance distinct. For a scored
+  prediction, [freeze the mapping from values or bands to labels](evaluation.md#validate-the-measurement).
 - **Inputs:** source revision or snapshot, relevant files, raw results and a
   reproduction command through the actual caller with effective configuration.
   Preserve relevant failed experiments and constraints. For evaluation, use the
@@ -46,9 +47,11 @@ Keep it short and link existing artifacts:
 - **Return:** artifact location and handback route. Return useful partial evidence
   and remaining uncertainty at the limit, without waiting for the lead to ask.
 
-For a reuse judgment, supply the actual invocation and a representative task
-input. Have the helper exercise that path within its execution and side-effect
-permissions, and look for evidence that would defeat reuse. Do not label a reuse
+For a reuse judgment, supply the actual invocation and the input the decision
+concerns, or a faithful sample of it. Keep known-good inputs as controls; running
+one does not establish compatibility with a different target input. Have the
+helper exercise the target path within its execution and side-effect permissions,
+and look for evidence that would defeat reuse. Do not label a reuse
 recommendation runtime-verified from code inspection alone. If execution is
 unavailable or forbidden, label the finding inspection-only and return the
 specific missing check; do not expand permissions to obtain a stronger claim.

@@ -62,8 +62,12 @@ as such instead of pretending its predictions were fixed in advance.
 If an independent prediction is part of the test, dispatch it once the case's
 inputs and scoring rule are frozen. Retain the prediction before the judged case
 starts, with evidence of that ordering; a content hash alone proves neither
-timing nor independence. Keep the lead's answer and judged outputs out of the
-helper's packet. A prediction made after that case has started is a late
+timing nor independence. An existing harness transcript or independently retained
+message/receipt that records the prediction and places it before execution is
+enough; no separate recorder or hash manifest is required. Self-reported times
+or local commit dates alone do not establish the order.
+Keep the lead's answer and judged outputs out of the helper's packet.
+A prediction made after that case has started is a late
 prediction, not its pre-registration; if informed by its result, label it post-hoc.
 For a run already underway, coordinate a hold before the next case only within
 existing authority and resource ownership. Otherwise target a later unstarted
