@@ -19,6 +19,9 @@ Retyping an apparently equivalent call may exercise a different implementation.
 For variable results, compare under the declared repeatability rule rather than
 assuming identical bytes. Keep independent implementations as cross-checks:
 replaying the same code establishes alignment, not independent correctness.
+Use permitted baseline or development runs to distinguish a prediction of the
+intended system from a prediction of defects in its implementation or judge.
+Keep judged-case outcomes out of that preparation for a blind prediction.
 
 ## Validate the measurement
 
@@ -55,6 +58,16 @@ unchanged behavior, how each will be measured, acceptance rules, and what each
 outcome means for the next decision. Include partial success and inconclusive
 outcomes where meaningful. Exploration can discover new explanations; label it
 as such instead of pretending its predictions were fixed in advance.
+
+If an independent prediction is part of the test, dispatch it once the case's
+inputs and scoring rule are frozen. Retain the prediction before the judged case
+starts, with evidence of that ordering; a content hash alone proves neither
+timing nor independence. Keep the lead's answer and judged outputs out of the
+helper's packet. A prediction made after that case has started is a late
+prediction, not its pre-registration; if informed by its result, label it post-hoc.
+For a run already underway, coordinate a hold before the next case only within
+existing authority and resource ownership. Otherwise target a later unstarted
+case without interrupting the current run or claiming retroactive registration.
 
 Declare the scored unit, exclusion rule, aggregation and required coverage.
 Apply exclusions at that declared unit, not whichever level produces a favorable
@@ -99,3 +112,5 @@ confirmatory claim needs a fresh evaluation with rules fixed beforehand.
 State what was validated, what failed and what was not tested. Keep unresolved
 cases visible even when the aggregate looks good. Follow through on the decision:
 integrate the checked improvement, keep the incumbent or narrow the claim.
+A refuted prediction may still expose a useful distinction or failure mechanism;
+retain that evidence alongside the failed prediction without changing its verdict.

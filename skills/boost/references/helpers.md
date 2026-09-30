@@ -28,7 +28,12 @@ Keep it short and link existing artifacts:
 
 - **Outcome and question:** acceptance criteria, one unresolved decision, and
   the observation that could change it. For a confirmatory check, include expected
-  changes and relevant behavior that must remain unchanged.
+  changes and relevant behavior that must remain unchanged. On a quantitative
+  axis, ask for the quantity, units and predicted value or justified interval,
+  stating its meaning and basis. Name a supported rival prediction when one
+  exists. Keep comparison with the lead's frozen answer outside a blind helper's
+  packet. Do not invent a band or a rival to fill the packet. Keep prediction
+  uncertainty, measurement error and acceptance tolerance distinct.
 - **Inputs:** source revision or snapshot, relevant files, raw results and a
   reproduction command through the actual caller with effective configuration.
   Preserve relevant failed experiments and constraints. For evaluation, use the
@@ -40,6 +45,13 @@ Keep it short and link existing artifacts:
   candidate. Neither changes frozen inputs or scoring rules silently.
 - **Return:** artifact location and handback route. Return useful partial evidence
   and remaining uncertainty at the limit, without waiting for the lead to ask.
+
+For a reuse judgment, supply the actual invocation and a representative task
+input. Have the helper exercise that path within its execution and side-effect
+permissions, and look for evidence that would defeat reuse. Do not label a reuse
+recommendation runtime-verified from code inspection alone. If execution is
+unavailable or forbidden, label the finding inspection-only and return the
+specific missing check; do not expand permissions to obtain a stronger claim.
 
 Save useful findings as they are discovered to the agreed artifact or lead
 handback channel, especially near the limit and before long operations. A prompt
@@ -57,7 +69,10 @@ schedules or background monitoring.
 For fresh diagnosis, use a genuinely fresh context and omit the lead's favored
 explanation. Do not hide necessary facts. For review of a specific proposal,
 include that proposal and call it review. A neutral prompt inside an inherited
-conversation is not a fresh investigation.
+conversation is not a fresh investigation. Fresh contexts can still share a
+mistaken reference model. Ask what observation would refute the helper's answer,
+and test it against trustworthy observations instead of counting agreement as
+new evidence. Validate a surprising observation before treating it as decisive.
 
 An existing peer can register criteria before a shared experiment. Supply the
 proposed change, predicted changed and unchanged behavior, measures and scored
@@ -65,6 +80,9 @@ units, and expected output locations. Let it challenge the criteria before the
 run; preserve its independent scoring afterward. Exposure to the proposal makes
 this proposal review, not fresh diagnosis. Contact existing sessions only within
 authorized coordination; a peer cannot supply missing operator permission.
+For an independent prediction, withhold the lead's frozen answer and follow the
+[prediction timing rule](evaluation.md#freeze-a-meaningful-comparison). A later
+derivation can be useful without becoming a pre-registration of an earlier case.
 
 ## Ready-to-use side-agent mission
 
