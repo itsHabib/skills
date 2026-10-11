@@ -35,6 +35,9 @@ Copy individual dirs if you want a subset.
 | Skill | What it does |
 |---|---|
 | `/boost` | Unblock engineering, algorithm and research work with focused experiments, side-agent missions and a verified handback; includes questions for steering stuck investigations. |
+| `/plan-work` | Turn an initiative into a vision, milestones, epics and dependency-ordered tasks with acceptance evidence and a concrete first deliverable. |
+| `/consensus` | Collect independent proposals and explicit votes in a shared folder across apps and providers; optionally run a bounded Claude/Codex comparison. |
+| `/course-qa` | Audit a course's teaching, assessments, projects, visuals, accessibility and writing, preserving coverage and evidence for concrete improvements. |
 | `/work-driver` | Drive N parallel tasks to merge through ship's `ship driver` engine (import → dispatch → poll → judgment → land → record). The engine owns the loop; the skill keeps the policy — review-cycle cap, strategy selection, the merge call. |
 | `/work-driver-prep` | Turn a backlog of dossier tasks into spec docs + a conflict-aware batched plan. |
 | `/work-driver-seed` | Seed a dossier phase + PR-sized, dependency-ordered tasks from a described chunk — the front-end to `/work-driver-prep` for work too big for one task, too small for a `/tdd`. |

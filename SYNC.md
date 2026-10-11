@@ -15,7 +15,8 @@ Public transforms (apply to every synced file):
 6. Reader voice is second-person ("you/your"), not "the operator".
 7. Known divergent-by-design skills: `write-pr` (generic Jira config),
    `polish` / `prep-public` / `wip` (audit rules genericized), `work-driver`
-   (credential bootstrap genericized).
+   (credential bootstrap genericized), `course-qa` (private course adapter
+   omitted; editorial guidance and scanner integration genericized).
 
 Before pushing: `scripts/check.sh` must pass AND
 `git grep -riE "<employer>|<operator-username>|<private-repo-names>" -- skills`

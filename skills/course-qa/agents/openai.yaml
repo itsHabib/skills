@@ -1,0 +1,4 @@
+interface:
+  display_name: "Course QA"
+  short_description: "Deep course QA with teaching, visuals and writing review"
+  default_prompt: "Use $course-qa for an extensive course audit, including editorial review, and save coverage, evidence and proposed improvements."
