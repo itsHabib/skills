@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Work"
+  short_description: "Turn an ambition into epics and actionable tasks"
+  default_prompt: "Use $plan-work to turn this idea into a vision, milestones, epics, and a dependency-ordered task plan with a concrete first deliverable."
