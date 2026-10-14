@@ -27,6 +27,8 @@ python3 -B -m unittest discover -s tests/boost-discovery -p 'test_*.py' -v
 
 Prepare from the repository root after both skill versions and this harness are
 final. The original ref defaults to `4b4a3d987ec2a556581ffd55bfd9dfa5c9449838`.
+If your clone is shallow, fetch that historical commit before preparing a trial.
+Unit tests use the current checkout commit and do not require historical data.
 The revised directory is copied byte for byte, excluding Python caches and
 `.DS_Store`; it is not replaced with a summary. `--revised-ref COMMIT` is an
 alternative to `--revised-dir`. `--cases all` or comma-separated case IDs work too.

@@ -10,7 +10,7 @@ from pathlib import Path
 
 from checks import (CASES, ROOT, count_cycle, design_score, grade_directory,
                     grade_result, load_json, polygon_counts, tree_count)
-from harness import BASELINE, grade, prepare, select_cases, sha, snapshot_ref
+from harness import grade, git, prepare, select_cases, sha, snapshot_ref
 
 
 def controls():
@@ -176,7 +176,9 @@ class PacketChecks(unittest.TestCase):
         revised = self.root / "source"
         revised.mkdir()
         (revised / "SKILL.md").write_text("Synthetic revision used only for packet isolation tests.\n")
-        self.args = argparse.Namespace(repo=ROOT.parents[1], original_ref=BASELINE,
+        # Unit tests also run in shallow CI checkouts; trials keep their historical baseline.
+        self.original_ref = git(ROOT.parents[1], "rev-parse", "HEAD").decode().strip()
+        self.args = argparse.Namespace(repo=ROOT.parents[1], original_ref=self.original_ref,
                                        revised_ref=None, revised_dir=revised, out=self.root / "run",
                                        cases="smoke", model="test-model", effort="test-effort",
                                        pair_id="test-pair", tool_limit=24, seconds=600, retrieval_dir=None)
@@ -184,8 +186,8 @@ class PacketChecks(unittest.TestCase):
     def test_actual_snapshots_and_no_answer_key_in_packets(self):
         prepared = prepare(self.args)
         freeze = load_json(self.args.out / "coordinator/FREEZE.json")
-        original, source = snapshot_ref(self.args.repo, BASELINE)
-        self.assertEqual(source["commit"], BASELINE)
+        original, source = snapshot_ref(self.args.repo, self.original_ref)
+        self.assertEqual(source["commit"], self.original_ref)
         self.assertEqual(freeze["arms"]["original"]["files"]["boost/SKILL.md"]["sha256"], sha(original["SKILL.md"]))
         self.assertTrue(prepared["freeze_sha256"])
         for arm in ("original", "revised"):
