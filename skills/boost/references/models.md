@@ -28,6 +28,14 @@ failure and use the existing budget first. If additional resources are needed,
 describe the specific question and expected evidence; follow the caller's
 existing authorization.
 
+For discovery, prefer a discriminating probe or changed representation before
+more repetitions of the same attempt. Escalation should have a named obligation,
+a plausible path to new evidence and a bounded expected output. Higher precision
+or finishing a nearly complete search may justify more of the same method;
+repeated failure without information does not. Record requested versus exposed
+effective model/effort settings; leave
+unavailable routing unknown. Higher reasoning is an experiment, not a result.
+
 Count intake, helpers, tool execution, failed attempts, retries, verification
 and consolidation. Report elapsed time separately from total compute effort;
 parallel calls reduce elapsed time without making their work free. Record

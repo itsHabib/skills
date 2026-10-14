@@ -11,6 +11,16 @@ is needed. For measured decisions, Boost checks the actual inputs and execution
 path, validates the evaluator, and preserves failures and unresolved cases.
 See [evaluation and evidence](references/evaluation.md) for that conditional path.
 
+## Mathematical and scientific discovery
+
+> /boost Investigate this conjecture within the available budget. Try a materially different representation, search for a small counterexample, and preserve the strongest checked result. Distinguish proof, finite computation, numerical support and empirical evidence. Check the closest prior work before suggesting novelty, and return the next experiment that would most change the conclusion.
+
+The [discovery path](references/discovery.md) keeps a small set of distinct ideas,
+tests one uncertainty at a time and spends help on the weakest consequential
+assumption. [Worked examples](references/discovery-examples.md) show a pattern
+becoming a proof, a geometric conjecture being refuted and repaired, and an
+experiment that separates two scientific explanations. No fixed team is required.
+
 ## Research inspiration
 
 [Research inspiration](references/research.md) describes mechanisms from Google

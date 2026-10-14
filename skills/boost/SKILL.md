@@ -2,7 +2,7 @@
 name: boost
 argument-hint: "[task or current difficulty]"
 user_invocable: true
-description: Unblock difficult engineering, algorithm, debugging or research work with a focused experiment or side-agent investigation and a verified handback. Use when asked to boost a task, add a thinking partner, challenge an approach or stop repeated unproductive attempts.
+description: Unblock difficult engineering or investigate mathematical, scientific and geometric questions with bounded experiments, alternative representations and checked evidence. Use when asked to boost a task, explore a conjecture, add a thinking partner, challenge an approach or stop repeated unproductive attempts.
 ---
 
 # Boost
@@ -11,6 +11,12 @@ Improve the active task using the smallest investigation that could change the
 next action. Use the available tools and model within the user's scope,
 permissions and resources. This skill requires no extra approval, Python setup,
 special runtime or permanent team.
+
+For open-ended discovery, the next action may be choosing a question, finding a
+counterexample or learning which experiment is informative. Read
+[discovery](references/discovery.md) for that path. Keep a small set of genuinely
+different possibilities while testing one uncertainty at a time; do not force
+early agreement or promise a positive result. Ordinary repairs use the loop below.
 
 ## The working loop
 
@@ -48,6 +54,7 @@ Read other references only as needed:
 
 | Uncertainty | Read |
 |---|---|
+| A mathematical, scientific or geometric discovery question | [Discovery](references/discovery.md), then [worked examples](references/discovery-examples.md) if useful |
 | Engineering boundaries, design, reliability or a research claim | Relevant [recipe](references/recipes.md) |
 | Algorithm correctness, performance or selecting candidates | [Algorithm improvement](references/algorithm-improvement.md) |
 | A checkpoint or stuck investigation needs a useful question | [Questions](references/questions.md) |
@@ -111,5 +118,5 @@ including failed work. Report measured time or cost when available; mark unknown
 Keep this proportional. [Python utilities](references/utilities.md) are optional.
 A useful negative result is valid; task success alone does not establish that
 Boost beats comparable ordinary effort. [Research inspiration](references/research.md)
-describes mechanisms from FunSearch, AlphaEvolve and AlphaDev, not demonstrated
-performance gains for this skill.
+separates published mechanisms from proposed adaptations. Discovery handbacks
+also separate correctness, scope, scientific evidence and prior-art status.

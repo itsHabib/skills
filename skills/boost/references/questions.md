@@ -39,6 +39,9 @@ contract usually needs implementation and validation, not a research mission.
 | The results look suspiciously good | Could your evaluator reward the wrong behavior? |
 | An aggregate score looks good | Which required cases or serious failures could that summary hide? |
 | It’s stuck in one approach | What would a fundamentally different explanation predict? |
+| A search keeps finding similar candidates | Which representation or hypothesis have all of them inherited, and what would a different one expose? |
+| A construction beats the current baseline | Does it beat a simple classical or random construction under the same rules? |
+| A claim looks new | Which equivalent statement or earlier bound could make this a rediscovery? |
 | It claims success | What did you demonstrate, and what are you still assuming? |
 | It requests more resources | What can you establish with what you already have? |
 

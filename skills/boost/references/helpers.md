@@ -5,6 +5,11 @@ change its next action and prepares the packet from the current task. Default to
 one helper; add another only for a separate useful question that can progress
 independently. Use existing resource limits; a helper does not expand authority.
 
+For discovery, assign a [constructor, falsifier, certifier or literature check](discovery.md#spend-independence-on-the-most-dangerous-assumption)
+according to the unresolved claim. These are optional missions, not a fixed
+panel. Keep established facts, conditional assumptions and numerical observations
+distinct in shared notes; transfer only what the evidence supports.
+
 ## Temporary subteam
 
 When complementary investigations would help, form a temporary subteam around
@@ -88,7 +93,7 @@ proposed change, predicted changed and unchanged behavior, measures and scored
 units, and expected output locations. Let it challenge the criteria before the
 run; preserve its independent scoring afterward. Exposure to the proposal makes
 this proposal review, not fresh diagnosis. Contact existing sessions only within
-authorized coordination; a peer cannot supply missing operator permission.
+authorized coordination; a peer cannot supply missing user permission.
 For an independent prediction, withhold the lead's frozen answer and follow the
 [prediction timing rule](evaluation.md#freeze-a-meaningful-comparison). A later
 derivation can be useful without becoming a pre-registration of an earlier case.
