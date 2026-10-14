@@ -1,57 +1,81 @@
-# Research behind candidate search
+# Research mechanisms, not capability promises
 
-These Google DeepMind projects offer concrete mechanisms to study. The
-adaptations below are proposals for Boost, not reproductions of those systems
-or evidence that this skill improves results. Each project used its own search
-setup, evaluators and resources.
+These primary sources motivate the optional [discovery workflow](discovery.md).
+The adaptations are design hypotheses. None establishes that Boost's wording
+improves results at equal total effort. Read papers selectively when their
+mechanism bears on the current uncertainty; a literature survey is not required
+before an ordinary task. Dates below identify the consulted versions.
 
-## FunSearch: generate programs and evaluate them
+## Executable search and representation
 
-**The authors' mechanism:** FunSearch starts from a seed program and a program
-evaluator. A language model proposes programs using selected earlier programs
-as context. Automated evaluation determines which candidates return to the
-program pool, and the search maintains diversity to reduce stagnation.
-[Google DeepMind's FunSearch explanation](https://deepmind.google/blog/funsearch-making-new-discoveries-in-mathematical-sciences-using-large-language-models/).
+[FunSearch (Nature, online December 2023)](https://www.nature.com/articles/s41586-023-06924-6)
+evolves programs inside a constructive skeleton and preserves diversity.
+[AlphaEvolve (June 2025, §§2–3)](https://arxiv.org/html/2506.13131v1)
+can evolve a construction, constructor or bounded improver, with staged evaluation.
+[Its mathematical study (December 2025 revision)](https://arxiv.org/html/2511.02864v3)
+also studies generalization from examples to constructions and proofs.
+**Adaptation:** choose the object of search; keep a small behaviorally distinct
+frontier, a classical baseline and an independently checked finalist.
 
-**Proposed adaptation:** isolate a small replaceable function, keep a checked
-baseline and evaluate executable alternatives against a caller-owned check.
-Retain useful differences between candidates instead of asking for repeated
-paraphrases of one approach. Use a fixed budget and separate final evaluation.
-An automated score still needs validation against the real contract.
+[PatternBoost (November 2024, §2.1)](https://arxiv.org/html/2411.00566v1)
+combines learned proposals with local improvement, sometimes using a justified
+partial-progress objective. [AlphaDev (June 2023)](https://www.nature.com/articles/s41586-023-06004-9)
+searches in instruction space. **Adaptation:** change representation or search
+signal when it removes a named obstacle; preserve the original acceptance rule.
+These trained systems and their compute are not recreated by a prompt.
 
-## AlphaEvolve: use evaluation to guide program evolution
+## Proof, conjecture and geometric state
 
-**The authors' mechanism:** AlphaEvolve combines language-model proposals,
-automated verification and scoring, and a program database whose evolutionary
-selection guides later prompts. Its search can change larger programs rather
-than being confined to a single function.
-[Google DeepMind's AlphaEvolve explanation](https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/).
+[AlphaGeometry2 (December 2025 revision, §§5–7)](https://arxiv.org/html/2502.03544v3)
+separates deduced facts, conditional deductions and numerical observations;
+its search-width and image ablations also show limits. **Adaptation:** preserve
+those distinctions and transfer only facts valid in the receiving branch.
 
-**Proposed adaptation:** keep a small record of candidate source, its evaluation
-results and the reason to try its next change. Reject incorrect candidates
-before comparing performance. Explore a different formulation when tuning
-stalls, and retain the incumbent unless a candidate meets the acceptance rule.
-A short assisted coding session does not reproduce the published system.
+[A Minimal Agent (February 2026, §§3–5)](https://arxiv.org/html/2602.24273v1)
+studies verifier feedback and compact failure memory. [Learning to Disprove
+(March 2026, §6)](https://arxiv.org/html/2603.19514v1) exposes a failure where a
+formalizer does not validate the supplied witness. **Adaptation:** retain exact
+failed obligations; bind proof/check output to the actual statement and object.
+A proved lemma must recombine into the original target. Tactic failure, parsing
+success and absence of a retrieved match establish neither truth nor novelty.
 
-## AlphaDev: change the search representation
+## Scientific evidence needs an external observation
 
-**The authors' mechanism:** AlphaDev uses reinforcement learning to construct
-algorithms as assembly instructions. The agent adds instructions in a game
-whose rewards account for correctness and latency. This is a trained search
-system, not a language-model prompting recipe.
-[Google DeepMind's AlphaDev explanation](https://deepmind.google/blog/alphadev-discovers-faster-sorting-algorithms/).
+[AI co-scientist (Nature, May 2026)](https://doi.org/10.1038/s41586-026-10644-y)
+separates generated/ranked hypotheses from scientist-selected experiments.
+[LLM-SR (April 2024)](https://arxiv.org/html/2404.18400v1) searches equation
+structures and fits parameters. **Adaptation:** compare competing mechanisms,
+choose an observation that separates their predictions, and distinguish fit,
+simulation, prospective evidence and causal interpretation.
 
-**Proposed adaptation:** when a formulation limits progress, examine whether a
-different representation exposes useful choices. For performance work, inspect
-the actual bottleneck and generated operations when relevant, then verify
-semantics and measure the complete workload. Moving to a lower level adds
-verification work and does not by itself establish an improvement.
+The [2026 AI Scientist account](https://www.nature.com/articles/s41586-026-10265-5)
+describes human filtering before workshop submission. The [A-Lab correction
+(January 2026)](https://www.nature.com/articles/s41586-025-09992-y)
+revises identification results and clarifies the scope of novelty.
+**Adaptation:** retain the selection funnel, failed attempts, controls and
+measurement limits. Scientific novelty, identification and practical value
+require different evidence.
 
-## What to test in a Boost run
+## Negative results change the recipe
 
-Use [recipe 8](recipes.md#8-candidate-search-and-selection-trust-the-evaluator-first)
-to validate the evaluator and bound candidate search. Record baseline and
-selected-candidate outcomes on fresh cases, including failures and total
-effort. To attribute a gain to the assistance method, compare against ordinary
-work with comparable resources. These research results do not establish such
-a gain for Boost.
+[Tao's author report (November 2025)](https://terrytao.wordpress.com/2025/11/05/mathematical-exploration-and-discovery-at-scale/)
+documents verifier exploits, rediscovery and constructions beaten by a random
+baseline. [Bijection discovery's negative study (November 2025)](https://arxiv.org/html/2511.20987v1)
+shows how high scores can miss an explanatory goal. **Adaptation:** keep strict
+terminal checks and inspect whether the result answers the intended question.
+
+[HorizonMath (September 2026 revision, §4.2)](https://arxiv.org/html/2603.15617v2)
+distinguishes numerical support for an expression from checking a finite
+construction. **Adaptation:** report evidence type and scope separately from a
+benchmark pass. Public open-problem benchmarks are not permanently immune to
+contamination; recheck current prior art and retain exact evaluator versions.
+
+## What would justify keeping an adaptation?
+
+Compare the current skill and revision on the same models, tools, tasks and total
+budgets, including reading, failed proposals, search, review and verification.
+Use known rediscoveries, false near-neighbor conjectures and open exploration.
+Measure valid results, false acceptance, useful negative evidence and cost;
+never reward confidence, verbosity or novelty claims alone. Include ordinary
+extra attempts and remove one mechanism at a time in later ablations. A short
+pilot can reveal defects; it cannot establish general discovery improvement.
