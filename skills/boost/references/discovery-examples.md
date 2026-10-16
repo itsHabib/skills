@@ -108,3 +108,41 @@ outcome, label a simulation empirical confirmation or exclude a failed run.
 experiment ran. Prior-art status of the real application is unchecked. Escalate
 only if a named uncertainty, such as calibration or identifiability, needs
 specialist evidence. The appropriate next experiment is already concrete.
+
+## Two candidates → an existing judge → a bounded decision
+
+This is an invented teaching scenario, not a recorded experiment or evidence of
+a discovery gain. A previously validated exact batch-count judge is already on
+disk. Counts are nonnegative integers, capacity is a positive integer, and a
+partial batch counts as one. Its shared development rows are (items, batches) =
+(0, 0), (7, 2). Two agents propose constant capacities that fit those rows:
+A uses four items per batch, B uses six. Neither may change the judge.
+
+Before consulting the judge's retained 12-item row, record the two-arm prediction:
+at 12 items, A predicts three batches and B predicts two. A judge value of three
+supports A over B on this case; two supports B; another value challenges both or
+the reference contract. Keep this sealed comparison and each labelled variant
+beside it. Do not replace a sealed artifact with the variant that later wins.
+
+The retained row is (12, 3), so no new experiment is needed to reject B for
+this case. Withdraw B's claim with that row as evidence. This comparison does
+not prove capacity four is uniquely correct among all possible models, nor
+validate a deployed implementation. A new claim would need its own coverage.
+
+The supplied arithmetic can be checked without a model:
+
+```python
+saved_rows = ((0, 0), (7, 2), (12, 3))
+def batches(items, capacity):
+    return (items + capacity - 1) // capacity
+
+a = tuple(batches(items, 4) for items, _ in saved_rows)
+b = tuple(batches(items, 6) for items, _ in saved_rows)
+reference = tuple(count for _, count in saved_rows)
+assert a == reference == (0, 2, 3)
+assert b == (0, 2, 2)
+assert a[-1] != b[-1]  # The retained 12-item row distinguishes the candidates.
+```
+
+A saved judge is useful only after its identity, quantity, controls and coverage
+have been checked. Its age or agreement with one candidate is not validation.
