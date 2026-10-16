@@ -12,6 +12,10 @@ Before choosing one, ask: **Would plausible answers lead to different next
 actions?** If not, drop the question and continue the justified work. A check
 that confirms the current action can still be valuable.
 
+Before asserting "none" or "nothing" about another component's involvement,
+list the relevant stages and check each against the code or producing record.
+A partial recollection is a lead to investigate, not evidence to dismiss.
+
 Costly reversal or a downstream contract makes a fork consequential, but a cheap
 discriminating check can also be worth doing. Routine wiring with a settled
 contract usually needs implementation and validation, not a research mission.

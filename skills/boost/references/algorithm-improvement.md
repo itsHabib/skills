@@ -6,6 +6,12 @@ it is not a qualification gate before helping someone.
 
 ## Make the uncertainty executable
 
+If the existing system already produces the output the question concerns, join
+that actual output to the reference by verified identity and classify the
+differences before building a predictor. Predict only what the system does not
+already produce; a model of the product answers a different question from a
+measurement of the product.
+
 Write down the input contract and what would count as better. Separate hard
 correctness requirements from an objective such as runtime, memory or packing
 quality. A faster invalid answer cannot win. Profile before assuming the
@@ -74,8 +80,11 @@ Preserve the best checked implementation as the incumbent. Try candidate
 changes in an isolated copy or branch so a failed experiment cannot erase it.
 Compare complete outputs and requirements, not just a summary score. Record
 the exact candidate, input set, command and measurement conditions. Recheck a
-candidate before replacing the incumbent; measure plausible speed gains more
-than once with a comparable runtime environment.
+candidate before replacing the incumbent. Replay a second, unlike input in the
+same family and compare the complete downstream result against declared changed
+and unchanged requirements, as in
+[repair checks](evaluation.md#check-a-repair-before-the-next-batch). Measure
+plausible speed gains more than once with a comparable runtime environment.
 
 Choose the next intervention from the evidence. Some useful possibilities:
 

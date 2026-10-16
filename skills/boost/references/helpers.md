@@ -48,7 +48,10 @@ Keep it short and link existing artifacts:
 - **Scope:** allowed edits, separate ownership for concurrent writers, shared
   resources to avoid and a concrete time or effort limit within the task's budget.
   Verification preserves the tested subject; implementation may edit an assigned
-  candidate. Neither changes frozen inputs or scoring rules silently.
+  candidate. Neither changes frozen inputs or scoring rules silently. After a
+  failed attempt on a shared or exclusive resource, retry only with new evidence
+  and a written hypothesis that changes the attempt; otherwise stop and record
+  the prerequisite for retry.
 - **Return:** artifact location and handback route. Return useful partial evidence
   and remaining uncertainty at the limit, without waiting for the lead to ask.
 

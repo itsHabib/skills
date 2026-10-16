@@ -117,6 +117,10 @@ proxy for the intended outcome, or more analysis may not answer the question.
 analysis or bounded experiment with its decision rule fixed in advance.
 Check that the proposed measurement actually separates the explanations.
 Report unresolved ambiguity; a plausible narrative is not a causal result.
+Before communicating a cause when competing mechanisms fit the measurements,
+read the producing process's own logs, steps or inputs for the distinguishing
+fact. If none is available, label the cause a hypothesis. Correct withdrawn
+mechanisms beside affected claims without altering sealed records.
 
 For a measured or frozen comparison, use [evaluation and evidence](evaluation.md)
 to validate the quantity, pairing and controls before interpreting a result.
@@ -136,14 +140,18 @@ the actual requirement remains unmet.
 > Here are [goal, current patch, failed attempts and raw check output]. Keep
 > correct work intact. Reproduce the failure and question the current diagnosis.
 > Make the smallest justified repair, then run regression and development
-> checks. Return the patch, evidence and any remaining blocker.
+> checks, including both sides of changed conditions, downstream readers and a
+> second unlike case from the same input family. Return the patch, evidence
+> and any remaining blocker.
 
 **Deliver and check:** use a caller-owned development check for the missing
 requirement and feed its output back to the worker. Keep final evaluation
 separate. If the same approach stalls, give a fresh helper the current files
 and raw failure rather than restarting everything. Stop on verified completion,
 the agreed budget or a concrete blocker; plans and messages alone are not
-progress.
+progress. When the check itself is repaired, preserve its old verdict and
+validate the revision with both accepted and rejected controls; follow
+[repair checks](evaluation.md#check-a-repair-before-the-next-batch).
 
 ## 8. Candidate search and selection: trust the evaluator first
 
