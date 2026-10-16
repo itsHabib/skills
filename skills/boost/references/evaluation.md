@@ -173,8 +173,9 @@ requirements. Trace unexpected shifts in counts, coverage or routing before hand
 
 If the evaluator itself changes after revealing a failure, treat that repair as
 a candidate. Retain the old rule, old verdict and reason beside the revised rule
-and verdict. Add a case beyond the relaxed boundary that the new check must still
-reject, as well as a valid control. Until these controls pass, label any rescued
+and verdict. Add a known-wrong case the revised check must reject and a valid
+control. If the repair relaxes a boundary, include a case beyond the new boundary
+that must still be rejected. Until these controls pass, label any rescued
 result "passed under revised check; old verdict: fail" with its reason.
 Passing those controls validates the repair only within their scope; a later
 confirmatory claim still needs the frozen evaluation required below.
